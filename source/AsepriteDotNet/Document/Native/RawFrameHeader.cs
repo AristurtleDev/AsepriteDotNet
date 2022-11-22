@@ -18,23 +18,14 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using System.Collections.ObjectModel;
+namespace AsepriteDotNet.Document.Native;
 
-namespace AsepriteDotNet.Document;
-
-public sealed class AsepriteDocument
+public struct RawFrameHeader
 {
-    private IList<AseFrame> _frames;
-
-    public AseHeader Header { get; }
-
-    public ReadOnlyCollection<AseFrame> Frames => _frames.AsReadOnly();
-
-    internal AsepriteDocument(AseHeader header)
-    {
-        Header = header;
-        _frames = new List<AseFrame>(header.Frames);
-        
-    }
-
+    public uint Length;
+    public ushort Magic;
+    public ushort OldCount;
+    public ushort Duration;
+    public byte[] Ignore1;
+    public uint NewCount;
 }

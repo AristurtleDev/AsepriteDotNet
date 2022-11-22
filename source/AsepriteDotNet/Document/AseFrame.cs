@@ -18,23 +18,29 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using System.Collections.ObjectModel;
+using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public sealed class AsepriteDocument
+public sealed class AseFrame
 {
-    private IList<AseFrame> _frames;
+    /// <summary>
+    ///     Gets the raw aseprite frame values.
+    /// </summary>
+    public readonly RawFrameHeader RawFrameHeader;
 
-    public AseHeader Header { get; }
+    /// <summary>
+    ///     Gets the duration, in milliseconds, of this frame when used in an
+    ///     animation.
+    /// </summary>
+    public int Duration => RawFrameHeader.Duration;
 
-    public ReadOnlyCollection<AseFrame> Frames => _frames.AsReadOnly();
-
-    internal AsepriteDocument(AseHeader header)
+    internal AseFrame(RawFrameHeader rawFrame)
     {
-        Header = header;
-        _frames = new List<AseFrame>(header.Frames);
-        
-    }
+        if (rawFrame.Magic != 0xF1FA)
+        {
+            throw new ArgumentException(nameof(rawFrame), $"Invalid magic number '0x{rawFrame.Magic:X4}'");
 
+        }
+    }
 }

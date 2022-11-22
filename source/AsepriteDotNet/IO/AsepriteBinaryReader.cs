@@ -36,6 +36,11 @@ public sealed class AsepriteBinaryReader : IDisposable
     private readonly byte[] _buffer = new byte[16];
 
     /// <summary>
+    ///     Gets the position of the underlying stream.
+    /// </summary>
+    public long Position => _stream.Position;
+
+    /// <summary>
     ///     Initializes a new instance of the <see cref="AsepriteBinaryReader"/>
     ///     class.
     /// </summary>

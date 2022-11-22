@@ -27,68 +27,70 @@ namespace AsepriteDotNet.Document;
 
 public sealed class AseHeader
 {
-    /// <summary>
-    ///     Gets the raw aseprite file header values.
-    /// </summary>
-    public readonly RawHeader RawHeader;
 
     /// <summary>
     ///     Gets the total number of frames in the Aseprite file.
     /// </summary>
-    public int Frames => RawHeader.Frames;
+    public int Frames { get; }
 
     /// <summary>
     ///     Gets the width, in pixels, of the image (canvas).
     /// </summary>
-    public int Width => RawHeader.Width;
+    public int Width { get; }
 
     /// <summary>
     ///     Gets the height, in pixels, of the image (canvas).
     /// </summary>
-    public int Height => RawHeader.Height;
+    public int Height { get; }
 
     /// <summary>
     ///     Gets the color depth mode used by the Aseprite file that defines
     ///     the number of bits-per-pixel used.
     /// </summary>
-    public AseColorDepth ColorDepth => (AseColorDepth)RawHeader.ColorDepth;
+    public AseColorDepth ColorDepth { get; }
 
     /// <summary>
     ///     Gets a value that indicates if the opacity value for layers if
     ///     valid.
     /// </summary>
-    public bool IsLayerOpacityVailid => (RawHeader.Flags & 1) != 0;
+    public bool IsLayerOpacityVailid { get; }
 
     /// <summary>
     ///     Gets the index within the palette of the color that represents a
     ///     transparent pixel. This value is only valid when the the color
     ///     depth mode used is <see cref="AseColorDepth.Indexed"/>.
     /// </summary>
-    public int TransparentIndex => RawHeader.TransparentIndex;
+    public int TransparentIndex { get; }
 
     /// <summary>
     ///     Gets the number of colors defined in the image.
     /// </summary>
-    public int NumberOfColors => RawHeader.NumberOfColors == 0 ? 256 : RawHeader.NumberOfColors;
+    public int NumberOfColors { get; }
 
-    internal AseHeader(RawHeader rawHeader)
+    internal AseHeader(RawHeader native)
     {
-        if(rawHeader.MagicNumber != 0xA5E0)
+        if (native.MagicNumber != 0xA5E0)
         {
-            throw new ArgumentException(nameof(rawHeader), $"Invalid magic number '0x{rawHeader.MagicNumber:X4}'");
+            throw new ArgumentException(nameof(native), $"Invalid magic number '0x{native.MagicNumber:X4}'");
         }
 
-        if(rawHeader.Width == 0 || rawHeader.Height == 0)
+        if (native.Width == 0 || native.Height == 0)
         {
-            throw new ArgumentException(nameof(rawHeader), $"Invalid image size '{rawHeader.Width}x{rawHeader.Height}");
+            throw new ArgumentException(nameof(native), $"Invalid image size '{native.Width}x{native.Height}");
         }
 
-        if(rawHeader.ColorDepth != 8 || rawHeader.ColorDepth != 16 || rawHeader.ColorDepth != 32)
+        if (native.ColorDepth != 8 || native.ColorDepth != 16 || native.ColorDepth != 32)
         {
-            throw new ArgumentException(nameof(rawHeader), $"Invalid color depth '{rawHeader.ColorDepth}'");
+            throw new ArgumentException(nameof(native), $"Invalid color depth '{native.ColorDepth}'");
         }
 
-        RawHeader = rawHeader;
+        Frames = native.Frames;
+        Width = native.Width;
+        Height = native.Height;
+        ColorDepth = (AseColorDepth)native.ColorDepth;
+        IsLayerOpacityVailid = (native.Flags & 1) != 0;
+        TransparentIndex = native.TransparentIndex;
+        NumberOfColors = native.NumberOfColors;
     }
 
 }

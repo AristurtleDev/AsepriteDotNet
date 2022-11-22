@@ -27,19 +27,15 @@ namespace AsepriteDotNet.Document;
 
 public abstract class AseChunk
 {
-    /// <summary>
-    ///     Gets the raw Aseprite chunk header values.
-    /// </summary>
-    public readonly RawChunkHeader RawChunkHeader;
 
     /// <summary>
     ///     Gets a <see cref="AseChunkType"/> value that defines the type
     ///     of chunk this is.
     /// </summary>
-    public AseChunkType ChunkType => (AseChunkType)RawChunkHeader.Type;
+    public AseChunkType ChunkType { get; }
 
-    internal AseChunk(RawChunkHeader rawChunkHeader)
+    internal AseChunk(RawChunkHeader native)
     {
-        RawChunkHeader = rawChunkHeader;
+        ChunkType = (AseChunkType)native.Type;
     }
 }

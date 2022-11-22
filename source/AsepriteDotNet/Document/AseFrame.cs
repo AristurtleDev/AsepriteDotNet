@@ -25,22 +25,18 @@ namespace AsepriteDotNet.Document;
 public sealed class AseFrame
 {
     /// <summary>
-    ///     Gets the raw aseprite frame values.
-    /// </summary>
-    public readonly RawFrameHeader RawFrameHeader;
-
-    /// <summary>
     ///     Gets the duration, in milliseconds, of this frame when used in an
     ///     animation.
     /// </summary>
-    public int Duration => RawFrameHeader.Duration;
+    public int Duration { get; }
 
-    internal AseFrame(RawFrameHeader rawFrame)
+    internal AseFrame(RawFrameHeader native)
     {
-        if (rawFrame.Magic != 0xF1FA)
+        if (native.Magic != 0xF1FA)
         {
-            throw new ArgumentException(nameof(rawFrame), $"Invalid magic number '0x{rawFrame.Magic:X4}'");
-
+            throw new ArgumentException(nameof(native), $"Invalid magic number '0x{native.Magic:X4}'");
         }
+
+        Duration = native.Duration;
     }
 }

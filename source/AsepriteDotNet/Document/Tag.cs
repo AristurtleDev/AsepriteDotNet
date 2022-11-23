@@ -18,23 +18,30 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using System.Collections.ObjectModel;
+using System.Drawing;
+
+using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public sealed class AsepriteDocument
+public class Tag
 {
-    private IList<Frame> _frames;
+    public int From { get; }
+    public int To { get; }
+    public LoopDirection LoopDirection { get; }
+    public Color Color { get; }
+    public string Name { get; }
 
-    public Header Header { get; }
-
-    public ReadOnlyCollection<Frame> Frames => _frames.AsReadOnly();
-
-    internal AsepriteDocument(Header header)
+    public Tag(RawTagsChunkTag native)
     {
-        Header = header;
-        _frames = new List<Frame>(header.Frames);
-        
-    }
+        From = native.From;
+        To = native.To;
+        LoopDirection = (LoopDirection)native.LoopDirection;
+        Name = native.Name;
 
+        byte r = native.Color[0];
+        byte g = native.Color[1];
+        byte b = native.Color[2];
+        Color = Color.FromArgb(255, r, g, b);
+    }
 }

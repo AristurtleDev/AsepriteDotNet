@@ -21,22 +21,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
+using AsepriteDotNet.Document.Native;
+
 namespace AsepriteDotNet.Document;
 
-public enum AseChunkType
+public class TilesetLayer : Layer
 {
-    OldPaletteChunkA = 0x0004,
-    OldPaletteChunkB = 0x0011,
-    LayerChunk = 0x2004,
-    CelChunk = 0x2005,
-    CelExtraChunk = 0x2006,
-    ColorProfileChunk = 0x2007,
-    ExternalFilesChunk = 0x2008,
-    MaskChunk = 0x2016,
-    PathChunk = 0x2017,
-    TagsChunk = 0x2018,
-    PaletteChunk = 0x2019,
-    UserDataChunk = 0x2020,
-    SliceChunk = 0x2022,
-    TilesetChunk = 0x2023
+    public int TilesetIndex { get; }
+
+    internal TilesetLayer(RawLayerChunk native)
+        : base(native)
+    {
+        TilesetIndex = (int)(native.TilsetIndex ?? throw new ArgumentException());
+    }
 }

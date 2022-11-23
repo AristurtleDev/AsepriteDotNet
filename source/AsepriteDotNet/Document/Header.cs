@@ -25,7 +25,7 @@ using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public sealed class AseHeader
+public sealed class Header
 {
 
     /// <summary>
@@ -47,7 +47,7 @@ public sealed class AseHeader
     ///     Gets the color depth mode used by the Aseprite file that defines
     ///     the number of bits-per-pixel used.
     /// </summary>
-    public AseColorDepth ColorDepth { get; }
+    public ColorDepth ColorDepth { get; }
 
     /// <summary>
     ///     Gets a value that indicates if the opacity value for layers if
@@ -58,7 +58,7 @@ public sealed class AseHeader
     /// <summary>
     ///     Gets the index within the palette of the color that represents a
     ///     transparent pixel. This value is only valid when the the color
-    ///     depth mode used is <see cref="AseColorDepth.Indexed"/>.
+    ///     depth mode used is <see cref="ColorDepth.Indexed"/>.
     /// </summary>
     public int TransparentIndex { get; }
 
@@ -67,7 +67,7 @@ public sealed class AseHeader
     /// </summary>
     public int NumberOfColors { get; }
 
-    internal AseHeader(RawHeader native)
+    internal Header(RawHeader native)
     {
         if (native.MagicNumber != 0xA5E0)
         {
@@ -87,7 +87,7 @@ public sealed class AseHeader
         Frames = native.Frames;
         Width = native.Width;
         Height = native.Height;
-        ColorDepth = (AseColorDepth)native.ColorDepth;
+        ColorDepth = (ColorDepth)native.ColorDepth;
         IsLayerOpacityVailid = (native.Flags & 1) != 0;
         TransparentIndex = native.TransparentIndex;
         NumberOfColors = native.NumberOfColors;

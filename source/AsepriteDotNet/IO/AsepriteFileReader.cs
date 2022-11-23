@@ -32,15 +32,104 @@ public static class AsepriteFileReader
     {
         using AsepriteBinaryReader reader = new(File.OpenRead(path));
 
-        RawHeader rawHeader = ReadRawHeader(reader);
-        AseHeader header = new(rawHeader);
+        _ = reader.ReadDword(); //  Filesize, don't need
+        ushort hmagic = reader.ReadWord();
 
-        IList<AseFrame> frames = new List<AseFrame>(header.Frames);
+        //  Validate header magic number
+        if (hmagic != 0xA5E0)
+        {
+            throw new InvalidOperationException();
+        }
+
+        int nframes = reader.ReadWord();
+        int width = reader.ReadWord();
+        int height = reader.ReadWord();
+
+        //  Validate width and height
+        if (width == 0 || height == 0)
+        {
+            throw new InvalidOperationException();
+        }
+
+        int bpp = reader.ReadWord();
+
+        //  Validate color depth
+        if (bpp != 8 || bpp != 16 || bpp != 32)
+        {
+            throw new InvalidOperationException();
+        }
+
+        ColorDepth depth = (ColorDepth)bpp;
+
+        uint hflags = reader.ReadDword();
+        bool layerOpacityValid = (hflags & 1) != 0;
+
+        _ = reader.ReadWord();  //  Speed, deprected, don't need it
+        _ = reader.ReadDword(); //  Set to 0, can ignore
+        _ = reader.ReadDword(); //  Set to 0, can ignore
+        int transparentIndex = reader.ReadByte();
+
+        //  Transparent index only valid if color depth is indexed
+        if (depth != ColorDepth.Indexed)
+        {
+            transparentIndex = 0;
+        }
+
+        _ = reader.ReadBytes(3);    //  Ignore 3-byte array
+
+        int ncolors = reader.ReadWord();
+
+        //  Remainder of header is not needed, skip to end of header
+        reader.Seek(128);
+
+        for (int fnum = 0; fnum < nframes; fnum++)
+        {
+            _ = reader.ReadDword(); //  frame size, don't need
+            ushort fmagic = reader.ReadWord();
+
+            //  Validate frame magic
+            if (fmagic != 0xF1FA)
+            {
+                throw new InvalidOperationException();
+            }
+
+            int nchunks = reader.ReadWord();
+            int duration = reader.ReadWord();
+            _ = reader.ReadBytes(2);    //  Ignore 2-byte array
+
+            int morechunks = (int)reader.ReadDword();
+
+            //  Determine the actual number of chunks to read
+            if(nchunks == 0xFFFF && nchunks < morechunks)
+            {
+                nchunks = morechunks;
+            }
+
+            for (int chunkNum = 0; chunkNum < nchunks; chunkNum++)
+            {
+                long chunkStart = reader.Position;
+                uint chunkLen = reader.ReadDword();
+                long chunkEnd = chunkStart + chunkLen;
+                ChunkType chunkType = (ChunkType)reader.ReadWord();
+
+                
+            }
+
+        }
+
+
+        RawHeader rawHeader = ReadRawHeader(reader);
+        Header header = new(rawHeader);
+
+        IList<Frame> frames = new List<Frame>(header.Frames);
+        IList<Layer> layers = new List<Layer>();
+        ColorProfile? colorProfile = default;
+        AseExternalFilesChunk? externalFiles = default;
 
         for (int frameNum = 0; frameNum < header.Frames; frameNum++)
         {
             RawFrameHeader rawFrameHeader = ReadRawFrameHeader(reader);
-            AseFrame frame = new(rawFrameHeader);
+            Frame frame = new(rawFrameHeader);
 
             //  If the old chunk count is 0xFFFF there may be more chunks to
             //  read, so we would use the new chunk count.
@@ -50,9 +139,61 @@ public static class AsepriteFileReader
                 nchunks = (int)rawFrameHeader.NewCount;
             }
 
+            IList<Cel> cels = new List<Cel>();
+            Cel? lastCel = default;
+
             for (int chunkNum = 0; chunkNum < nchunks; chunkNum++)
             {
-                AseChunk chunk = ReadChunk(reader);
+                long chunkStart = reader.Position;
+
+                RawChunkHeader chunkHeader = ReadRawChunkHeader(reader);
+
+                long chunkEnd = chunkStart + chunkHeader.Length;
+
+                ChunkType chunkType = (ChunkType)chunkHeader.Type;
+
+                if (chunkType == ChunkType.LayerChunk)
+                {
+                    Layer chunk = ReadLayerChunk(reader);
+                    layers.Add(chunk);
+                }
+                else if (chunkType == ChunkType.CelChunk)
+                {
+                    Cel chunk = ReadCelChunk(reader, chunkEnd);
+                    cels.Add(chunk);
+                    lastCel = chunk;
+                }
+                else if (chunkType == ChunkType.CelExtraChunk)
+                {
+                    CelExtra chunk = ReadCelExtraChunk(reader);
+                    lastCel?.SetCelExtra(chunk);
+                }
+                else if (chunkType == ChunkType.ColorProfileChunk)
+                {
+                    colorProfile = ReadColorProfileChunk(reader);
+                }
+                else if (chunkType == ChunkType.ExternalFilesChunk)
+                {
+                    externalFiles = ReadExternalFilesChunk(reader);
+                }
+
+
+
+                // AseChunk chunk = chunkType switch
+                // {
+                //     AseChunkType.OldPaletteChunkA => throw new NotSupportedException($"Old Palette Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
+                //     AseChunkType.OldPaletteChunkB => throw new NotSupportedException($"Old Palette Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
+                //     AseChunkType.LayerChunk => ReadLayerChunk(reader),
+                //     AseChunkType.CelChunk => ReadCelChunk(reader, end),
+                //     AseChunkType.CelExtraChunk => ReadCelExtraChunk(reader),
+                //     AseChunkType.ColorProfileChunk => ReadColorProfileChunk(reader),
+                //     AseChunkType.ExternalFilesChunk => ReadExternalFilesChunk(reader),
+                //     AseChunkType.MaskChunk => throw new NotSupportedException($"Mask Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
+                //     AseChunkType.PathChunk => throw new NotSupportedException($"Path Chunk (0x{rawHeader.Type:X2}) detected.  The version of Aseprite used to create this file is not supported"),
+                //     AseChunkType.TagsChunk => ReadTagsChunk(reader),
+                //     AseChunkType.PaletteChunk => ReadPaletteChunk(reader),
+                //     _ => throw new InvalidOperationException($"Unknown chunk type (0x{rawHeader.Type:X4})")
+                // };
             }
 
         }
@@ -100,7 +241,7 @@ public static class AsepriteFileReader
         return raw;
     }
 
-    internal static AseChunk ReadChunk(AsepriteBinaryReader reader)
+    internal static Chunk ReadChunk(AsepriteBinaryReader reader)
     {
         long start = reader.Position;
 
@@ -110,20 +251,21 @@ public static class AsepriteFileReader
         //  like the cel chunk.
         long end = start + rawHeader.Length;
 
-        AseChunkType chunkType = (AseChunkType)rawHeader.Type;
+        ChunkType chunkType = (ChunkType)rawHeader.Type;
 
         return chunkType switch
         {
-            AseChunkType.OldPaletteChunkA => throw new NotSupportedException($"Old Palette Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
-            AseChunkType.OldPaletteChunkB => throw new NotSupportedException($"Old Palette Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
-            AseChunkType.LayerChunk => ReadLayerChunk(reader, rawHeader),
-            AseChunkType.CelChunk => ReadCelChunk(reader, rawHeader, end),
-            AseChunkType.CelExtraChunk => ReadCelExtraChunk(reader, rawHeader),
-            AseChunkType.ColorProfileChunk => ReadColorProfileChunk(reader, rawHeader),
-            AseChunkType.ExternalFilesChunk => ReadExternalFilesChunk(reader, rawHeader),
-            AseChunkType.MaskChunk => throw new NotSupportedException($"Mask Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
-            AseChunkType.PathChunk => throw new NotSupportedException($"Path Chunk (0x{rawHeader.Type:X2}) detected.  The version of Aseprite used to create this file is not supported"),
-            AseChunkType.TagsChunk => ReadTagsChunk(reader, rawHeader),
+            ChunkType.OldPaletteChunkA => throw new NotSupportedException($"Old Palette Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
+            ChunkType.OldPaletteChunkB => throw new NotSupportedException($"Old Palette Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
+            ChunkType.LayerChunk => ReadLayerChunk(reader, rawHeader),
+            ChunkType.CelChunk => ReadCelChunk(reader, rawHeader, end),
+            ChunkType.CelExtraChunk => ReadCelExtraChunk(reader, rawHeader),
+            ChunkType.ColorProfileChunk => ReadColorProfileChunk(reader, rawHeader),
+            ChunkType.ExternalFilesChunk => ReadExternalFilesChunk(reader, rawHeader),
+            ChunkType.MaskChunk => throw new NotSupportedException($"Mask Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
+            ChunkType.PathChunk => throw new NotSupportedException($"Path Chunk (0x{rawHeader.Type:X2}) detected.  The version of Aseprite used to create this file is not supported"),
+            ChunkType.TagsChunk => ReadTagsChunk(reader, rawHeader),
+            ChunkType.PaletteChunk => ReadPaletteChunk(reader, rawHeader),
             _ => throw new InvalidOperationException($"Unknown chunk type (0x{rawHeader.Type:X4})")
         };
 
@@ -138,14 +280,14 @@ public static class AsepriteFileReader
         return raw;
     }
 
-    private static AseLayerChunk ReadLayerChunk(AsepriteBinaryReader reader, RawChunkHeader header)
+    private static Layer ReadLayerChunk(AsepriteBinaryReader reader)
     {
         RawLayerChunk raw = ReadRawLayerChunk(reader);
 
         return raw.Type switch
         {
-            0 or 1 => new AseLayerChunk(header, raw),
-            2 => new AseTilesetLayerChunk(header, raw),
+            0 or 1 => new Layer(raw),
+            2 => new TilesetLayer(raw),
             _ => throw new InvalidOperationException($"Unknown Layer Type '{raw.Type}'")
         };
     }
@@ -172,15 +314,15 @@ public static class AsepriteFileReader
         return raw;
     }
 
-    private static AseCelChunk ReadCelChunk(AsepriteBinaryReader reader, RawChunkHeader header, long end)
+    private static Cel ReadCelChunk(AsepriteBinaryReader reader, long end)
     {
         RawCelChunk raw = ReadRawCelChunk(reader, end);
 
         return raw.Type switch
         {
-            0 or 2 => new AseImageCelChunk(header, raw),
-            1 => new AseLinkedCelChunk(header, raw),
-            3 => new AseTilemapCelChunk(header, raw),
+            0 or 2 => new ImageCel(raw),
+            1 => new LinkedCel(raw),
+            3 => new TilemapCel(raw),
             _ => throw new InvalidOperationException($"Unknown Cel Type '{raw.Type}'")
         };
     }
@@ -240,10 +382,10 @@ public static class AsepriteFileReader
         return raw;
     }
 
-    private static AseCelExtraChunk ReadCelExtraChunk(AsepriteBinaryReader reader, RawChunkHeader header)
+    private static CelExtra ReadCelExtraChunk(AsepriteBinaryReader reader)
     {
         RawCelExtraChunk raw = ReadRawCelExtraChunk(reader);
-        return new AseCelExtraChunk(header, raw);
+        return new CelExtra(raw);
     }
 
     private static RawCelExtraChunk ReadRawCelExtraChunk(AsepriteBinaryReader reader)
@@ -259,10 +401,10 @@ public static class AsepriteFileReader
         return raw;
     }
 
-    private static AseColorProfileChunk ReadColorProfileChunk(AsepriteBinaryReader reader, RawChunkHeader header)
+    private static ColorProfile ReadColorProfileChunk(AsepriteBinaryReader reader)
     {
         RawColorProfileChunk raw = ReadRawColorProfileChunk(reader);
-        return new AseColorProfileChunk(header, raw);
+        return new ColorProfile(raw);
     }
 
     private static RawColorProfileChunk ReadRawColorProfileChunk(AsepriteBinaryReader reader)
@@ -284,10 +426,10 @@ public static class AsepriteFileReader
         return raw;
     }
 
-    private static AseExternalFilesChunk ReadExternalFilesChunk(AsepriteBinaryReader reader, RawChunkHeader header)
+    private static AseExternalFilesChunk ReadExternalFilesChunk(AsepriteBinaryReader reader)
     {
         ExternalFilesChunk raw = ReadRawExternalFilesChunk(reader);
-        return new AseExternalFilesChunk(header, raw);
+        return new AseExternalFilesChunk(raw);
     }
 
     private static ExternalFilesChunk ReadRawExternalFilesChunk(AsepriteBinaryReader reader)
@@ -320,7 +462,7 @@ public static class AsepriteFileReader
     private static AseTagsChunk ReadTagsChunk(AsepriteBinaryReader reader, RawChunkHeader header)
     {
         RawTagsChunk raw = ReadRawTagsChunk(reader);
-        return new AseTagsChunk(header, raw);
+        return new AseTagsChunk(raw);
     }
 
     private static RawTagsChunk ReadRawTagsChunk(AsepriteBinaryReader reader)
@@ -352,5 +494,21 @@ public static class AsepriteFileReader
         raw.Name = reader.ReadString();
 
         return raw;
+    }
+
+    private static RawPaletteChunk ReadRawPaletteChunk(AsepriteBinaryReader reader)
+    {
+        RawPaletteChunk raw;
+        raw.NewPaletteSize = reader.ReadDword();
+        raw.From = reader.ReadDword();
+        raw.To = reader.ReadDword();
+        raw.Ignore = reader.ReadBytes(8);
+
+        raw.Entries = new RawPaletteChunkEntry
+
+        for (uint i = raw.From; i <= raw.To; i++)
+        {
+
+        }
     }
 }

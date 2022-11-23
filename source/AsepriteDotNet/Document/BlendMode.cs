@@ -23,7 +23,7 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
-public enum AseBlendMode
+public enum BlendMode
 {
     Normal = 0,
     Multiply = 1,

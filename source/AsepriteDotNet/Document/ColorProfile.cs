@@ -18,23 +18,35 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+
+using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public sealed class AsepriteDocument
+public class ColorProfile : Chunk
 {
-    private IList<Frame> _frames;
+    public ColorProfileType ColorProfileType { get; }
 
-    public Header Header { get; }
+    public bool UseFixedGamma { get; }
 
-    public ReadOnlyCollection<Frame> Frames => _frames.AsReadOnly();
+    public float FixedGamma { get; }
 
-    internal AsepriteDocument(Header header)
+    [MemberNotNullWhen(true, nameof(ICCData))]
+    public bool HasICCData { get; }
+
+    public byte[]? ICCData { get; } = default;
+
+    public ColorProfile(RawColorProfileChunk native)
+        : base(ChunkType.ColorProfileChunk)
     {
-        Header = header;
-        _frames = new List<Frame>(header.Frames);
-        
-    }
+        ColorProfileType = (ColorProfileType)native.Type;
+        UseFixedGamma = (native.Flags & 1) != 0;
+        HasICCData = native.ICCProfileData is not null;
 
+        if (HasICCData)
+        {
+            ICCData = native.ICCProfileData;
+        }
+    }
 }

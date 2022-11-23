@@ -18,23 +18,38 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+
+using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public sealed class AsepriteDocument
+public class CelExtra : Chunk
 {
-    private IList<Frame> _frames;
 
-    public Header Header { get; }
+    [MemberNotNullWhen(true, nameof(PreciseX))]
+    [MemberNotNullWhen(true, nameof(PreciseY))]
+    [MemberNotNullWhen(true, nameof(PreciseWidth))]
+    [MemberNotNullWhen(true, nameof(PreciseHeight))]
+    public bool PreciseBoundsSet { get; }
 
-    public ReadOnlyCollection<Frame> Frames => _frames.AsReadOnly();
+    public float? PreciseX { get; } = default;
+    public float? PreciseY { get; } = default;
+    public float? PreciseWidth { get; } = default;
+    public float? PreciseHeight { get; } = default;
 
-    internal AsepriteDocument(Header header)
+
+    public CelExtra(RawCelExtraChunk native)
+        : base(ChunkType.CelExtraChunk)
     {
-        Header = header;
-        _frames = new List<Frame>(header.Frames);
-        
-    }
+        PreciseBoundsSet = (native.Flags & 1) != 0;
 
+        if (PreciseBoundsSet)
+        {
+            PreciseX = native.PreciseX;
+            PreciseY = native.PreciseY;
+            PreciseWidth = native.PreciseWidth;
+            PreciseHeight = native.PreciseHeight;
+        }
+    }
 }

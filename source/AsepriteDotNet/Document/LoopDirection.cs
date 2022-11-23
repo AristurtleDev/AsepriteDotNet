@@ -18,25 +18,11 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using AsepriteDotNet.Document.Native;
-
 namespace AsepriteDotNet.Document;
 
-public sealed class AseFrame
+public enum LoopDirection
 {
-    /// <summary>
-    ///     Gets the duration, in milliseconds, of this frame when used in an
-    ///     animation.
-    /// </summary>
-    public int Duration { get; }
-
-    internal AseFrame(RawFrameHeader native)
-    {
-        if (native.Magic != 0xF1FA)
-        {
-            throw new ArgumentException(nameof(native), $"Invalid magic number '0x{native.Magic:X4}'");
-        }
-
-        Duration = native.Duration;
-    }
+    Forward = 0,
+    Reverse = 1,
+    PingPong = 2
 }

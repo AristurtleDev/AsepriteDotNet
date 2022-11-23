@@ -22,20 +22,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
 using AsepriteDotNet.Document.Native;
+using AsepriteDotNet.IO.Compression;
 
 namespace AsepriteDotNet.Document;
 
-public abstract class AseChunk
+public class ImageCel : Cel
 {
+    public int Width { get; }
+    public int Height { get; }
+    public byte[] Pixels { get; }
 
-    /// <summary>
-    ///     Gets a <see cref="AseChunkType"/> value that defines the type
-    ///     of chunk this is.
-    /// </summary>
-    public AseChunkType ChunkType { get; }
 
-    internal AseChunk(RawChunkHeader native)
+    public ImageCel(RawCelChunk native)
+        : base(native)
     {
-        ChunkType = (AseChunkType)native.Type;
+        Width = native.Width ?? throw new ArgumentException();
+        Height = native.Height ?? throw new ArgumentException();
+
+        if (native.Pixels is not null)
+        {
+            Pixels = native.Pixels;
+        }
+        else if (native.CompressedPixels is not null)
+        {
+            Pixels = Zlib.Deflate(native.CompressedPixels);
+        }
+        else
+        {
+            throw new ArgumentException();
+        }
     }
 }

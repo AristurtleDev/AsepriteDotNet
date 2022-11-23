@@ -18,23 +18,11 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using System.Collections.ObjectModel;
-
 namespace AsepriteDotNet.Document;
 
-public sealed class AsepriteDocument
+public enum ColorProfileType
 {
-    private IList<Frame> _frames;
-
-    public Header Header { get; }
-
-    public ReadOnlyCollection<Frame> Frames => _frames.AsReadOnly();
-
-    internal AsepriteDocument(Header header)
-    {
-        Header = header;
-        _frames = new List<Frame>(header.Frames);
-        
-    }
-
+    None = 0,
+    sRGB = 1,
+    ICC = 2
 }

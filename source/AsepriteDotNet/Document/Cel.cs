@@ -37,16 +37,14 @@ public class Cel : Chunk
     [MemberNotNullWhen(true, nameof(CelExtra))]
     public bool HasCelExtraData => CelExtra is not null;
 
-    public CelExtra? CelExtra { get; private set; }
+    public CelExtra? CelExtra { get; internal set; }
 
-    public Cel(RawCelChunk native)
+    public Cel(int layerIndex, int x, int y, int opacity)
         : base(ChunkType.CelChunk)
     {
-        LayerIndex = native.LayerIndex;
-        X = native.X;
-        Y = native.Y;
-        Opacity = native.Opacity;
+        LayerIndex = layerIndex;
+        X = x;
+        Y = y;
+        Opacity = opacity;
     }
-
-    internal void SetCelExtra(CelExtra celExtra) => CelExtra = celExtra;
 }

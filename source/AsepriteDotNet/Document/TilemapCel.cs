@@ -35,25 +35,19 @@ public class TilemapCel : Cel
     public int XFlipBitmask { get; }
     public int YFlipBitmask { get; }
     public int RotationBitmask { get; }
-    public byte[] CompressedTiles { get; }
+    public byte[] Tiles { get; }
 
 
-    public TilemapCel(RawCelChunk native)
-        : base(native)
+    public TilemapCel(int layerIndex, int x, int y, int opacity, int width, int height, int bitsPerTile, int tileIdBitmask, int xFlipBitmask, int yFlipBitmask, int rotationBitmask, byte[] tiles)
+        : base(layerIndex, x, y, opacity)
     {
-        Width = (int)(native.Width ?? throw new ArgumentException());
-        Height = (int)(native.Height ?? throw new ArgumentException());
-        BitsPerTile = (int)(native.BitsPerTile ?? throw new ArgumentException());
-        TileIdBitmask = (int)(native.TileIdBitmask ?? throw new ArgumentException());
-        XFlipBitmask = (int)(native.XFlipBitmask ?? throw new ArgumentException());
-        YFlipBitmask = (int)(native.YFlipBitmask ?? throw new ArgumentException());
-        RotationBitmask = (int)(native.RotationBitmask ?? throw new ArgumentException());
-
-        if (native.CompressedTiles is null)
-        {
-            throw new ArgumentException();
-        }
-
-        CompressedTiles = Zlib.Deflate(native.CompressedTiles);
+        Width = width;
+        Height = height;
+        BitsPerTile = bitsPerTile;
+        TileIdBitmask = tileIdBitmask;
+        XFlipBitmask = xFlipBitmask;
+        YFlipBitmask = yFlipBitmask;
+        RotationBitmask = rotationBitmask;
+        Tiles = tiles;
     }
 }

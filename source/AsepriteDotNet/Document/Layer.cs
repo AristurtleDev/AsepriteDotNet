@@ -35,13 +35,13 @@ public class Layer : Chunk
     public int Opacity { get; }
     public string Name { get; }
 
-    internal Layer(RawLayerChunk native)
+    internal Layer(bool visible, int childLevel, BlendMode blendMode, int opacity, string name)
         : base(ChunkType.LayerChunk)
     {
-        IsVisible = (native.Flags & 1) != 0;
-        ChildLevel = native.ChildLevel;
-        BlendMode = (BlendMode)native.BlendMode;
-        Opacity = native.Opacity;
-        Name = native.Name;
+        IsVisible = visible;
+        ChildLevel = childLevel;
+        BlendMode = blendMode;
+        Opacity = opacity;
+        Name = name;
     }
 }

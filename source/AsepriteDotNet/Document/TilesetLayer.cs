@@ -29,9 +29,6 @@ public class TilesetLayer : Layer
 {
     public int TilesetIndex { get; }
 
-    internal TilesetLayer(RawLayerChunk native)
-        : base(native)
-    {
-        TilesetIndex = (int)(native.TilsetIndex ?? throw new ArgumentException());
-    }
+    internal TilesetLayer(bool visible, int childLevel, BlendMode blendMode, int opacity, string name, int tilesetIndex)
+        : base(visible, childLevel, blendMode, opacity, name) => TilesetIndex = tilesetIndex;
 }

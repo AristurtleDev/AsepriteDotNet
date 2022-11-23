@@ -23,6 +23,7 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 using AsepriteDotNet.Document;
 using AsepriteDotNet.Document.Native;
+using AsepriteDotNet.IO.Compression;
 
 namespace AsepriteDotNet.IO;
 
@@ -82,8 +83,13 @@ public static class AsepriteFileReader
         //  Remainder of header is not needed, skip to end of header
         reader.Seek(128);
 
+        IList<Layer> layers = new List<Layer>();
+
         for (int fnum = 0; fnum < nframes; fnum++)
         {
+            IList<Cel> cels = new List<Cel>();
+            Cel? lastCel = default;
+
             _ = reader.ReadDword(); //  frame size, don't need
             ushort fmagic = reader.ReadWord();
 
@@ -112,7 +118,112 @@ public static class AsepriteFileReader
                 long chunkEnd = chunkStart + chunkLen;
                 ChunkType chunkType = (ChunkType)reader.ReadWord();
 
-                
+                if(chunkType == ChunkType.OldPaletteChunkA)
+                {
+                    throw new NotSupportedException();
+                }
+                else if(chunkType == ChunkType.OldPaletteChunkB)
+                {
+                    throw new NotSupportedException();
+                }
+                else if (chunkType == ChunkType.LayerChunk)
+                {
+                    ushort lflags = reader.ReadWord();
+                    
+                    //  only care about the IsVisible flag
+                    bool visible = (lflags & 1) != 0;
+
+                    ushort ltype = reader.ReadWord();
+                    ushort level = reader.ReadWord();
+
+                    _ = reader.ReadWord();  //  default width, ignored
+                    _ = reader.ReadWord();  //  default height, ignored
+                    BlendMode blend = (BlendMode)reader.ReadWord();
+                    int lopacity = reader.ReadByte();
+
+                    //  Is layer opacity valid?
+                    if(!layerOpacityValid)
+                    {
+                        lopacity = 255;
+                    }
+
+                    _ = reader.ReadBytes(3);    //  3-byte array, ignored
+                    string lname = reader.ReadString();
+
+                    Layer layer;
+                    if(ltype == 0 || ltype == 1)
+                    {
+                        layer = new Layer(visible, level, blend, lopacity, lname);
+                    }
+                    else if(ltype == 2)
+                    {
+                        int tilesetIndex = (int)reader.ReadDword();
+                        layer = new TilesetLayer(visible, level, blend, lopacity, lname, tilesetIndex);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException();
+                    }
+
+                    layers.Add(layer);
+                }
+                else if(chunkType == ChunkType.CelChunk)
+                {
+                    int lindex = reader.ReadWord();
+                    int celx = reader.ReadShort();
+                    int cely = reader.ReadShort();
+                    int celOpacity = reader.ReadByte();
+                    int ctype = reader.ReadWord();
+                    _ = reader.ReadBytes(7);    //  7-byte array, ignore
+
+                    Cel cel;
+
+                    if(ctype == 1)
+                    {
+                        //  linked cel
+                        int frameLink = reader.ReadWord();
+                        cel = new LinkedCel(lindex, celx, cely, celOpacity, frameLink);
+                    }
+                    else if(ctype == 0 || ctype == 2 || ctype == 3)
+                    {
+                        int cWidth = reader.ReadWord();
+                        int cHeight = reader.ReadWord();
+
+                        if(ctype == 0)
+                        {
+                            //  Raw image cel
+                            byte[] pixels = reader.ReadBytes((int)(chunkEnd - reader.Position));
+                            cel = new ImageCel(lindex, celx, cely, celOpacity, width, height, pixels);
+                        }
+                        else if(ctype == 2)
+                        {
+                            //  Compressed image cel
+                            byte[] compressed = reader.ReadBytes((int)(chunkEnd - reader.Position));
+                            byte[] pixels = Zlib.Deflate(compressed);
+                            cel = new ImageCel(lindex, celx, cely, celOpacity, width, height, pixels);
+                        }
+                        else
+                        {
+                            //  Tilemap cell
+                            int bpt = reader.ReadWord();
+                            int tileIdBitmask = (int)reader.ReadDword();
+                            int xFlipBitmask = (int)reader.ReadDword();
+                            int yFlipBitmask = (int)reader.ReadDword();
+                            int rotationBitmask = (int)reader.ReadDword();
+                            _ = reader.ReadBytes(10);   //  10-byte array, ignore
+                            byte[] compressed = reader.ReadBytes((int)(chunkEnd - reader.Position));
+                            byte[] tiles = Zlib.Deflate(compressed);
+                            cel = new TilemapCel(lindex, celx, cely, celOpacity, width, height, bpt, tileIdBitmask, xFlipBitmask, yFlipBitmask, rotationBitmask, tiles);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException();
+                    }
+
+                    cels.Add(cel);
+                    lastCel = cel;
+                }
             }
 
         }

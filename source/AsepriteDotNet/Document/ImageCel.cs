@@ -33,23 +33,11 @@ public class ImageCel : Cel
     public byte[] Pixels { get; }
 
 
-    public ImageCel(RawCelChunk native)
-        : base(native)
+    public ImageCel(int layerIndex, int x, int y, int opacity, int width, int height, byte[] pixels)
+        : base(layerIndex, x, y, opacity)
     {
-        Width = native.Width ?? throw new ArgumentException();
-        Height = native.Height ?? throw new ArgumentException();
-
-        if (native.Pixels is not null)
-        {
-            Pixels = native.Pixels;
-        }
-        else if (native.CompressedPixels is not null)
-        {
-            Pixels = Zlib.Deflate(native.CompressedPixels);
-        }
-        else
-        {
-            throw new ArgumentException();
-        }
+        Width = width;
+        Height = height;
+        Pixels = pixels;
     }
 }

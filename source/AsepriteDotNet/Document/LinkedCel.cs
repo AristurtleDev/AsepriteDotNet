@@ -30,14 +30,6 @@ public class LinkedCel : Cel
     public int FramePosition { get; }
 
 
-    public LinkedCel(RawCelChunk native)
-        : base(native)
-    {
-        if (native.FramePosition is null)
-        {
-            throw new ArgumentException();
-        }
-
-        FramePosition = (int)native.FramePosition;
-    }
+    public LinkedCel(int layerIndex, int x, int y, int opacity, int frame)
+        : base(layerIndex, x, y, opacity) => FramePosition = frame;
 }

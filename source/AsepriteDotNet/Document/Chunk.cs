@@ -25,7 +25,7 @@ using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public abstract class Chunk : IAseChunk
+public abstract class Chunk
 {
 
     /// <summary>

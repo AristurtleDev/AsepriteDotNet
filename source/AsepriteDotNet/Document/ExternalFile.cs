@@ -18,19 +18,21 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
+using System.Diagnostics.CodeAnalysis;
+
 using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
 public class ExternalFile
 {
+    required public int ID { get; init; }
+    required public string ExternalFileName { get; init; }
 
-    public int ID { get; }
-    public string ExternalFileName { get; }
-
-    public ExternalFile(RawExternalFileChunkEntry native)
+    [SetsRequiredMembers]
+    internal ExternalFile(RawExternalFileChunkEntry chunk)
     {
-        ID = (int)native.EntryId;
-        ExternalFileName = native.ExternalFileName;
+        ID = (int)chunk.EntryId;
+        ExternalFileName = chunk.ExternalFileName;
     }
 }

@@ -21,27 +21,60 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
+using System.Diagnostics.CodeAnalysis;
+
 using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public class Layer : Chunk
+public class Layer : IUserData
 {
+    required public LayerFlags Flags { get; init; }
+    required public int ChildLevel { get; init; }
+    required public BlendMode BlendMode { get; init; }
+    required public int Opacity { get; init; }
+    required public string Name { get; init; }
 
+    public bool IsVisible => (Flags & LayerFlags.Visible) != 0;
 
-    public bool IsVisible { get; }
-    public int ChildLevel { get; }
-    public BlendMode BlendMode { get; }
-    public int Opacity { get; }
-    public string Name { get; }
+    [MemberNotNullWhen(true, nameof(UserData))]
+    public bool HasUserData => UserData is not null;
 
-    internal Layer(bool visible, int childLevel, BlendMode blendMode, int opacity, string name)
-        : base(ChunkType.LayerChunk)
+    public UserData? UserData { get; set; }
+
+    [SetsRequiredMembers]
+    public Layer(RawLayerChunk chunk)
     {
-        IsVisible = visible;
-        ChildLevel = childLevel;
-        BlendMode = blendMode;
-        Opacity = opacity;
-        Name = name;
+        Flags = (LayerFlags)chunk.Flags;
+        ChildLevel = chunk.ChildLevel;
+        BlendMode = (BlendMode)chunk.BlendMode;
+        Opacity = chunk.Opacity;
+        Name = chunk.Name;
     }
 }
+
+// public class Layer : Chunk, IUserData
+// {
+//     LayerFlags Flags { get; }
+//     public bool IsVisible => (Flags & LayerFlags.Visible) == Flags;
+//     public int ChildLevel { get; }
+//     public BlendMode BlendMode { get; }
+//     public int Opacity { get; }
+//     public string Name { get; }
+
+//     internal Layer(bool visible, int childLevel, BlendMode blendMode, int opacity, string name)
+//         : base(ChunkType.LayerChunk)
+//     {
+//         IsVisible = visible;
+//         ChildLevel = childLevel;
+//         BlendMode = blendMode;
+//         Opacity = opacity;
+//         Name = name;
+//     }
+
+//     internal Layer(RawLayerChunk raw)
+//     {
+//         Flags = (LayerFlags)raw.Flags;
+
+//     }
+// }

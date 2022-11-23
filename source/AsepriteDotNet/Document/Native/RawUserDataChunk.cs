@@ -23,9 +23,12 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document.Native;
 
-public struct RawExternalFilesChunk
+public struct RawUserDataChunk
 {
-    public uint NumberOfEntries;
-    public byte[] Ignore;
-    public RawExternalFileChunkEntry[] Entries;
+    public uint Flags;
+    public string? Text;
+    public byte? Red;
+    public byte? Green;
+    public byte? Blue;
+    public byte? Alpha;
 }

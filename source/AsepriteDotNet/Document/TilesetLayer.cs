@@ -21,14 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
+using System.Diagnostics.CodeAnalysis;
+
 using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
 public class TilesetLayer : Layer
 {
-    public int TilesetIndex { get; }
+    required public int TilesetIndex { get; init; }
 
-    internal TilesetLayer(bool visible, int childLevel, BlendMode blendMode, int opacity, string name, int tilesetIndex)
-        : base(visible, childLevel, blendMode, opacity, name) => TilesetIndex = tilesetIndex;
+    [SetsRequiredMembers]
+    internal TilesetLayer(RawLayerChunk chunk) : base(chunk)
+    {
+        if (chunk.TilsetIndex is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        TilesetIndex = (int)chunk.TilsetIndex;
+    }
 }
+
+// public class TilesetLayer : Layer
+// {
+//     public int TilesetIndex { get; }
+
+//     internal TilesetLayer(bool visible, int childLevel, BlendMode blendMode, int opacity, string name, int tilesetIndex)
+//         : base(visible, childLevel, blendMode, opacity, name) => TilesetIndex = tilesetIndex;
+// }

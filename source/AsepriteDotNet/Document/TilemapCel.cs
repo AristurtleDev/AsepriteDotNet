@@ -21,33 +21,99 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
+using System.Diagnostics.CodeAnalysis;
+
 using AsepriteDotNet.Document.Native;
-using AsepriteDotNet.IO.Compression;
 
 namespace AsepriteDotNet.Document;
 
 public class TilemapCel : Cel
 {
-    public int Width { get; }
-    public int Height { get; }
-    public int BitsPerTile { get; }
-    public int TileIdBitmask { get; }
-    public int XFlipBitmask { get; }
-    public int YFlipBitmask { get; }
-    public int RotationBitmask { get; }
-    public byte[] Tiles { get; }
+    required public int Width { get; init; }
+    required public int Height { get; init; }
+    required public int BitsPerTile { get; init; }
+    required public int TileIdBitmask { get; init; }
+    required public int XFlipBitmask { get; init; }
+    required public int YFlipBitmask { get; init; }
+    required public int RotationBitmask { get; init; }
+    required public byte[] Tiles { get; init; }
 
-
-    public TilemapCel(int layerIndex, int x, int y, int opacity, int width, int height, int bitsPerTile, int tileIdBitmask, int xFlipBitmask, int yFlipBitmask, int rotationBitmask, byte[] tiles)
-        : base(layerIndex, x, y, opacity)
+    [SetsRequiredMembers]
+    internal TilemapCel(RawCelChunk chunk) : base(chunk)
     {
-        Width = width;
-        Height = height;
-        BitsPerTile = bitsPerTile;
-        TileIdBitmask = tileIdBitmask;
-        XFlipBitmask = xFlipBitmask;
-        YFlipBitmask = yFlipBitmask;
-        RotationBitmask = rotationBitmask;
-        Tiles = tiles;
+        if (chunk.Width is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.Height is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.BitsPerTile is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.TileIdBitmask is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.XFlipBitmask is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.YFlipBitmask is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.RotationBitmask is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.Tiles is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        Width = (int)chunk.Width;
+        Height = (int)chunk.Height;
+        BitsPerTile = (int)chunk.BitsPerTile;
+        TileIdBitmask = (int)chunk.TileIdBitmask;
+        XFlipBitmask = (int)chunk.XFlipBitmask;
+        YFlipBitmask = (int)chunk.YFlipBitmask;
+        RotationBitmask = (int)chunk.RotationBitmask;
+        Tiles = chunk.Tiles;
     }
 }
+
+// public class TilemapCel : Cel
+// {
+//     public int Width { get; }
+//     public int Height { get; }
+//     public int BitsPerTile { get; }
+//     public int TileIdBitmask { get; }
+//     public int XFlipBitmask { get; }
+//     public int YFlipBitmask { get; }
+//     public int RotationBitmask { get; }
+//     public byte[] Tiles { get; }
+
+
+//     public TilemapCel(int layerIndex, int x, int y, int opacity, int width, int height, int bitsPerTile, int tileIdBitmask, int xFlipBitmask, int yFlipBitmask, int rotationBitmask, byte[] tiles)
+//         : base(layerIndex, x, y, opacity)
+//     {
+//         Width = width;
+//         Height = height;
+//         BitsPerTile = bitsPerTile;
+//         TileIdBitmask = tileIdBitmask;
+//         XFlipBitmask = xFlipBitmask;
+//         YFlipBitmask = yFlipBitmask;
+//         RotationBitmask = rotationBitmask;
+//         Tiles = tiles;
+//     }
+// }

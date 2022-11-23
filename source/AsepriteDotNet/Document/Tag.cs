@@ -18,30 +18,33 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public class Tag
+public class Tag : IUserData
 {
-    public int From { get; }
-    public int To { get; }
-    public LoopDirection LoopDirection { get; }
-    public Color Color { get; }
-    public string Name { get; }
+    required public int From { get; init; }
+    required public int To { get; init; }
+    required public LoopDirection LoopDirection { get; init; }
+    required public Color Color { get; init; }
+    required public string Name { get; init; }
 
-    public Tag(RawTagsChunkTag native)
+    [MemberNotNullWhen(true, nameof(UserData))]
+    public bool HasUserData => UserData is not null;
+
+    public UserData? UserData { get; set; }
+
+    [SetsRequiredMembers]
+    internal Tag(RawTagsChunkTag chunk)
     {
-        From = native.From;
-        To = native.To;
-        LoopDirection = (LoopDirection)native.LoopDirection;
-        Name = native.Name;
-
-        byte r = native.Color[0];
-        byte g = native.Color[1];
-        byte b = native.Color[2];
-        Color = Color.FromArgb(255, r, g, b);
+        From = chunk.From;
+        To = chunk.To;
+        LoopDirection = (LoopDirection)chunk.LoopDirection;
+        Color = Color.FromArgb(255, chunk.Color[0], chunk.Color[1], chunk.Color[2]);
+        Name = chunk.Name;
     }
 }

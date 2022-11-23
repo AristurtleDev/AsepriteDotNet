@@ -30,18 +30,17 @@ public struct RawCelChunk
     public short Y;
     public byte Opacity;
     public ushort Type;
-    public byte[] Ignroe;
+    public byte[] Ignore;
     public ushort? Width;
     public ushort? Height;
     public byte[]? Pixels;
     public ushort? FramePosition;
-    public byte[]? CompressedPixels;
     public ushort? BitsPerTile;
     public uint? TileIdBitmask;
     public uint? XFlipBitmask;
     public uint? YFlipBitmask;
     public uint? RotationBitmask;
     public byte[]? Ignore2;
-    public byte[]? CompressedTiles;
+    public byte[]? Tiles;
 
 }

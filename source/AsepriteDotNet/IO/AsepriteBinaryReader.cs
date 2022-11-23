@@ -140,6 +140,23 @@ public sealed class AsepriteBinaryReader : IDisposable
     }
 
     /// <summary>
+    ///     Reads all bytes from the underlying stream from the current position
+    ///     of the underlying stream up to the specified position.
+    /// </summary>
+    /// <param name="pos">
+    ///     The position to read to.
+    /// </param>
+    /// <returns>
+    ///     A new byte array containing the bytes read from the underlying
+    ///     stream.
+    /// </returns>
+    public byte[] ReadToPosition(long pos)
+    {
+        int len = (int)(pos - _stream.Position);
+        return ReadBytes(len);
+    }
+
+    /// <summary>
     ///     Reads a 2-byte unsigned integer from the underlying stream and
     ///     advances the stream by two bytes.
     /// </summary>

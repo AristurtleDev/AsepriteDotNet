@@ -21,23 +21,54 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
+using System.Diagnostics.CodeAnalysis;
+
 using AsepriteDotNet.Document.Native;
-using AsepriteDotNet.IO.Compression;
 
 namespace AsepriteDotNet.Document;
 
 public class ImageCel : Cel
 {
-    public int Width { get; }
-    public int Height { get; }
-    public byte[] Pixels { get; }
+    required public int Width { get; init; }
+    required public int Height { get; init; }
+    required public byte[] Pixels { get; init; }
 
-
-    public ImageCel(int layerIndex, int x, int y, int opacity, int width, int height, byte[] pixels)
-        : base(layerIndex, x, y, opacity)
+    [SetsRequiredMembers]
+    public ImageCel(RawCelChunk chunk) : base(chunk)
     {
-        Width = width;
-        Height = height;
-        Pixels = pixels;
+        if (chunk.Width is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.Height is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (chunk.Pixels is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        Width = (int)chunk.Width;
+        Height = (int)chunk.Height;
+        Pixels = chunk.Pixels;
     }
 }
+
+// public class ImageCel : Cel
+// {
+//     public int Width { get; }
+//     public int Height { get; }
+//     public byte[] Pixels { get; }
+
+
+//     public ImageCel(int layerIndex, int x, int y, int opacity, int width, int height, byte[] pixels)
+//         : base(layerIndex, x, y, opacity)
+//     {
+//         Width = width;
+//         Height = height;
+//         Pixels = pixels;
+//     }
+// }

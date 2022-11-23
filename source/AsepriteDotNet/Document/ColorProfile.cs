@@ -24,29 +24,26 @@ using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
-public class ColorProfile : Chunk
+public class ColorProfile
 {
-    public ColorProfileType ColorProfileType { get; }
+    required public ColorProfileType ColorProfileType { get; init; }
+    required public ColorProfileFlags Flags { get; init; }
+    required public float FixedGamma { get; init; }
 
-    public bool UseFixedGamma { get; }
+    public bool UseFixedGamma => (Flags & ColorProfileFlags.UseSpecialFixedGamma) != 0;
 
-    public float FixedGamma { get; }
 
     [MemberNotNullWhen(true, nameof(ICCData))]
-    public bool HasICCData { get; }
+    public bool HasICCData => ICCData is not null;
 
-    public byte[]? ICCData { get; } = default;
+    required public byte[]? ICCData { get; init; }
 
-    public ColorProfile(RawColorProfileChunk native)
-        : base(ChunkType.ColorProfileChunk)
+    [SetsRequiredMembers]
+    internal ColorProfile(RawColorProfileChunk chunk)
     {
-        ColorProfileType = (ColorProfileType)native.Type;
-        UseFixedGamma = (native.Flags & 1) != 0;
-        HasICCData = native.ICCProfileData is not null;
-
-        if (HasICCData)
-        {
-            ICCData = native.ICCProfileData;
-        }
+        ColorProfileType = (ColorProfileType)chunk.Type;
+        Flags = (ColorProfileFlags)chunk.Flags;
+        FixedGamma = chunk.FixedGamma;
+        ICCData = chunk.ICCProfileData;
     }
 }

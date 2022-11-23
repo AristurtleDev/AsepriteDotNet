@@ -21,15 +21,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
+using System.Diagnostics.CodeAnalysis;
+
 using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
 public class LinkedCel : Cel
 {
-    public int FramePosition { get; }
+    required public int FramePosition { get; init; }
 
+    [SetsRequiredMembers]
+    internal LinkedCel(RawCelChunk chunk) : base(chunk)
+    {
+        if (chunk.FramePosition is null)
+        {
+            throw new InvalidOperationException();
+        }
 
-    public LinkedCel(int layerIndex, int x, int y, int opacity, int frame)
-        : base(layerIndex, x, y, opacity) => FramePosition = frame;
+        FramePosition = (int)chunk.FramePosition;
+    }
 }
+
+// public class LinkedCel : Cel
+// {
+//     public int FramePosition { get; }
+
+
+//     public LinkedCel(int layerIndex, int x, int y, int opacity, int frame)
+//         : base(layerIndex, x, y, opacity) => FramePosition = frame;
+// }

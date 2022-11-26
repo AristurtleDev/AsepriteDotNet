@@ -21,18 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-namespace AsepriteDotNet.Document.Native;
+using System.Diagnostics.CodeAnalysis;
 
-public struct RawLayerChunk
+namespace AsepriteDotNet.IO;
+
+internal sealed class ReadResult<T>
 {
-    public ushort Flags;
-    public ushort Type;
-    public ushort ChildLevel;
-    public ushort DefaultWidth;
-    public ushort DefaultHeight;
-    public ushort BlendMode;
-    public byte Opacity;
-    public byte[] Ignore;
-    public string Name;
-    public uint? TilsetIndex;
+    public T? Value { get; set; } = default;
+    public List<string> Warnings { get; set; } = new();
+
+    [MemberNotNullWhen(true, nameof(Value))]
+    public bool Successful => Value is not null;
 }

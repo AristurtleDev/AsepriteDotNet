@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
-Copyright 2022 Aristurtle
+Copyright 2022 Christopher Whitley
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -18,25 +18,24 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using AsepriteDotNet.Document.Native;
-
 namespace AsepriteDotNet.Document;
 
 public sealed class Frame
 {
     /// <summary>
-    ///     Gets the duration, in milliseconds, of this frame when used in an
-    ///     animation.
+    ///     Gets or Sets an <see cref="int"/> value that indicates the duration,
+    ///     in milliseconds, of this <see cref="Frame"/> in an animation.
     /// </summary>
-    public int Duration { get; }
+    public int Duration { get; set; } = 100;
 
-    internal Frame(RawFrameHeader native)
-    {
-        if (native.Magic != 0xF1FA)
-        {
-            throw new ArgumentException(nameof(native), $"Invalid magic number '0x{native.Magic:X4}'");
-        }
+    /// <summary>
+    ///     Gets the collection of <see cref="Cel"/> elements in this
+    ///     <see cref="Frame"/>.
+    /// </summary>
+    public List<Cel> Cels { get; } = new();
 
-        Duration = native.Duration;
-    }
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="Frame"/> class.
+    /// </summary>
+    public Frame() { }
 }

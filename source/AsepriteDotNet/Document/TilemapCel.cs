@@ -21,99 +21,80 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Diagnostics.CodeAnalysis;
-
-using AsepriteDotNet.Document.Native;
+using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
 public class TilemapCel : Cel
 {
-    required public int Width { get; init; }
-    required public int Height { get; init; }
-    required public int BitsPerTile { get; init; }
-    required public int TileIdBitmask { get; init; }
-    required public int XFlipBitmask { get; init; }
-    required public int YFlipBitmask { get; init; }
-    required public int RotationBitmask { get; init; }
-    required public byte[] Tiles { get; init; }
+    private Size _size = new Size(1, 1);
 
-    [SetsRequiredMembers]
-    internal TilemapCel(RawCelChunk chunk) : base(chunk)
+    /// <summary>
+    ///     Gets or Sets a <see cref="Size"/> value that defines the width and
+    ///     height of this <see cref="TilemapCel"/>.
+    /// </summary>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the <see cref="Size.Width"/> or <see cref="Size.Height"/>
+    ///     value is not greater than 0 when setting value.
+    /// </exception>
+    public Size Size
     {
-        if (chunk.Width is null)
+        get => _size;
+        set
         {
-            throw new InvalidOperationException();
+            if (value.Width < 1 || value.Height < 1)
+            {
+                throw new ArgumentException(nameof(Size), $"{nameof(Size)} must have a width and height greater than 0 each");
+            }
         }
-
-        if (chunk.Height is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        if (chunk.BitsPerTile is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        if (chunk.TileIdBitmask is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        if (chunk.XFlipBitmask is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        if (chunk.YFlipBitmask is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        if (chunk.RotationBitmask is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        if (chunk.Tiles is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        Width = (int)chunk.Width;
-        Height = (int)chunk.Height;
-        BitsPerTile = (int)chunk.BitsPerTile;
-        TileIdBitmask = (int)chunk.TileIdBitmask;
-        XFlipBitmask = (int)chunk.XFlipBitmask;
-        YFlipBitmask = (int)chunk.YFlipBitmask;
-        RotationBitmask = (int)chunk.RotationBitmask;
-        Tiles = chunk.Tiles;
     }
+
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value taht defines the number of
+    ///     bits per tile.
+    /// </summary>
+    /// <remarks>
+    ///     Per Aseprite file spec, at the moment this is always 32-bits per
+    ///     tile.
+    /// </remarks>
+    public int BitsPerTile { get; } = 32;
+
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that indicates the bitmask
+    ///     for tile ID.
+    /// </summary>
+    public int TileIdBitmask { get; set; }
+
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that indicates the bitmask
+    ///     for X flip.
+    /// </summary>
+    public int XFlipBitmask { get; set; }
+
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that indicates the bitmask
+    ///     for Y flip.
+    /// </summary>
+    public int YFlipBitmask { get; set; }
+
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that indicates the bitmask
+    ///     for 90CW rotation.
+    /// </summary>
+    public int RotationBitmask { get; set; }
+
+    /// <summary>
+    ///     Gets or Sets an <see cref="Array"/> of <see cref="byte"/> elements
+    ///     that represents the raw tile data for this <see cref="TilemapCel"/>.
+    /// </summary>
+    /// <remarks>
+    ///     Order of tiles is row by row, from top to bottom, for each scanline
+    ///     read tiles from left to right.
+    /// </remarks>
+    public byte[] Tiles { get; set; } = Array.Empty<byte>();
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TilemapCel"/> class.
+    /// </summary>
+    public TilemapCel() { }
 }
-
-// public class TilemapCel : Cel
-// {
-//     public int Width { get; }
-//     public int Height { get; }
-//     public int BitsPerTile { get; }
-//     public int TileIdBitmask { get; }
-//     public int XFlipBitmask { get; }
-//     public int YFlipBitmask { get; }
-//     public int RotationBitmask { get; }
-//     public byte[] Tiles { get; }
-
-
-//     public TilemapCel(int layerIndex, int x, int y, int opacity, int width, int height, int bitsPerTile, int tileIdBitmask, int xFlipBitmask, int yFlipBitmask, int rotationBitmask, byte[] tiles)
-//         : base(layerIndex, x, y, opacity)
-//     {
-//         Width = width;
-//         Height = height;
-//         BitsPerTile = bitsPerTile;
-//         TileIdBitmask = tileIdBitmask;
-//         XFlipBitmask = xFlipBitmask;
-//         YFlipBitmask = yFlipBitmask;
-//         RotationBitmask = rotationBitmask;
-//         Tiles = tiles;
-//     }
-// }

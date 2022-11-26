@@ -21,54 +21,46 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Diagnostics.CodeAnalysis;
-
-using AsepriteDotNet.Document.Native;
+using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
 public class ImageCel : Cel
 {
-    required public int Width { get; init; }
-    required public int Height { get; init; }
-    required public byte[] Pixels { get; init; }
+    private Size _size = new Size(1, 1);
 
-    [SetsRequiredMembers]
-    public ImageCel(RawCelChunk chunk) : base(chunk)
+    /// <summary>
+    ///     Gets or Sets a <see cref="Size"/> value that defines the width and
+    ///     height of this <see cref="ImageCel"/>.
+    /// </summary>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the <see cref="Size.Width"/> or <see cref="Size.Height"/>
+    ///     value is not greater than 0 when setting value.
+    /// </exception>
+    public Size Size 
     {
-        if (chunk.Width is null)
+        get => _size;
+        set
         {
-            throw new InvalidOperationException();
+            if(value.Width < 1 || value.Height < 1)
+            {
+                throw new ArgumentException(nameof(Size), $"{nameof(Size)} must have a width and height greater than 0 each");
+            }
         }
-
-        if (chunk.Height is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        if (chunk.Pixels is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        Width = (int)chunk.Width;
-        Height = (int)chunk.Height;
-        Pixels = chunk.Pixels;
     }
+
+    /// <summary>
+    ///     Gets or Sets an <see cref="Array"/> of <see cref="byte"/> elements
+    ///     that represents the raw pixel data for this <see cref="ImageCel"/>.
+    /// </summary>
+    /// <remarks>
+    ///     Order of pixels is row by row, from top to bottom, for each scanline
+    ///     read pixels from left to right.
+    /// </remarks>
+    public byte[] Pixels { get; set; } = Array.Empty<byte>();
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="ImageCel"/> class.
+    /// </summary>
+    public ImageCel() { }
 }
-
-// public class ImageCel : Cel
-// {
-//     public int Width { get; }
-//     public int Height { get; }
-//     public byte[] Pixels { get; }
-
-
-//     public ImageCel(int layerIndex, int x, int y, int opacity, int width, int height, byte[] pixels)
-//         : base(layerIndex, x, y, opacity)
-//     {
-//         Width = width;
-//         Height = height;
-//         Pixels = pixels;
-//     }
-// }

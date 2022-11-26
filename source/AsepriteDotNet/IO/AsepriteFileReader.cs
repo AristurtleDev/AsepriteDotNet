@@ -24,1024 +24,622 @@ SOFTWARE.
 using System.Drawing;
 
 using AsepriteDotNet.Document;
-using AsepriteDotNet.Document.Native;
 using AsepriteDotNet.IO.Compression;
 
 namespace AsepriteDotNet.IO;
 
 public static class AsepriteFileReader
 {
+    private const ushort ASE_HEADER_MAGIC = 0xA5E0;                 //  File Header Magic Number
+    private const int ASE_HEADER_SIZE = 128;                        //  File Header Length, In Bytes
+
+    private const ushort ASE_FRAME_MAGIC = 0xF1FA;                  //  Frame Magic Number
+
+    private const ushort ASE_CHUNK_OLD_PALETTE1 = 0x0004;           //  Old Palette Chunk
+    private const ushort ASE_CHUNK_OLD_PALETTE2 = 0x0011;           //  Old Palette Chunk
+    private const ushort ASE_CHUNK_LAYER = 0x2004;                  //  Layer Chunk
+    private const ushort ASE_CHUNK_CEL = 0x2005;                    //  Cel Chunk
+    private const ushort ASE_CHUNK_CEL_EXTRA = 0x2006;              //  Cel Extra Chunk
+    private const ushort ASE_CHUNK_COLOR_PROFILE = 0x2007;          //  Color Profile Chunk
+    private const ushort ASE_CHUNK_EXTERNAL_FILES = 0x2008;         //  External Files Chunk
+    private const ushort ASE_CHUNK_MASK = 0x2016;                   //  Mask Chunk (deprecated)
+    private const ushort ASE_CHUNK_PATH = 0x2017;                   //  Path Chunk (never used)
+    private const ushort ASE_CHUNK_TAGS = 0x2018;                   //  Tags Chunk
+    private const ushort ASE_CHUNK_PALETTE = 0x2019;                //  Palette Chunk
+    private const ushort ASE_CHUNK_USER_DATA = 0x2020;              //  User Data Cunk
+    private const ushort ASE_CHUNK_SLICE = 0x2021;                  //  Slice Chunk
+    private const ushort ASE_CHUNK_TILESET = 0x2023;                //  Tileset Chunk
+
+    private const ushort ASE_LAYER_TYPE_NORMAL = 0;                 //  Layer Type Normal (Image) Layer
+    private const ushort ASE_LAYER_TYPE_GROUP = 1;                  //  Layer Type Group
+    private const ushort ASE_LAYER_TYPE_TILEMAP = 2;                //  Layer Type Tilemap
+
+    private const ushort ASE_LAYER_FLAG_VISIBLE = 1;                //  Layer Flag (Is Visible)
+    private const ushort ASE_LAYER_FLAG_EDITABLE = 2;               //  Layer Flag (Is Editable)
+    private const ushort ASE_LAYER_FLAG_LOCKED = 4;                 //  Layer Flag  (Movement Locked)
+    private const ushort ASE_LAYER_FLAG_BACKGROUND = 8;             //  Layer Flag (Is Background Layer)
+    private const ushort ASE_LAYER_FLAG_PREFERS_LINKED = 16;        //  Layer Flag (Prefers Linked Cels)
+    private const ushort ASE_LAYER_FLAG_COLLAPSED = 32;             //  Layer Flag (Displayed Collapsed)
+    private const ushort ASE_LAYER_FLAG_REFERENCE = 64;             //  Layer Flag (Is Reference Layer)
+
+    private const ushort ASE_CEL_TYPE_RAW_IMAGE = 0;                //  Cel Type (Raw Image)
+    private const ushort ASE_CEL_TYPE_LINKED = 1;                   //  Cel Type (Linked)
+    private const ushort ASE_CEL_TYPE_COMPRESSED_IMAGE = 2;         //  Cel Type (Compressed Image)
+    private const ushort ASE_CEL_TYPE_COMPRESSED_TILEMAP = 3;       //  Cel Type (Compressed Tilemap)
+
+    private const uint ASE_CEL_EXTRA_FLAG_PRECISE_BOUNDS_SET = 1;   //  Cel Extra Flag (Precise Bounds Set)
+
+    private const ushort ASE_PALETTE_FLAG_HAS_NAME = 1;             //  Palette Flag (Color Has Name)
+
+    private const uint ASE_USER_DATA_FLAG_HAS_TEXT = 1;             //  User Data Flag (Has Text)
+    private const uint ASE_USER_DATA_FLAG_HAS_COLOR = 2;            //  User Data Flag (Has Color)
+
+    private const uint ASE_SLICE_FLAGS_IS_NINE_PATCH = 1;           //  Slice Flag (Is 9-Patch Slice)
+    private const uint ASE_SLICE_FLAGS_HAS_PIVOT = 2;               //  Slice Flag (Has Pivot Information)
+
+    private const uint ASE_TILESET_FLAG_EXTERNAL_FILE = 1;          //  Tileset Flag (Includes Link To External File)
+    private const uint ASE_TILESET_FLAG_EMBEDDED = 2;               //  Tileset Flag (Includes Tiles Inside File)
+
+    /// <summary>
+    ///     Reads the Asperite file from the specified <paramref name="path"/>.
+    /// </summary>
+    /// <param name="path">
+    ///     The absolute file path to the Aseprite file to read.
+    /// </param>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if invalid data is found within the Asperite file while it
+    ///     is being read. The exception message contains the details on what
+    ///     value was invalid.
+    /// </exception>
     public static void ReadFile(string path)
     {
-        using AsepriteBinaryReader reader = new(File.OpenRead(path));
-
-        RawHeader rawHeader = ReadRawHeader(reader);
-        Header header = new(rawHeader);
-
-
-        ColorProfile? colorProfile;
-        List<ExternalFile>? externalFiles = new List<ExternalFile>();
-        List<Layer> layers = new List<Layer>();
-        List<Tag> tags = new List<Tag>();
+        ReadResult<int> result = new();
+        List<Frame> frames = new();
+        List<Layer> layers = new();
+        GroupLayer? lastGroupLayer = default;
+        List<Tag> tags = new();
+        List<Slice> slices = new();
+        List<Tileset> tilesets = new();
         Color[] palette = Array.Empty<Color>();
 
+        using AsepriteBinaryReader reader = new(File.OpenRead(path));
 
-        for (int fnum = 0; fnum < rawHeader.Frames; fnum++)
+        //  Read the Aseprite file header
+        _ = reader.ReadDword();             //  File size (ignored, don't need)
+        ushort hmagic = reader.ReadWord();  //  Header magic number
+
+        if (hmagic != ASE_HEADER_MAGIC)
         {
-            IList<Cel> cels = new List<Cel>();
+            reader.Dispose();
+            throw new InvalidOperationException($"Invalid header magic number (0x{hmagic:X4}). This does not appear to be a valid Aseprite file");
+        }
+
+        ushort nframes = reader.ReadWord(); //  Total number of frames
+        ushort width = reader.ReadWord();   //  Width, in pixels
+        ushort height = reader.ReadWord();  //  Height, in pixels
+
+        if (width < 1 || height < 1)
+        {
+            reader.Dispose();
+            throw new InvalidOperationException($"Invalid canvas size {width}x{height}.");
+        }
+
+        ushort depth = reader.ReadWord();   //  Color depth (bits per pixel)
+
+        if (!Enum.IsDefined<ColorDepth>((ColorDepth)depth))
+        {
+            reader.Dispose();
+            throw new InvalidOperationException($"Invalid color depth: {depth}");
+        }
+
+        uint hflags = reader.ReadDword();   //  Header flags
+
+        bool isLayerOpacityValid = (hflags & 1) != 0;
+
+        _ = reader.ReadWord();              //  Speed (ms between frames) (deprecated)
+        _ = reader.ReadDword();             //  Set to zero (ignored)
+        _ = reader.ReadDword();             //  Set to zero (ignored)
+        byte tindex = reader.ReadByte();    //  Index of transparent color in palette
+
+        if (depth != 8)
+        {
+            //  Transparent color index is only valid in indexed depth
+            tindex = 0;
+        }
+
+        //  Remainder of header is not needed, skipping to end of header
+        reader.Seek(ASE_HEADER_SIZE);
+
+        Header header = new()
+        {
+            Frames = nframes,
+            Size = new Size(width, height),
+            ColorDepth = (ColorDepth)depth,
+            TransparentIndex = tindex
+        };
+
+        //  Read frame-by-frame until all frames are read.
+        for (int fnum = 0; fnum < nframes; fnum++)
+        {
+            List<Cel> cels = new List<Cel>();
             Cel? lastCel = default;
-            IUserData? lastWithUserData = default;
+            IUserData? lastUserData = default;
             int tagIterator = 0;
 
-            RawFrameHeader fHeader = ReadRawFrameHeader(reader);
+            //  Read the frame header
+            _ = reader.ReadDword();             //  Bytes in frame (don't need, ignored)
+            ushort fmagic = reader.ReadWord();  //  Frmae magic number
 
-            //  If the old chunk count is 0xFFFF then there may be more chunks
-            //  to read, so we would use the new chunk count, but only if it
-            //  is greater than the old chunk count
-            int nchunks = fHeader.OldCount;
-            if (fHeader.OldCount == 0xFFFF && nchunks < fHeader.NewCount)
+            if (fmagic != ASE_FRAME_MAGIC)
             {
-                nchunks = (int)fHeader.NewCount;
+                reader.Dispose();
+                throw new InvalidOperationException($"Invalid frame magic number (0x{hmagic:X4}) in frame {fnum}.");
             }
 
-            for (int chunkNum = 0; chunkNum < nchunks; chunkNum++)
+            int nchunks = reader.ReadWord();        //  Old field which specified chunk count
+            ushort duration = reader.ReadWord();    //  Frame duration, in milliseconds
+            _ = reader.ReadBytes(2);                //  For future (set to zero)
+            uint moreChunks = reader.ReadDword();   //  New field which specifies chunk count
+
+            //  Determine which chunk count to use
+            if (nchunks == 0xFFFF && nchunks < moreChunks)
             {
-                long chunkStart = reader.Position;
+                nchunks = (int)moreChunks;
+            }
 
-                RawChunkHeader cHeader = ReadRawChunkHeader(reader);
+            //  Read chunk-by-chunk until all chunks in this frame are read.
+            for (int cnum = 0; cnum < nchunks; cnum++)
+            {
+                long cstart = reader.Position;
+                uint clen = reader.ReadDword();     //  Size of chunk, in bytes
+                ushort ctype = reader.ReadWord();   //  The type of chunk
+                long cend = cstart + clen;
 
-                long chunkEnd = chunkStart + cHeader.Length;
-
-                ChunkType chunkType = (ChunkType)cHeader.Type;
-
-                if (chunkType == ChunkType.LayerChunk)
+                if (ctype == ASE_CHUNK_LAYER)
                 {
-                    Layer layer = ReadLayerChunk(reader, header.IsLayerOpacityVailid);
-                    layers.Add(layer);
+                    ushort lflags = reader.ReadWord();  //  Layer flags
+                    ushort ltype = reader.ReadWord();   //  Layer type
+                    ushort level = reader.ReadWord();   //  Layer child level
+                    _ = reader.ReadWord();              //  Default layer width (ignored)
+                    _ = reader.ReadWord();              //  Default layer height (ignored)
+                    ushort blend = reader.ReadWord();   //  Blend mode
+                    byte opacity = reader.ReadByte();   //  Layer opacity
+                    _ = reader.ReadBytes(3);            //  For future (set to zero)
+                    string name = reader.ReadString();  //  Layer name
+
+                    if (!isLayerOpacityValid)
+                    {
+                        opacity = 255;
+                    }
+
+                    //  Validate blend mode
+                    if (!Enum.IsDefined<BlendMode>((BlendMode)blend))
+                    {
+                        blend = 0;
+                        result.Warnings.Add($"Unknown blend mode '{blend}' found in layer '{name}'. Defaulting to mode 0 (normal).");
+                    }
+
+                    Layer layer;
+
+                    if (ltype == ASE_LAYER_TYPE_NORMAL)
+                    {
+                        layer = new ImageLayer()
+                        {
+                            ChildLevel = level,
+                            BlendMode = (BlendMode)blend,
+                            Opacity = opacity,
+                            Name = name
+                        };
+                    }
+                    else if (ltype == ASE_LAYER_TYPE_GROUP)
+                    {
+                        layer = new GroupLayer()
+                        {
+                            ChildLevel = level,
+                            BlendMode = (BlendMode)blend,
+                            Opacity = opacity,
+                            Name = name
+                        };
+                    }
+                    else if (ltype == ASE_LAYER_TYPE_TILEMAP)
+                    {
+                        uint index = reader.ReadDword();    //  Tilset index
+
+                        layer = new TilemapLayer()
+                        {
+                            ChildLevel = level,
+                            BlendMode = (BlendMode)blend,
+                            Opacity = opacity,
+                            Name = name,
+                            TilesetIndex = (int)index
+                        };
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Unknown layer type '{ltype}'");
+                    }
+
+                    layer.IsVisible = HasFlag(ltype, ASE_LAYER_FLAG_VISIBLE);
+                    layer.IsEditable = HasFlag(ltype, ASE_LAYER_FLAG_EDITABLE);
+                    layer.IsMovementLocked = HasFlag(ltype, ASE_LAYER_FLAG_LOCKED);
+                    layer.IsBackgroundLayer = HasFlag(ltype, ASE_LAYER_FLAG_BACKGROUND);
+                    layer.PrefersLinkedCels = HasFlag(ltype, ASE_LAYER_FLAG_PREFERS_LINKED);
+                    layer.IsDisplayedCollapsed = HasFlag(ltype, ASE_LAYER_FLAG_COLLAPSED);
+                    layer.IsReferenceLayer = HasFlag(ltype, ASE_LAYER_FLAG_REFERENCE);
+
+                    if (level != 0 && lastGroupLayer is not null)
+                    {
+                        lastGroupLayer.AddChild(layer);
+                    }
+
+                    if (layer is GroupLayer gLayer)
+                    {
+                        lastGroupLayer = gLayer;
+                    }
+
+                    lastUserData = layer;
+
                 }
-                else if (chunkType == ChunkType.CelChunk)
+                else if (ctype == ASE_CHUNK_CEL)
                 {
-                    Cel cel = ReadCelChunk(reader, chunkEnd);
+                    ushort index = reader.ReadWord();   //  Layer index
+                    short x = reader.ReadShort();       //  X position
+                    short y = reader.ReadShort();       //  Y position
+                    byte opacity = reader.ReadByte();   //  Opacity level
+                    ushort type = reader.ReadWord();    //  Cel type
+                    _ = reader.ReadBytes(7);            //  For future (set to zero)
+
+                    Cel cel;
+
+                    if (type == ASE_CEL_TYPE_RAW_IMAGE)
+                    {
+                        ushort w = reader.ReadWord();                   //  Width, in pixels
+                        ushort h = reader.ReadWord();                   //  Height, in pixels
+                        byte[] pixels = reader.ReadToPosition(cend);    //  Raw pixel data
+
+                        cel = new ImageCel()
+                        {
+                            Size = new Size(w, h),
+                            Pixels = pixels
+                        };
+                    }
+                    else if (type == ASE_CEL_TYPE_LINKED)
+                    {
+                        ushort findex = reader.ReadWord();  //  Frame position to link with
+
+                        cel = new LinkedCel()
+                        {
+                            Frame = findex
+                        };
+                    }
+                    else if (type == ASE_CEL_TYPE_COMPRESSED_IMAGE)
+                    {
+                        ushort w = reader.ReadWord();                   //  Width, in pixels
+                        ushort h = reader.ReadWord();                   //  Height, in pixels
+                        byte[] pixels = reader.ReadToPosition(cend);    //  Raw pixel data compressed with Zlib
+
+                        cel = new ImageCel()
+                        {
+                            Size = new Size(w, h),
+                            Pixels = Zlib.Deflate(pixels)
+                        };
+                    }
+                    else if (type == ASE_CEL_TYPE_COMPRESSED_TILEMAP)
+                    {
+                        ushort w = reader.ReadWord();               //  Width, in number of tiles
+                        ushort h = reader.ReadWord();               //  Height, in number of tiles
+                        ushort btp = reader.ReadWord();             //  Bits per tile
+                        uint id = reader.ReadDword();               //  Bitmask for Tile ID
+                        uint xflip = reader.ReadDword();            //  Bitmask for X Flip
+                        uint yflip = reader.ReadDword();            //  Bitmask for Y Flip
+                        uint rotation = reader.ReadDword();         //  Bitmask for 90CW rotation
+                        _ = reader.ReadBytes(10);                   //  Reserved
+                        byte[] tiles = reader.ReadToPosition(cend); //  Raw tile data compressed with Zlib
+
+                        cel = new TilemapCel()
+                        {
+                            Size = new Size(w, h),
+                            TileIdBitmask = (int)id,
+                            XFlipBitmask = (int)xflip,
+                            YFlipBitmask = (int)yflip,
+                            RotationBitmask = (int)rotation,
+                            Tiles = Zlib.Deflate(tiles)
+                        };
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Unknown cel type '{type}'");
+                    }
+
+                    cel.LayerIndex = index;
+                    cel.Position = new Point(x, y);
+                    cel.Opacity = opacity;
+
                     cels.Add(cel);
                     lastCel = cel;
+                    lastUserData = cel;
                 }
-                else if (chunkType == ChunkType.CelExtraChunk)
+                else if (ctype == ASE_CHUNK_CEL_EXTRA)
                 {
-                    RawCelExtraChunk celExtraChunk = ReadRawCelExtraChunk(reader);
-                    lastCel?.SetPreciseBounds(celExtraChunk);
-                }
-                else if (chunkType == ChunkType.ColorProfileChunk)
-                {
-                    colorProfile = ReadColorProfile(reader);
-                }
-                else if (chunkType == ChunkType.ExternalFilesChunk)
-                {
-                    externalFiles = ReadExternalFiles(reader);
-                }
-                else if (chunkType == ChunkType.TagsChunk)
-                {
-                    tags = ReadTags(reader);
-                    tagIterator = 0;
-                    lastWithUserData = tags.First();
-                }
-                else if (chunkType == ChunkType.PaletteChunk)
-                {
-                    ReadPalette(reader, ref palette);
-                }
-                else if (chunkType == ChunkType.UserDataChunk)
-                {
-                    UserData userData = ReadUserData(reader);
+                    uint flags = reader.ReadDword();    //  Flags
+                    float x = reader.ReadFixed();       //  Precise X position
+                    float y = reader.ReadFixed();       //  Precise Y position
+                    float w = reader.ReadFixed();       //  Width of the cel in sprite (scaled in realtime)
+                    float h = reader.ReadFixed();       //  Height of the cel in sprite (scaled in realtime)
+                    _ = reader.ReadBytes(16);           //  For future (set to zero)
 
-                    if (lastWithUserData is not null)
+                    CelExtra extra = new()
                     {
-                        lastWithUserData.UserData = userData;
+                        PreciseBoundsSet = HasFlag(flags, ASE_CEL_EXTRA_FLAG_PRECISE_BOUNDS_SET),
+                        PreciseX = x,
+                        PreciseY = y,
+                        WidthInSprite = w,
+                        HeightInSprite = h
+                    };
 
-                        //  Tags are a special case, user data for tags comes
-                        //  all together (one next to the other) after the tags
-                        //  chunk, in the same order:
-                        //
-                        //  * TAGS CHUNK (TAG1, TAG2, ..., TAGn)
-                        //  * USER DATA CHUNK FOR TAG 1
-                        //  * USER DATA CHUNK FOR TAG 2
-                        //  * ...
-                        //  * USER DATA CHUNK FOR TAGn
-                        //
-                        //  So here we expect that the next user data chunk
-                        //  will correspond to the next tag in the tags
-                        //  collection
-                        tagIterator++;
-
-                        if (tagIterator < tags.Count)
-                        {
-                            lastWithUserData = tags[tagIterator];
-                        }
-                        else
-                        {
-                            lastWithUserData = null;
-                        }
+                    if (lastCel is not null)
+                    {
+                        lastCel.ExtraData = extra;
+                        lastCel = null;
                     }
                 }
-                else if (chunkType == ChunkType.OldPaletteChunkA)
+                else if (ctype == ASE_CHUNK_TAGS)
                 {
-                    throw new NotSupportedException();
+                    ushort ntags = reader.ReadWord();   //  Number of tags
+                    _ = reader.ReadBytes(8);            //  For future (set to zero)
+
+                    for (int i = 0; i < ntags; i++)
+                    {
+                        ushort from = reader.ReadWord();    //  From frame
+                        ushort to = reader.ReadWord();      //  To frame
+                        byte direction = reader.ReadByte(); //  Loop Direction
+
+                        //  Validate direction value
+                        if (!Enum.IsDefined<LoopDirection>((LoopDirection)direction))
+                        {
+                            throw new InvalidOperationException($"Unknown loop direction '{direction}'");
+                        }
+
+                        _ = reader.ReadBytes(8);            //  For future (set to zero)
+                        byte r = reader.ReadByte();         //  Red RGB value of tag color
+                        byte g = reader.ReadByte();         //  Green RGB value of tag color
+                        byte b = reader.ReadByte();         //  Blue RGB value of tag color
+                        _ = reader.ReadByte();              //  Extra byte (zero)
+                        string name = reader.ReadString();  //  Tag name
+
+                        Tag tag = new()
+                        {
+                            From = from,
+                            To = to,
+                            LoopDirection = (LoopDirection)direction,
+                            Color = Color.FromArgb(255, r, g, b),
+                            Name = name
+                        };
+
+                        tags.Add(tag);
+                    }
+
+                    tagIterator = 0;
+                    lastUserData = tags.FirstOrDefault();
                 }
-                else if (chunkType == ChunkType.OldPaletteChunkB)
+                else if (ctype == ASE_CHUNK_PALETTE)
                 {
-                    throw new NotSupportedException();
+                    uint nsize = reader.ReadDword();    //  New palette size (total number of entries)
+                    uint from = reader.ReadDword();     //  First color index to change
+                    uint to = reader.ReadDword();       //  Last color index to change
+                    _ = reader.ReadBytes(8);            //  For future (set to zero)
+
+                    if (nsize > 0)
+                    {
+                        //  Need to resize palette array
+                        Color[] npalette = new Color[nsize];
+                        Array.Copy(palette, npalette, palette.Length);
+                        palette = npalette;
+                    }
+
+                    for (uint i = from; i <= to; i++)
+                    {
+                        ushort flags = reader.ReadWord();
+                        byte r = reader.ReadByte();
+                        byte g = reader.ReadByte();
+                        byte b = reader.ReadByte();
+                        byte a = reader.ReadByte();
+
+                        if (HasFlag(flags, ASE_PALETTE_FLAG_HAS_NAME))
+                        {
+                            _ = reader.ReadString();    //  Color name (ignored)
+                        }
+
+                        palette[i] = Color.FromArgb(a, r, g, b);
+
+                    }
                 }
-                else if (chunkType == ChunkType.MaskChunk)
+                else if (ctype == ASE_CHUNK_USER_DATA)
                 {
-                    throw new NotSupportedException();
+                    uint flags = reader.ReadDword();    //  Flags
+
+                    string? text = default;
+                    if (HasFlag(flags, ASE_USER_DATA_FLAG_HAS_TEXT))
+                    {
+                        text = reader.ReadString(); //  User Data text
+                    }
+
+                    Color? color = default;
+                    if (HasFlag(flags, ASE_USER_DATA_FLAG_HAS_COLOR))
+                    {
+                        byte r = reader.ReadByte(); //  Color Red (0 - 255)
+                        byte g = reader.ReadByte(); //  Color Green (0 - 255)
+                        byte b = reader.ReadByte(); //  Color Blue (0 - 255)
+                        byte a = reader.ReadByte(); //  Color Alpha (0 - 255)
+
+                        color = Color.FromArgb(a, r, g, b);
+                    }
+
+                    if (lastUserData is not null)
+                    {
+                        lastUserData.UserData = new UserData()
+                        {
+                            Text = text,
+                            Color = color
+                        };
+
+                        if (lastUserData is Tag)
+                        {
+
+                            //  Tags are a special case, user data for tags 
+                            //  comes all together (one next to the other) after 
+                            //  the tags chunk, in the same order:
+                            //
+                            //  * TAGS CHUNK (TAG1, TAG2, ..., TAGn)
+                            //  * USER DATA CHUNK FOR TAG1
+                            //  * USER DATA CHUNK FOR TAG2
+                            //  * ...
+                            //  * USER DATA CHUNK FOR TAGn
+                            //
+                            //  So here we expect that the next user data chunk 
+                            //  will correspond to the next tag in the tags 
+                            //  collection
+                            tagIterator++;
+
+                            if (tagIterator < tags.Count)
+                            {
+                                lastUserData = tags[tagIterator];
+                            }
+                            else
+                            {
+                                lastUserData = null;
+                            }
+                        }
+
+                    }
                 }
-                else if (chunkType == ChunkType.PathChunk)
+                else if (ctype == ASE_CHUNK_SLICE)
                 {
-                    throw new NotSupportedException();
+                    uint nkeys = reader.ReadDword();    //  Number of "slice keys"
+                    uint flags = reader.ReadDword();    //  Flags
+                    _ = reader.ReadDword();             //  Reserved
+                    string name = reader.ReadString();  //  Name
+
+                    Slice slice = new()
+                    {
+                        Name = name,
+                        IsNinePatch = HasFlag(flags, ASE_SLICE_FLAGS_IS_NINE_PATCH),
+                        HasPivot = HasFlag(flags, ASE_SLICE_FLAGS_HAS_PIVOT)
+                    };
+
+                    for (uint i = 0; i < nkeys; i++)
+                    {
+                        uint kframe = reader.ReadDword();   //  Frame number this slice is valid starting from
+                        int x = reader.ReadLong();          //  Slice X origin coordinate in the sprite
+                        int y = reader.ReadLong();          //  Slice Y origin coordinate in the sprite
+                        uint w = reader.ReadDword();        //  Slice Width (can be 0 if slice is hidden)
+                        uint h = reader.ReadDword();        //  Slice Height (can be 0 if slice is hidden)
+
+                        SliceKey key = new(slice)
+                        {
+                            Frame = (int)kframe,
+                            Bounds = new Rectangle(x, y, (int)w, (int)h)
+                        };
+
+                        if (slice.IsNinePatch)
+                        {
+                            int cx = reader.ReadLong();     //  Center X position (relative to slice bounds)
+                            int cy = reader.ReadLong();     //  Center Y position (relative to slice bounds)
+                            uint cw = reader.ReadDword();   //  Center width
+                            uint ch = reader.ReadDword();   //  Center height
+
+                            key.CenterBounds = new Rectangle(cx, cy, (int)cw, (int)ch);
+                        }
+
+                        if (slice.HasPivot)
+                        {
+                            int px = reader.ReadLong(); //  Pivot X position (relative to the slice origin)
+                            int py = reader.ReadLong(); //  Pivot Y position (relative to the slice origin)
+
+                            key.Pivot = new Point(px, py);
+                        }
+                    }
+
+                    slices.Add(slice);
+                    lastUserData = slice;
                 }
+                else if (ctype == ASE_CHUNK_TILESET)
+                {
+                    uint id = reader.ReadDword();       //  Tileset ID
+                    uint flags = reader.ReadDword();    //  Tileset flags
+                    _ = reader.ReadDword();             //  Nubmer of tiles (ignored, calculated in class)
+                    ushort w = reader.ReadWord();       //  Tile width
+                    ushort h = reader.ReadWord();       //  Tile height
+                    _ = reader.ReadShort();             //  Base index (ignoring, only used in Asperite UI)
+                    _ = reader.ReadBytes(14);           //  Reserved
+                    string name = reader.ReadString();  //  Name of tileset
 
+
+                    if (HasFlag(flags, ASE_TILESET_FLAG_EXTERNAL_FILE))
+                    {
+                        reader.Dispose();
+                        throw new InvalidOperationException($"Tileset '{name}' includes tileset in external file. This is not supported at this time");
+                    }
+
+                    if (HasFlag(flags, ASE_TILESET_FLAG_EMBEDDED))
+                    {
+                        uint len = reader.ReadDword();              //  Compressed data length
+                        byte[] pixels = reader.ReadBytes((int)len); //  Compressed tileset image
+
+                        Tileset tileset = new()
+                        {
+                            ID = (int)id,
+                            TileSize = new Size(w, h),
+                            Name = name,
+                            Pixels = Zlib.Deflate(pixels)
+                        };
+
+                        tilesets.Add(tileset);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Tileset '{name}' does not include tileset image in file");
+                    }
+                }
+                else if (ctype == ASE_CHUNK_OLD_PALETTE1)
+                {
+                    result.Warnings.Add($"Old Palette Chunk (0x{ctype:X4}) ignored");
+                }
+                else if (ctype == ASE_CHUNK_OLD_PALETTE2)
+                {
+                    result.Warnings.Add($"Old Palette Chunk (0x{ctype:X4}) ignored");
+                }
+                else if (ctype == ASE_CHUNK_COLOR_PROFILE)
+                {
+                    result.Warnings.Add($"Color Profile Chunk (0x{ctype:X4}) ignored");
+                }
+                else if (ctype == ASE_CHUNK_EXTERNAL_FILES)
+                {
+                    result.Warnings.Add($"External Files Chunk (0x{ctype:X4}) ignored");
+                }
+                else if (ctype == ASE_CHUNK_MASK)
+                {
+                    result.Warnings.Add($"Mask Chunk (0x{ctype:X4}) ignored");
+                }
+                else if (ctype == ASE_CHUNK_PATH)
+                {
+                    result.Warnings.Add($"Path Chunk (0x{ctype:X4}) ignored");
+                }
             }
-        }
-    }
 
-
-    // -------------------------------------------------------------------------
-    //  Read methods
-    //
-    //  These are various methods that act as a bridge between reading the
-    //  raw value struct parts of an Aseprite file and returning back a more
-    //  strongly defined instance of those values.
-    // -------------------------------------------------------------------------
-
-    internal static Layer ReadLayerChunk(AsepriteBinaryReader reader, bool isLayerOpacityValid)
-    {
-        RawLayerChunk chunk = ReadRawLayerChunk(reader);
-
-        //  Is layer opacity valid?
-        if (!isLayerOpacityValid)
-        {
-            chunk.Opacity = 255;
-        }
-
-        LayerType ltype = (LayerType)chunk.Type;
-        Layer layer;
-
-        if (ltype == LayerType.Tilemap)
-        {
-            layer = new TilesetLayer(chunk);
-        }
-        else
-        {
-            layer = new Layer(chunk);
-        }
-
-        return layer;
-    }
-
-    internal static Cel ReadCelChunk(AsepriteBinaryReader reader, long end)
-    {
-        RawCelChunk rawCel = ReadRawCelChunk(reader, end);
-
-        CelType celType = (CelType)rawCel.Type;
-
-        return celType switch
-        {
-            //  Compressed pixel data is decompressed during the raw read
-            CelType.RawImage or CelType.CompressedImage => new ImageCel(rawCel),
-            CelType.Linked => new LinkedCel(rawCel),
-            CelType.CompressedTilemap => new TilemapCel(rawCel),
-            _ => throw new InvalidOperationException()
-        };
-    }
-
-    internal static ColorProfile ReadColorProfile(AsepriteBinaryReader reader)
-    {
-        RawColorProfileChunk chunk = ReadRawColorProfileChunk(reader);
-        return new ColorProfile(chunk);
-    }
-
-    internal static List<ExternalFile> ReadExternalFiles(AsepriteBinaryReader reader)
-    {
-        RawExternalFilesChunk chunk = ReadRawExternalFilesChunk(reader);
-
-        List<ExternalFile> files = new(chunk.Entries.Length);
-
-        for (int i = 0; i < chunk.Entries.Length; i++)
-        {
-            RawExternalFileChunkEntry entryChunk = chunk.Entries[i];
-
-            ExternalFile file = new(entryChunk);
-            files.Add(file);
-        }
-
-        return files;
-    }
-
-    internal static List<Tag> ReadTags(AsepriteBinaryReader reader)
-    {
-        RawTagsChunk chunk = ReadRawTagsChunk(reader);
-
-        List<Tag> tags = new(chunk.Tags.Length);
-
-        for (int i = 0; i < chunk.Tags.Length; i++)
-        {
-            RawTagsChunkTag tagChunk = chunk.Tags[i];
-
-            Tag tag = new(tagChunk);
-            tags.Add(tag);
-        }
-
-        return tags;
-    }
-
-    internal static void ReadPalette(AsepriteBinaryReader reader, ref Color[] palette)
-    {
-        RawPaletteChunk chunk = ReadRawPaletteChunk(reader);
-
-        if (chunk.NewPaletteSize > 0)
-        {
-            //  Need to resize the palette array
-            Color[] newPalette = new Color[chunk.NewPaletteSize];
-            Array.Copy(palette, newPalette, palette.Length);
-            palette = newPalette;
-        }
-
-        for (uint i = chunk.From; i <= chunk.To; i++)
-        {
-            RawPaletteChunkEntry entry = chunk.Entries[i];
-            Color color = Color.FromArgb(entry.Alpha, entry.Red, entry.Blue, entry.Green);
-            palette[i] = color;
-        }
-    }
-
-    internal static UserData ReadUserData(AsepriteBinaryReader reader)
-    {
-        RawUserDataChunk chunk = ReadRawUserDataChunk(reader);
-        return new UserData(chunk);
-    }
-
-    // -------------------------------------------------------------------------
-    //  ReadRaw methods
-    //
-    //  These are various methods that read the raw value struct of a part of
-    //  an aseprite file and returns it back.  Each method will perform a
-    //  validation call after all values for it are read, which can thrown an
-    //  exception if the values are found to not be as expected.
-    // -------------------------------------------------------------------------
-
-    private static RawHeader ReadRawHeader(AsepriteBinaryReader reader)
-    {
-        RawHeader header;
-
-        //  Begin reading
-        header.FileSize = reader.ReadDword();           //  Filesize, in bytes
-        header.MagicNumber = reader.ReadWord();         //  Magic Number, should always be 0xA5E0
-        header.Frames = reader.ReadWord();              //  Total number of frames
-        header.Width = reader.ReadWord();               //  Width, in pixels, of canvas
-        header.Height = reader.ReadWord();              //  Height, in pixels, of canvs
-        header.ColorDepth = reader.ReadWord();          //  Color Depth (bits-per-pixel)
-        header.Flags = reader.ReadDword();              //  Header flags
-        header.Speed = reader.ReadWord();               //  Speed (ms betwene frames) (deprecated)
-        header.Ignore1 = reader.ReadDword();            //  Set to 0
-        header.Ignore2 = reader.ReadDword();            //  Set to 0
-        header.TransparentIndex = reader.ReadByte();    //  Palette entry of transparent color (Indexed only)
-        header.Ignore3 = reader.ReadBytes(3);           //  Ignore these bytes
-        header.NumberOfColors = reader.ReadWord();      //  Number of colors (0 = 256 for old sprites)
-        header.PixelWidth = reader.ReadByte();          //  Pixel Width
-        header.PixelHeight = reader.ReadByte();         //  Pixel Height
-        header.GridX = reader.ReadShort();              //  Grid top-left x-coordiante
-        header.GridY = reader.ReadShort();              //  Grid top-left y-coordiante
-        header.GridWidth = reader.ReadWord();           //  Grid width, in pixels
-        header.GridHeight = reader.ReadWord();          //  Grid height, in pixels
-        header.Ignore4 = reader.ReadBytes(84);          //  For future (set to zero)
-
-        ThrowIfInvalid(header);
-
-        return header;
-    }
-
-    internal static RawFrameHeader ReadRawFrameHeader(AsepriteBinaryReader reader)
-    {
-        RawFrameHeader header;
-
-        //  Begin reading
-        header.Length = reader.ReadDword();     //  Bytes in frame
-        header.Magic = reader.ReadWord();       //  Magic number, should always be 0xF1FA
-        header.OldCount = reader.ReadWord();    //  Old field which specifies number of "chunks"
-        header.Duration = reader.ReadWord();    //  Frame duration, in milliseconds
-        header.Ignore1 = reader.ReadBytes(2);   //  For future (set to zero)
-        header.NewCount = reader.ReadDword();   //  New field which specifies number of "chunks"
-
-        ThrowIfInvalid(header);
-
-        return header;
-    }
-
-    internal static RawChunkHeader ReadRawChunkHeader(AsepriteBinaryReader reader)
-    {
-        RawChunkHeader header;
-
-        //  Begin reading
-        header.Length = reader.ReadDword();     //  Size of chunk, in bytes
-        header.Type = reader.ReadWord();        //  The type of chunk
-
-        ThrowIfInvalid(header);
-
-        return header;
-    }
-
-    internal static RawLayerChunk ReadRawLayerChunk(AsepriteBinaryReader reader)
-    {
-        RawLayerChunk chunk;
-
-        //  Default all optiona values
-        chunk.TilsetIndex = default;
-
-        //  Begin reading
-        chunk.Flags = reader.ReadWord();                //  Layer Flags
-        chunk.Type = reader.ReadWord();                 //  Layer Type
-        chunk.ChildLevel = reader.ReadWord();           //  Layer child level
-        chunk.DefaultWidth = reader.ReadWord();         //  Default width, in pixles (ignored)
-        chunk.DefaultHeight = reader.ReadWord();        //  Default height, in pixels (ignore)
-        chunk.BlendMode = reader.ReadWord();            //  Blend mode
-        chunk.Opacity = reader.ReadByte();              //  Layer opacity (only valid if header flag set)
-        chunk.Ignore = reader.ReadBytes(3);             //  For Furture (set to zero)
-        chunk.Name = reader.ReadString();               //  Layer name
-
-        //  Read optional values basd on layer type
-        if (chunk.Type == 2)
-        {
-            chunk.TilsetIndex = reader.ReadDword();     //  Tileset index
-        }
-
-        ThrowIfInvalid(chunk);
-
-        return chunk;
-    }
-
-    internal static RawCelChunk ReadRawCelChunk(AsepriteBinaryReader reader, long end)
-    {
-        RawCelChunk chunk;
-
-        //  Default all optional values
-        chunk.Width = default;
-        chunk.Height = default;
-        chunk.Pixels = default;
-        chunk.FramePosition = default;
-        chunk.Pixels = default;
-        chunk.BitsPerTile = default;
-        chunk.TileIdBitmask = default;
-        chunk.XFlipBitmask = default;
-        chunk.YFlipBitmask = default;
-        chunk.RotationBitmask = default;
-        chunk.Ignore2 = default;
-        chunk.Tiles = default;
-
-        //  Begin reading
-        chunk.LayerIndex = reader.ReadWord();   //  Index of layer this cel is on
-        chunk.X = reader.ReadShort();           //  top-left x-coordinate of cel relative to canvas bounds
-        chunk.Y = reader.ReadShort();           //  top-left y-coordiante of cel relative to canvas bounds
-        chunk.Opacity = reader.ReadByte();      //  Opacity of cel
-        chunk.Type = reader.ReadWord();         //  Cel type
-        chunk.Ignore = reader.ReadBytes(7);     //  For future (set to zero)
-
-
-        //  Read optional values bsed on cel type
-        if (chunk.Type == 0)
-        {
-            //  Raw image cel
-            chunk.Width = reader.ReadWord();            //  Width, in pixels
-            chunk.Height = reader.ReadWord();           //  Height, in pixels
-            chunk.Pixels = reader.ReadToPosition(end);  //  Uncompressed raw pixel data
-        }
-        else if (chunk.Type == 1)
-        {
-            //  Linked cell
-            chunk.FramePosition = reader.ReadWord();    //  Frame position to link with
-        }
-        else if (chunk.Type == 2)
-        {
-            //  Compressed image cel
-            chunk.Width = reader.ReadWord();                //  Width, in pixels
-            chunk.Height = reader.ReadWord();               //  Height, in pixels
-            byte[] compressed = reader.ReadToPosition(end); //  Compressed pixel data
-
-            chunk.Pixels = Zlib.Deflate(compressed);
-        }
-        else if (chunk.Type == 3)
-        {
-            chunk.Width = reader.ReadWord();                //  Width, in number of tiles
-            chunk.Height = reader.ReadWord();               //  Height, in number of tiles
-            chunk.BitsPerTile = reader.ReadWord();          //  Bits per tile
-            chunk.TileIdBitmask = reader.ReadDword();       //  Bitmask for tile id
-            chunk.XFlipBitmask = reader.ReadDword();        //  Bitmask for X flip
-            chunk.YFlipBitmask = reader.ReadDword();        //  Bitmask for Y flip
-            chunk.RotationBitmask = reader.ReadDword();     //  Bitmask for 90cw rotation
-            chunk.Ignore2 = reader.ReadBytes(10);           //  Reserved
-            byte[] compressed = reader.ReadToPosition(end); //  Compressed tile data
-
-            chunk.Tiles = Zlib.Deflate(compressed);
-        }
-
-        ThrowIfInvalid(chunk);
-
-        return chunk;
-    }
-
-    internal static RawCelExtraChunk ReadRawCelExtraChunk(AsepriteBinaryReader reader)
-    {
-        RawCelExtraChunk chunk;
-
-        //  Begin reading
-        chunk.Flags = reader.ReadDword();           //  Flags (1 = Precise Bounds are set) (set to zero????)
-        chunk.PreciseX = reader.ReadFixed();        //  Precise X position
-        chunk.PreciseY = reader.ReadFixed();        //  Precise Y position
-        chunk.PreciseWidth = reader.ReadFixed();    //  Width of the cel in the sprite (scaled in real-time)
-        chunk.PreciseHeight = reader.ReadFixed();   //  Height of the cel in the sprite
-        chunk.Ignore = reader.ReadBytes(16);        //  For future use (set to zero)
-
-        ThrowIfInvalid(chunk);
-
-        return chunk;
-
-
-    }
-
-    internal static RawColorProfileChunk ReadRawColorProfileChunk(AsepriteBinaryReader reader)
-    {
-        RawColorProfileChunk chunk;
-
-        //  Default all optional values
-        chunk.ICCProfileDataLength = default;
-        chunk.ICCProfileData = default;
-
-        //  Begin reading
-        chunk.Type = reader.ReadWord();         //  Color profile type
-        chunk.Flags = reader.ReadWord();        //  Flags 
-        chunk.FixedGamma = reader.ReadFixed();  //  Fixed gamma (1.0 = linear)
-        chunk.Ignore = reader.ReadBytes(8);     //  Reserved (set to 0)
-
-        //  Read optional values based on type
-        if (chunk.Type == 2)
-        {
-            chunk.ICCProfileDataLength = reader.ReadDword();
-            chunk.ICCProfileData = reader.ReadBytes((int)chunk.ICCProfileDataLength);
-        }
-
-        ThrowIfInvalid(chunk);
-
-        return chunk;
-    }
-
-    internal static RawExternalFilesChunk ReadRawExternalFilesChunk(AsepriteBinaryReader reader)
-    {
-        RawExternalFilesChunk chunk;
-
-        //  Begin reading
-        chunk.NumberOfEntries = reader.ReadDword(); //  Number of Entries
-        chunk.Ignore = reader.ReadBytes(8);         //  Reserved (set to zero)
-
-        //  Initialize the entries array
-        chunk.Entries = new RawExternalFileChunkEntry[chunk.NumberOfEntries];
-
-        //  Read each entry
-        for (uint i = 0; i < chunk.NumberOfEntries; i++)
-        {
-            RawExternalFileChunkEntry entryChunk;
-            entryChunk.EntryId = reader.ReadDword();            //  Entry ID (this ID is referenced by tilesets or palettes)
-            entryChunk.Ignore = reader.ReadBytes(8);            //  Reserved (set to zero)
-            entryChunk.ExternalFileName = reader.ReadString();  //  External file name
-
-            chunk.Entries[i] = entryChunk;
-        }
-
-        return chunk;
-    }
-
-    internal static RawTagsChunk ReadRawTagsChunk(AsepriteBinaryReader reader)
-    {
-        RawTagsChunk chunk;
-
-        //  Begin reading
-        chunk.NumberOfTags = reader.ReadWord();     //  Number of tags
-        chunk.Ignore = reader.ReadBytes(8);         //  For future (set to zero)
-
-        //  Initialize the tags array
-        chunk.Tags = new RawTagsChunkTag[chunk.NumberOfTags];
-
-        //  Read each tag
-        for (ushort i = 0; i < chunk.NumberOfTags; i++)
-        {
-            RawTagsChunkTag tagChunk;
-            tagChunk.From = reader.ReadWord();              //  From frame
-            tagChunk.To = reader.ReadWord();                //  To frame
-            tagChunk.LoopDirection = reader.ReadByte();     //  Loop animation direction
-            tagChunk.Ignore1 = reader.ReadBytes(8);         //  For future (set to zero)
-            tagChunk.Color = reader.ReadBytes(3);           //  RGB Values of the tag color
-            tagChunk.Ignore2 = reader.ReadByte();           //  Extra byte (zero)
-            tagChunk.Name = reader.ReadString();            //  Tag name
-
-            ThrowIfInvalid(tagChunk);
-
-            chunk.Tags[i] = tagChunk;
-        }
-
-        return chunk;
-    }
-
-    internal static RawPaletteChunk ReadRawPaletteChunk(AsepriteBinaryReader reader)
-    {
-        RawPaletteChunk chunk;
-
-        //  Begin reading
-        chunk.NewPaletteSize = reader.ReadDword();
-        chunk.From = reader.ReadDword();
-        chunk.To = reader.ReadDword();
-        chunk.Ignore = reader.ReadBytes(8);
-
-        //  Number of entries to read
-        int nEntries = (int)chunk.To - (int)chunk.From + 1;
-
-        //  Initialize the entry array
-        chunk.Entries = new RawPaletteChunkEntry[nEntries];
-
-        //  Read each entry
-        for (int i = 0; i < nEntries; i++)
-        {
-            RawPaletteChunkEntry entryChunk;
-
-            //  Default optional values
-            entryChunk.Name = default;
-
-            //  Begin reading
-            entryChunk.Flags = reader.ReadWord();       //  Entry flags
-            entryChunk.Red = reader.ReadByte();         //  Red (0 - 255)
-            entryChunk.Green = reader.ReadByte();       //  Green (0 - 255)
-            entryChunk.Blue = reader.ReadByte();        //  Blue (0 - 255)
-            entryChunk.Alpha = reader.ReadByte();       //  Alpha (0 - 255)
-
-            //  Read optional values based on flags
-            if (entryChunk.Flags == 1)
+            Frame frame = new()
             {
-                entryChunk.Name = reader.ReadString();  //  Color name
-            }
+                Duration = duration
+            };
 
-            chunk.Entries[i] = entryChunk;
+            frame.Cels.AddRange(cels);
+
+            frames.Add(frame);
         }
 
-        return chunk;
+        header.NumberOfColors = palette.Length;
+
     }
 
-    internal static RawUserDataChunk ReadRawUserDataChunk(AsepriteBinaryReader reader)
-    {
-        RawUserDataChunk chunk;
-
-        //  Default optional values
-        chunk.Text = default;
-        chunk.Red = default;
-        chunk.Green = default;
-        chunk.Blue = default;
-        chunk.Alpha = default;
-
-        //  Begin reading
-        chunk.Flags = reader.ReadDword();   //  Flags
-
-        //  If flags have bit 1 set (has text)
-        if ((chunk.Flags & 1) != 0)
-        {
-            chunk.Text = reader.ReadString();   //  Text
-        }
-
-        //  If flags have bit 2 set (has color)
-        if ((chunk.Flags & 2) != 0)
-        {
-            chunk.Red = reader.ReadByte();      //  Color Red (0 - 255)
-            chunk.Green = reader.ReadByte();    //  Color Green (0 - 255)
-            chunk.Blue = reader.ReadByte();     //  Color Blue (0 - 255)
-            chunk.Alpha = reader.ReadByte();    //  Color Alpha (0 - 255)
-        }
-
-        return chunk;
-    }
-
-    // -------------------------------------------------------------------------
-    //  ThrowIfValid methods
-    //
-    //  These are various overload that each take in a different native
-    //  struct and performs validation on the values within the struct to ensure
-    //  they are as expected.  Each method will throw an exception if the struct
-    //  values are not as expected.
-    // -------------------------------------------------------------------------
-
-    private static void ThrowIfInvalid(RawHeader header)
-    {
-        //  Validate magic number
-        if (header.MagicNumber != 0xA5E0)
-        {
-            throw new InvalidOperationException();
-        }
-
-        //  Validate the width and height
-        if (header.Width == 0 || header.Height == 0)
-        {
-            throw new InvalidOperationException();
-        }
-
-        //  Validate the color depth
-        if (!Enum.IsDefined<ColorDepth>((ColorDepth)header.ColorDepth))
-        {
-            throw new InvalidOperationException();
-        }
-    }
-
-    private static void ThrowIfInvalid(RawFrameHeader header)
-    {
-        //  Validate magic numbeer
-        if (header.Magic != 0xF1FA)
-        {
-            throw new InvalidOperationException();
-        }
-    }
-
-    private static void ThrowIfInvalid(RawChunkHeader header)
-    {
-        //  Validate the chunk type
-        if (!Enum.IsDefined<ChunkType>((ChunkType)header.Type))
-        {
-            throw new InvalidOperationException();
-        }
-    }
-
-    private static void ThrowIfInvalid(RawLayerChunk chunk)
-    {
-        //  Validate flags
-        if ((chunk.Flags & (int)LayerFlags.All) != chunk.Flags)
-        {
-            throw new InvalidOperationException();
-        }
-
-        //  Validate layer type value
-        if (!Enum.IsDefined<LayerType>((LayerType)chunk.Type))
-        {
-            throw new InvalidOperationException();
-        }
-
-        //  Validate blendmode value
-        if (!Enum.IsDefined<BlendMode>((BlendMode)chunk.BlendMode))
-        {
-            throw new InvalidOperationException();
-        }
-
-        //  Validate that tileset index is provided if layer type == 2
-        if (chunk.Type == 2 && chunk.TilsetIndex is null)
-        {
-            throw new InvalidOperationException();
-        }
-    }
-
-    private static void ThrowIfInvalid(RawCelChunk chunk)
-    {
-        //  validate cel type
-        if (!Enum.IsDefined<CelType>((CelType)chunk.Type))
-        {
-            throw new InvalidOperationException();
-        }
-
-        //  Not linked cels
-        if (chunk.Type != 1)
-        {
-            //  Validate width and height
-            if (chunk.Width is null || chunk.Width <= 0 || chunk.Height is null || chunk.Height <= 0)
-            {
-                throw new InvalidOperationException();
-            }
-        }
-    }
-
-    private static void ThrowIfInvalid(RawCelExtraChunk chunk)
-    {
-        //  Validate flags
-        if (chunk.Flags != 1)
-        {
-            throw new InvalidOperationException();
-        }
-    }
-
-    private static void ThrowIfInvalid(RawColorProfileChunk chunk)
-    {
-        if (!Enum.IsDefined<ColorProfileType>((ColorProfileType)chunk.Type))
-        {
-            throw new InvalidOperationException();
-        }
-
-        if (chunk.Flags != 1)
-        {
-            throw new InvalidOperationException();
-        }
-
-        //  ICC type validation
-        if (chunk.Type == 2)
-        {
-            if (chunk.ICCProfileDataLength is null)
-            {
-                throw new InvalidOperationException();
-            }
-
-            if (chunk.ICCProfileData is null)
-            {
-                throw new InvalidOperationException();
-            }
-        }
-    }
-
-    private static void ThrowIfInvalid(RawTagsChunkTag chunk)
-    {
-        //  Validate loop direction
-        if (!Enum.IsDefined<LoopDirection>((LoopDirection)chunk.LoopDirection))
-        {
-            throw new InvalidOperationException();
-        }
-    }
-
-    // internal static RawFrameHeader ReadRawFrameHeader(AsepriteBinaryReader reader)
-    // {
-    //     RawFrameHeader raw;
-    //     raw.Length = reader.ReadDword();
-    //     raw.Magic = reader.ReadWord();
-    //     raw.OldCount = reader.ReadWord();
-    //     raw.Duration = reader.ReadWord();
-    //     raw.Ignore1 = reader.ReadBytes(2);
-    //     raw.NewCount = reader.ReadDword();
-
-    //     return raw;
-    // }
-
-    // internal static Chunk ReadChunk(AsepriteBinaryReader reader)
-    // {
-    //     long start = reader.Position;
-
-    //     RawChunkHeader rawHeader = ReadRawChunkHeader(reader);
-
-    //     //  Chunk end position needs to be calcualted for eading some chunks
-    //     //  like the cel chunk.
-    //     long end = start + rawHeader.Length;
-
-    //     ChunkType chunkType = (ChunkType)rawHeader.Type;
-
-    //     return chunkType switch
-    //     {
-    //         ChunkType.OldPaletteChunkA => throw new NotSupportedException($"Old Palette Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
-    //         ChunkType.OldPaletteChunkB => throw new NotSupportedException($"Old Palette Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
-    //         ChunkType.LayerChunk => ReadLayerChunk(reader, rawHeader),
-    //         ChunkType.CelChunk => ReadCelChunk(reader, rawHeader, end),
-    //         ChunkType.CelExtraChunk => ReadCelExtraChunk(reader, rawHeader),
-    //         ChunkType.ColorProfileChunk => ReadColorProfileChunk(reader, rawHeader),
-    //         ChunkType.ExternalFilesChunk => ReadExternalFilesChunk(reader, rawHeader),
-    //         ChunkType.MaskChunk => throw new NotSupportedException($"Mask Chunk (0x{rawHeader.Type:X4}) detected.  The version of Aseprite used to create this file is not supported"),
-    //         ChunkType.PathChunk => throw new NotSupportedException($"Path Chunk (0x{rawHeader.Type:X2}) detected.  The version of Aseprite used to create this file is not supported"),
-    //         ChunkType.TagsChunk => ReadTagsChunk(reader, rawHeader),
-    //         ChunkType.PaletteChunk => ReadPaletteChunk(reader, rawHeader),
-    //         _ => throw new InvalidOperationException($"Unknown chunk type (0x{rawHeader.Type:X4})")
-    //     };
-
-    // }
-
-    // internal static RawChunkHeader ReadRawChunkHeader(AsepriteBinaryReader reader)
-    // {
-    //     RawChunkHeader raw;
-    //     raw.Length = reader.ReadDword();
-    //     raw.Type = reader.ReadWord();
-
-    //     return raw;
-    // }
-
-    // private static Layer ReadLayerChunk(AsepriteBinaryReader reader)
-    // {
-    //     RawLayerChunk raw = ReadRawLayerChunk(reader);
-
-    //     return raw.Type switch
-    //     {
-    //         0 or 1 => new Layer(raw),
-    //         2 => new TilesetLayer(raw),
-    //         _ => throw new InvalidOperationException($"Unknown Layer Type '{raw.Type}'")
-    //     };
-    // }
-
-    // private static RawLayerChunk ReadRawLayerChunk(AsepriteBinaryReader reader)
-    // {
-    //     RawLayerChunk raw;
-    //     raw.Flags = reader.ReadWord();
-    //     raw.Type = reader.ReadWord();
-    //     raw.ChildLevel = reader.ReadWord();
-    //     raw.DefaultWidth = reader.ReadWord();
-    //     raw.DefaultHeight = reader.ReadWord();
-    //     raw.BlendMode = reader.ReadWord();
-    //     raw.Opacity = reader.ReadByte();
-    //     raw.Ignore = reader.ReadBytes(3);
-    //     raw.Name = reader.ReadString();
-    //     raw.TilsetIndex = default;
-
-    //     if (raw.Type == 2)
-    //     {
-    //         raw.TilsetIndex = reader.ReadDword();
-    //     }
-
-    //     return raw;
-    // }
-
-    // private static Cel ReadCelChunk(AsepriteBinaryReader reader, long end)
-    // {
-    //     RawCelChunk raw = ReadRawCelChunk(reader, end);
-
-    //     return raw.Type switch
-    //     {
-    //         0 or 2 => new ImageCel(raw),
-    //         1 => new LinkedCel(raw),
-    //         3 => new TilemapCel(raw),
-    //         _ => throw new InvalidOperationException($"Unknown Cel Type '{raw.Type}'")
-    //     };
-    // }
-
-    // private static RawCelChunk ReadRawCelChunk(AsepriteBinaryReader reader, long end)
-    // {
-    //     RawCelChunk raw;
-    //     raw.LayerIndex = reader.ReadWord();
-    //     raw.X = reader.ReadShort();
-    //     raw.Y = reader.ReadShort();
-    //     raw.Opacity = reader.ReadByte();
-    //     raw.Type = reader.ReadWord();
-    //     raw.Ignroe = reader.ReadBytes(7);
-
-    //     raw.Width = default;
-    //     raw.Height = default;
-    //     raw.Pixels = default;
-    //     raw.FramePosition = default;
-    //     raw.CompressedPixels = default;
-    //     raw.BitsPerTile = default;
-    //     raw.TileIdBitmask = default;
-    //     raw.XFlipBitmask = default;
-    //     raw.YFlipBitmask = default;
-    //     raw.RotationBitmask = default;
-    //     raw.Ignore2 = default;
-    //     raw.CompressedTiles = default;
-
-    //     if (raw.Type == 0)
-    //     {
-    //         raw.Width = reader.ReadWord();
-    //         raw.Height = reader.ReadWord();
-    //         raw.Pixels = reader.ReadBytes((int)(end - reader.Position));
-    //     }
-    //     else if (raw.Type == 1)
-    //     {
-    //         raw.FramePosition = reader.ReadWord();
-    //     }
-    //     else if (raw.Type == 2)
-    //     {
-    //         raw.Width = reader.ReadWord();
-    //         raw.Height = reader.ReadWord();
-    //         raw.CompressedPixels = reader.ReadBytes((int)(end - reader.Position));
-    //     }
-    //     else if (raw.Type == 3)
-    //     {
-    //         raw.Width = reader.ReadWord();
-    //         raw.Height = reader.ReadWord();
-    //         raw.BitsPerTile = reader.ReadWord();
-    //         raw.TileIdBitmask = reader.ReadDword();
-    //         raw.XFlipBitmask = reader.ReadDword();
-    //         raw.YFlipBitmask = reader.ReadDword();
-    //         raw.RotationBitmask = reader.ReadDword();
-    //         raw.Ignore2 = reader.ReadBytes(10);
-    //         raw.CompressedTiles = reader.ReadBytes((int)(end - reader.Position));
-    //     }
-
-    //     return raw;
-    // }
-
-    // private static CelExtra ReadCelExtraChunk(AsepriteBinaryReader reader)
-    // {
-    //     RawCelExtraChunk raw = ReadRawCelExtraChunk(reader);
-    //     return new CelExtra(raw);
-    // }
-
-    // private static RawCelExtraChunk ReadRawCelExtraChunk(AsepriteBinaryReader reader)
-    // {
-    //     RawCelExtraChunk raw;
-    //     raw.Flags = reader.ReadDword();
-    //     raw.PreciseX = reader.ReadFixed();
-    //     raw.PreciseY = reader.ReadFixed();
-    //     raw.PreciseWidth = reader.ReadFixed();
-    //     raw.PreciseHeight = reader.ReadFixed();
-    //     raw.Ignore = reader.ReadBytes(16);
-
-    //     return raw;
-    // }
-
-    // private static ColorProfile ReadColorProfileChunk(AsepriteBinaryReader reader)
-    // {
-    //     RawColorProfileChunk raw = ReadRawColorProfileChunk(reader);
-    //     return new ColorProfile(raw);
-    // }
-
-    // private static RawColorProfileChunk ReadRawColorProfileChunk(AsepriteBinaryReader reader)
-    // {
-    //     RawColorProfileChunk raw;
-    //     raw.Type = reader.ReadWord();
-    //     raw.Flags = reader.ReadWord();
-    //     raw.FixedGamma = reader.ReadFixed();
-    //     raw.Ignore = reader.ReadBytes(8);
-    //     raw.ICCProfileDataLength = default;
-    //     raw.ICCProfileData = default;
-
-    //     if (raw.Type == 2)
-    //     {
-    //         raw.ICCProfileDataLength = reader.ReadDword();
-    //         raw.ICCProfileData = reader.ReadBytes((int)raw.ICCProfileDataLength);
-    //     }
-
-    //     return raw;
-    // }
-
-    // private static AseExternalFilesChunk ReadExternalFilesChunk(AsepriteBinaryReader reader)
-    // {
-    //     ExternalFilesChunk raw = ReadRawExternalFilesChunk(reader);
-    //     return new AseExternalFilesChunk(raw);
-    // }
-
-    // private static ExternalFilesChunk ReadRawExternalFilesChunk(AsepriteBinaryReader reader)
-    // {
-    //     ExternalFilesChunk raw;
-    //     raw.NumberOfEntries = reader.ReadDword();
-    //     raw.Ignore = reader.ReadBytes(8);
-
-    //     raw.Entries = new RawExternalFileChunkEntry[raw.NumberOfEntries];
-
-    //     for (int i = 0; i < raw.NumberOfEntries; i++)
-    //     {
-    //         RawExternalFileChunkEntry entry = ReadRawExternalFilesChunkEntry(reader);
-    //         raw.Entries[i] = entry;
-    //     }
-
-    //     return raw;
-    // }
-
-    // private static RawExternalFileChunkEntry ReadRawExternalFilesChunkEntry(AsepriteBinaryReader reader)
-    // {
-    //     RawExternalFileChunkEntry raw;
-    //     raw.EntryId = reader.ReadDword();
-    //     raw.Ignore = reader.ReadBytes(8);
-    //     raw.ExternalFileName = reader.ReadString();
-
-    //     return raw;
-    // }
-
-    // private static AseTagsChunk ReadTagsChunk(AsepriteBinaryReader reader, RawChunkHeader header)
-    // {
-    //     RawTagsChunk raw = ReadRawTagsChunk(reader);
-    //     return new AseTagsChunk(raw);
-    // }
-
-    // private static RawTagsChunk ReadRawTagsChunk(AsepriteBinaryReader reader)
-    // {
-    //     RawTagsChunk raw;
-    //     raw.NumberOfTags = reader.ReadWord();
-    //     raw.Ignore = reader.ReadBytes(8);
-
-    //     raw.Tags = new RawTagsChunkTag[raw.NumberOfTags];
-
-    //     for (int i = 0; i < raw.Tags.Length; i++)
-    //     {
-    //         RawTagsChunkTag rawTag = ReadRawTagsChunkTag(reader);
-    //         raw.Tags[i] = rawTag;
-    //     }
-
-    //     return raw;
-    // }
-
-    // private static RawTagsChunkTag ReadRawTagsChunkTag(AsepriteBinaryReader reader)
-    // {
-    //     RawTagsChunkTag raw;
-    //     raw.From = reader.ReadWord();
-    //     raw.To = reader.ReadWord();
-    //     raw.LoopDirection = reader.ReadByte();
-    //     raw.Ignore1 = reader.ReadBytes(8);
-    //     raw.Color = reader.ReadBytes(3);
-    //     raw.Ignore2 = reader.ReadByte();
-    //     raw.Name = reader.ReadString();
-
-    //     return raw;
-    // }
-
-    // private static RawPaletteChunk ReadRawPaletteChunk(AsepriteBinaryReader reader)
-    // {
-    //     RawPaletteChunk raw;
-    //     raw.NewPaletteSize = reader.ReadDword();
-    //     raw.From = reader.ReadDword();
-    //     raw.To = reader.ReadDword();
-    //     raw.Ignore = reader.ReadBytes(8);
-
-    //     raw.Entries = new RawPaletteChunkEntry
-
-    //     for (uint i = raw.From; i <= raw.To; i++)
-    //     {
-
-    //     }
-    // }
+    private static bool HasFlag(uint value, uint flag) => (value & flag) != 0;
 }

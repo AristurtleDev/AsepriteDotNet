@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
-Copyright 2022 Aristurtle
+Copyright 2022 Christopher Whitley
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -21,36 +21,38 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
-using AsepriteDotNet.Document.Native;
-
 namespace AsepriteDotNet.Document;
 
 public class UserData
 {
-    required public UserDataFlags Flags { get; init; }
-
+    /// <summary>
+    ///     Gets a <see cref="bool"/> value that indicates whether this
+    ///     <see cref="UserData"/> has a <see cref="UserData.Text"/> value.
+    /// </summary>
     [MemberNotNullWhen(true, nameof(Text))]
-    public bool HasText => (Flags & UserDataFlags.HasText) != 0;
+    public bool HasText => Text is not null;
 
+    /// <summary>
+    ///     Gets a <see cref="bool"/> value that indicates whether this
+    ///     <see cref="UserData"/> has a <see cref="UserData.Color"/> value.
+    /// </summary>
     [MemberNotNullWhen(true, nameof(Color))]
-    public bool HasColor => (Flags & UserDataFlags.HasColor) != 0;
+    public bool HasColor => Color is not null;
 
-    required public string? Text { get; init; } = default;
-    required public Color? Color { get; init; } = default;
+    /// <summary>
+    ///     Gets or Sets a <see cref="string"/> that contains the text for this
+    ///     <see cref="UserData"/>.
+    /// </summary>
+    public string? Text { get; internal set; } = default;
 
-    [SetsRequiredMembers]
-    internal UserData(RawUserDataChunk chunk)
-    {
-        Flags = (UserDataFlags)chunk.Flags;
-        Text = chunk.Text;
+    /// <summary>
+    ///     Gets or Sets a <see cref="Color"/> value that defines the color of
+    ///     this <see cref="UserData"/>.
+    /// </summary>
+    public Color? Color { get; internal set; } = default;
 
-        if (chunk.Red is not null && chunk.Blue is not null && chunk.Green is not null && chunk.Alpha is not null)
-        {
-            int r = chunk.Red.Value;
-            int g = chunk.Green.Value;
-            int b = chunk.Blue.Value;
-            int a = chunk.Alpha.Value;
-            Color = System.Drawing.Color.FromArgb(a, r, g, b);
-        }
-    }
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="UserData"/> class.
+    /// </summary>
+    public UserData() { }
 }

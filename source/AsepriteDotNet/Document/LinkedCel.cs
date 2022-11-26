@@ -21,33 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Diagnostics.CodeAnalysis;
-
-using AsepriteDotNet.Document.Native;
-
 namespace AsepriteDotNet.Document;
 
 public class LinkedCel : Cel
 {
-    required public int FramePosition { get; init; }
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that indicates the frame
+    ///     position of the cel this is linked with.
+    /// </summary>
+    public int Frame { get; set; }
 
-    [SetsRequiredMembers]
-    internal LinkedCel(RawCelChunk chunk) : base(chunk)
-    {
-        if (chunk.FramePosition is null)
-        {
-            throw new InvalidOperationException();
-        }
-
-        FramePosition = (int)chunk.FramePosition;
-    }
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="LinkedCel"/> class.
+    /// </summary>
+    public LinkedCel() { }
 }
-
-// public class LinkedCel : Cel
-// {
-//     public int FramePosition { get; }
-
-
-//     public LinkedCel(int layerIndex, int x, int y, int opacity, int frame)
-//         : base(layerIndex, x, y, opacity) => FramePosition = frame;
-// }

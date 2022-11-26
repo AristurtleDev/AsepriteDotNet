@@ -21,60 +21,83 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Diagnostics.CodeAnalysis;
-
-using AsepriteDotNet.Document.Native;
-
 namespace AsepriteDotNet.Document;
 
-public class Layer : IUserData
+public abstract class Layer : IUserData
 {
-    required public LayerFlags Flags { get; init; }
-    required public int ChildLevel { get; init; }
-    required public BlendMode BlendMode { get; init; }
-    required public int Opacity { get; init; }
-    required public string Name { get; init; }
+    private int _opacity;
 
-    public bool IsVisible => (Flags & LayerFlags.Visible) != 0;
+    /// <summary>
+    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
+    ///     <see cref="Layer"/> is visible.
+    /// </summary>
+    public bool IsVisible { get; set; } = true;
 
-    [MemberNotNullWhen(true, nameof(UserData))]
-    public bool HasUserData => UserData is not null;
+    /// <summary>
+    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
+    ///     <see cref="Layer"/> is editable.
+    /// </summary>
+    public bool IsEditable { get; set; } = true;
 
-    public UserData? UserData { get; set; }
+    /// <summary>
+    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
+    ///     movement of this <see cref="Layer"/> is locked in the Aseprite UI.
+    /// </summary>
+    public bool IsMovementLocked { get; set; } = false;
 
-    [SetsRequiredMembers]
-    public Layer(RawLayerChunk chunk)
+    /// <summary>
+    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
+    ///     <see cref="Layer"/> is the background layer.
+    /// </summary>
+    public bool IsBackgroundLayer { get; set; } = false;
+
+    /// <summary>
+    ///     Gets or Sets a <see cref="bool"/> value that indicats whether this
+    ///     <see cref="Layer"/> perfers linked cels.
+    /// </summary>
+    public bool PrefersLinkedCels { get; set; } = false;
+
+    /// <summary>
+    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
+    ///     <see cref="Layer"/> is displed collapsed in the Asperite UI.
+    /// </summary>
+    public bool IsDisplayedCollapsed { get; set; } = false;
+
+    /// <summary>
+    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
+    ///     <see cref="Layer"/> is a reference layer.
+    /// </summary>
+    public bool IsReferenceLayer { get; set; } = false;
+    
+    /// <summary>
+    ///     Gets the child level of this <see cref="Layer"/>.
+    /// </summary>
+    public virtual int ChildLevel { get; internal set; } = 0;
+
+    /// <summary>
+    ///     Gets or Sets a <see cref="BlendMode"/> value that indicates the
+    ///     blend mode used by this layer.
+    /// </summary>
+    public BlendMode BlendMode { get; set; } = BlendMode.Normal;
+
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that defines the opacity
+    ///     level of this layer.  When set, the value will be clamped in the
+    ///     inclusive range of 0 to 255.
+    /// </summary>
+    public int Opacity
     {
-        Flags = (LayerFlags)chunk.Flags;
-        ChildLevel = chunk.ChildLevel;
-        BlendMode = (BlendMode)chunk.BlendMode;
-        Opacity = chunk.Opacity;
-        Name = chunk.Name;
+        get => _opacity;
+        set
+        {
+            _opacity = Math.Clamp(value, 0, 255);
+        }
     }
+
+    /// <summary>
+    ///     Gets or Sets the name of this layer.
+    /// </summary>
+    public string Name { get; set; } = "Layer";
+
+    public UserData UserData { get; set; } = new();
 }
-
-// public class Layer : Chunk, IUserData
-// {
-//     LayerFlags Flags { get; }
-//     public bool IsVisible => (Flags & LayerFlags.Visible) == Flags;
-//     public int ChildLevel { get; }
-//     public BlendMode BlendMode { get; }
-//     public int Opacity { get; }
-//     public string Name { get; }
-
-//     internal Layer(bool visible, int childLevel, BlendMode blendMode, int opacity, string name)
-//         : base(ChunkType.LayerChunk)
-//     {
-//         IsVisible = visible;
-//         ChildLevel = childLevel;
-//         BlendMode = blendMode;
-//         Opacity = opacity;
-//         Name = name;
-//     }
-
-//     internal Layer(RawLayerChunk raw)
-//     {
-//         Flags = (LayerFlags)raw.Flags;
-
-//     }
-// }

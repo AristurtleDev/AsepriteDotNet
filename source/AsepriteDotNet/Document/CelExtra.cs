@@ -21,18 +21,42 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using AsepriteDotNet.Document.Native;
-
 namespace AsepriteDotNet.Document;
 
-public abstract class Chunk
+public class CelExtra
 {
+    /// <summary>
+    ///     Gets or Sets a <see cref="bool"/> value that indicates whether 
+    ///     precise bounds are set.
+    /// </summary>
+    public bool PreciseBoundsSet { get; set; }
 
     /// <summary>
-    ///     Gets a <see cref="Document.ChunkType"/> value that defines the type
-    ///     of chunk this is.
+    ///     Gets or Sets a <see cref="float"/> value that defines the precise
+    ///     x-coordinate position of the cel.
     /// </summary>
-    public ChunkType ChunkType { get; }
+    public float PreciseX { get; set; }
 
-    internal Chunk(ChunkType type) => ChunkType = type;
+    /// <summary>
+    ///     Gets or Sets a <see cref="float"/> value that defines the precise
+    ///     y-coordinate position of the cel.
+    /// </summary>
+    public float PreciseY { get; set; }
+
+    /// <summary>
+    ///     Gets or Sets a <see cref="float"/> value that defines the width of
+    ///     the cel in the sprite (scaled in real-time).
+    /// </summary>
+    public float WidthInSprite { get; set; }
+
+    /// <summary>
+    ///     Gets or Sets a <see cref="float"/> value that defines the height of
+    ///     the cel in the sprite (scaled in real-time).
+    /// </summary>
+    public float HeightInSprite { get; set; }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="CelExtra"/> class.
+    /// </summary>
+    public CelExtra() { }
 }

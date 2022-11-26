@@ -21,56 +21,62 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
-public abstract class Cel : IUserData
+public class Tileset
 {
-    private int _opacity = 255;
+    private Size _tileSize = new Size(1, 1);
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the index of
-    ///     the layer this <see cref="Cel"/> is on.
+    ///     Gets or Sets an <see cref="int"/> value that indicates the ID of
+    ///     this <see cref="Tileset"/>.
     /// </summary>
-    public int LayerIndex { get; set; }
+    public int ID { get; set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Point"/> value that indicates the 
-    ///     top-left coordinate position of this <see cref="Cel"/>.
+    ///     Gets the total number of tiles in this <see cref="Tileset"/>.
+    ///     (Number of Pixels / (Tile Width * Tile Height)).
     /// </summary>
-    public Point Position { get; set; }
+    public int TileCount => Pixels.Length / (TileSize.Width * TileSize.Height);
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that defines the opacity
-    ///     level of this <see cref="Cel" />.  When set, the value will be
-    ///     clamped in the inclusive range of 0 to 255.
+    ///     Gets or Sets a <see cref="Size"/> value that defines the size of
+    ///     each tile in this <see cref="Tileset"/>.
     /// </summary>
-    public int Opacity
+    public Size TileSize
     {
-        get => _opacity;
+        get => _tileSize;
         set
         {
-            _opacity = Math.Clamp(value, 0, 255);
+            if(value.Width <= 0 || value.Height <= 0)
+            {
+                throw new ArgumentException($"Invalid tile size {value.Width}x{value.Height}.  Width and height must be greater than zero.");
+            }
+
+            _tileSize = value;
         }
     }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates if this
-    ///     <see cref="Cel"/> instance has extra data.
+    ///     Gets a <see cref="string"/> that contains the name of this
+    ///     <see cref="Tileset"/>.
     /// </summary>
-    [MemberNotNullWhen(true, nameof(ExtraData))]
-    public bool HasExtraData => ExtraData is not null;
+    public string Name { get; set; } = "Tileset";
 
     /// <summary>
-    ///     Gets or Sets an instance of the  <see cref="CelExtra"/> class that
-    ///     defines extra data values for this <see cref="Cel"/>.
+    ///     Gets or Sets an <see cref="Array"/> of <see cref="byte"/> elements
+    ///     that represents the raw pixel data for this <see cref="Tileset"/>,
     /// </summary>
-    public CelExtra? ExtraData { get; set; } = default;
+    /// <remarks>
+    ///     Order of pixels is row by row, from top to bottom, for each scanline
+    ///     read pixels from left to right.
+    /// </remarks>
+    public byte[] Pixels { get; set; } = Array.Empty<byte>();
 
     /// <summary>
-    ///     Gets or Sets the <see cref="UserData"/> for this <see cref="Cel"/>.
+    ///     Initializes a new instance of the <see cref="Tileset"/> class.
     /// </summary>
-    public UserData UserData { get; set; } = new();
+    public Tileset() { }
 }

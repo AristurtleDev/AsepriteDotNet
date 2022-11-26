@@ -21,103 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Diagnostics.CodeAnalysis;
-
-using AsepriteDotNet.Document.Native;
+using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
 public class Header
 {
-    required public int Frames { get; init; }
-    required public int Width { get; init; }
-    required public int Height { get; init; }
-    required public ColorDepth ColorDepth { get; init; }
-    required public HeaderFlags Flags { get; init; }
-    required public int TransparentIndex { get; init; }
-    required public int NumberOfColors { get; init; }
+    private Size _size = new(1, 1);
+    private int _transparentIndex = 0;
 
-    public bool IsLayerOpacityVailid => (Flags & HeaderFlags.LayerOpacityValid) != 0;
-
-    [SetsRequiredMembers]
-    public Header(RawHeader header)
+    public int Frames { get; set; }
+    public Size Size
     {
-        Frames = header.Frames;
-        Width = header.Width;
-        Height = header.Height;
-        ColorDepth = (ColorDepth)header.ColorDepth;
-        Flags = (HeaderFlags)header.Flags;
-        TransparentIndex = header.TransparentIndex;
-        NumberOfColors = header.NumberOfColors;
+        get => _size;
+        set
+        {
+            if(value.Width < 1 || value.Height < 1)
+            {
+                throw new InvalidOperationException($"{nameof(Size)} width and height must be greater than zero");
+            }
+
+            _size = value;
+        }
     }
+
+    public ColorDepth ColorDepth { get; set; }
+    public int TransparentIndex
+    {
+        get => ColorDepth == ColorDepth.Indexed ? _transparentIndex : 0;
+        set => _transparentIndex = value;
+    }
+
+    public int NumberOfColors { get; set; }
+
+
+    public Header() { }
 }
-
-// public sealed class Header
-// {
-
-//     /// <summary>
-//     ///     Gets the total number of frames in the Aseprite file.
-//     /// </summary>
-//     public int Frames { get; }
-
-//     /// <summary>
-//     ///     Gets the width, in pixels, of the image (canvas).
-//     /// </summary>
-//     public int Width { get; }
-
-//     /// <summary>
-//     ///     Gets the height, in pixels, of the image (canvas).
-//     /// </summary>
-//     public int Height { get; }
-
-//     /// <summary>
-//     ///     Gets the color depth mode used by the Aseprite file that defines
-//     ///     the number of bits-per-pixel used.
-//     /// </summary>
-//     public ColorDepth ColorDepth { get; }
-
-//     /// <summary>
-//     ///     Gets a value that indicates if the opacity value for layers if
-//     ///     valid.
-//     /// </summary>
-//     public bool IsLayerOpacityVailid { get; }
-
-//     /// <summary>
-//     ///     Gets the index within the palette of the color that represents a
-//     ///     transparent pixel. This value is only valid when the the color
-//     ///     depth mode used is <see cref="ColorDepth.Indexed"/>.
-//     /// </summary>
-//     public int TransparentIndex { get; }
-
-//     /// <summary>
-//     ///     Gets the number of colors defined in the image.
-//     /// </summary>
-//     public int NumberOfColors { get; }
-
-//     internal Header(RawHeader native)
-//     {
-//         if (native.MagicNumber != 0xA5E0)
-//         {
-//             throw new ArgumentException(nameof(native), $"Invalid magic number '0x{native.MagicNumber:X4}'");
-//         }
-
-//         if (native.Width == 0 || native.Height == 0)
-//         {
-//             throw new ArgumentException(nameof(native), $"Invalid image size '{native.Width}x{native.Height}");
-//         }
-
-//         if (native.ColorDepth != 8 || native.ColorDepth != 16 || native.ColorDepth != 32)
-//         {
-//             throw new ArgumentException(nameof(native), $"Invalid color depth '{native.ColorDepth}'");
-//         }
-
-//         Frames = native.Frames;
-//         Width = native.Width;
-//         Height = native.Height;
-//         ColorDepth = (ColorDepth)native.ColorDepth;
-//         IsLayerOpacityVailid = (native.Flags & 1) != 0;
-//         TransparentIndex = native.TransparentIndex;
-//         NumberOfColors = native.NumberOfColors;
-//     }
-
-// }

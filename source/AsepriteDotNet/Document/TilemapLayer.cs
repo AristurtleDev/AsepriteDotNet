@@ -21,26 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-namespace AsepriteDotNet.Document.Native;
+namespace AsepriteDotNet.Document;
 
-public struct RawCelChunk
+public class TilemapLayer : Layer
 {
-    public ushort LayerIndex;
-    public short X;
-    public short Y;
-    public byte Opacity;
-    public ushort Type;
-    public byte[] Ignore;
-    public ushort? Width;
-    public ushort? Height;
-    public byte[]? Pixels;
-    public ushort? FramePosition;
-    public ushort? BitsPerTile;
-    public uint? TileIdBitmask;
-    public uint? XFlipBitmask;
-    public uint? YFlipBitmask;
-    public uint? RotationBitmask;
-    public byte[]? Ignore2;
-    public byte[]? Tiles;
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that indicates the index of
+    ///     the tileset used by this <see cref="TilemapLayer"/>.
+    /// </summary>
+    public int TilesetIndex { get; set; }
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TilemapLayer"/> class.
+    /// </summary>
+    public TilemapLayer() { }
 }

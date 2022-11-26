@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
-Copyright 2022 Aristurtle
+Copyright 2022 Christopher Whitley
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -22,6 +22,5 @@ namespace AsepriteDotNet.Document;
 
 public interface IUserData
 {
-    bool HasUserData { get; }
-    UserData? UserData { get; set; }
+    UserData UserData { get; set; }
 }

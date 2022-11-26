@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
-Copyright 2022 Aristurtle
+Copyright 2022 Christopher Whitley
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -18,33 +18,49 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-
-using AsepriteDotNet.Document.Native;
 
 namespace AsepriteDotNet.Document;
 
 public class Tag : IUserData
 {
-    required public int From { get; init; }
-    required public int To { get; init; }
-    required public LoopDirection LoopDirection { get; init; }
-    required public Color Color { get; init; }
-    required public string Name { get; init; }
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that indicates the inclusive
+    ///     index of the frame the animation this <see cref="Tag"/> is for
+    ///     starts on.
+    /// </summary>
+    public int From { get; set; }
 
-    [MemberNotNullWhen(true, nameof(UserData))]
-    public bool HasUserData => UserData is not null;
+    /// <summary>
+    ///     Gets or Sets an <see cref="int"/> value that indicates the inclusive
+    ///     index of the frame the animation this <see cref="Tag"/> is for goes
+    ///     to.
+    /// </summary>
+    public int To { get; set; }
 
-    public UserData? UserData { get; set; }
+    /// <summary>
+    ///     Gets or Sets a <see cref="LoopDirection"/> value that defines the 
+    ///     animation loop direction for the animation this <see cref="Tag"/>
+    ///     is for.
+    /// </summary>
+    public LoopDirection LoopDirection { get; set; } = LoopDirection.Forward;
 
-    [SetsRequiredMembers]
-    internal Tag(RawTagsChunkTag chunk)
-    {
-        From = chunk.From;
-        To = chunk.To;
-        LoopDirection = (LoopDirection)chunk.LoopDirection;
-        Color = Color.FromArgb(255, chunk.Color[0], chunk.Color[1], chunk.Color[2]);
-        Name = chunk.Name;
-    }
+    /// <summary>
+    ///     Gets or Sets a <see cref="Color"/> value that defines the color of
+    ///     this <see cref="Tag"/>.
+    /// </summary>
+    public Color Color { get; set; }
+
+    /// <summary>
+    ///     Gets or Sets a <see cref="string"/> that contains the name of this
+    ///     <see cref="Tag"/>.
+    /// </summary>
+    public string Name { get; set; } = "Tag";
+
+    public UserData UserData { get; set; } = new();
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="Tag"/> class.
+    /// </summary>
+    public Tag() { }
 }

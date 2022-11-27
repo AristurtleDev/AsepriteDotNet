@@ -29,7 +29,7 @@ namespace AsepriteDotNet.IO;
 ///     A low-level binary reader designed to read data types from an
 ///     Aseprite file.
 /// </summary>
-public sealed class AsepriteBinaryReader : IDisposable
+internal sealed class AsepriteBinaryReader : IDisposable
 {
     private Stream _stream;
     private bool _isDisposed = false;

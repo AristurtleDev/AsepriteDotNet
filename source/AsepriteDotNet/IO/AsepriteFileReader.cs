@@ -96,10 +96,46 @@ public static class AsepriteFileReader
     ///     is being read. The exception message contains the details on what
     ///     value was invalid.
     /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the specified <paramref name="path"/> is a zero-length
+    ///     string, contains only white space, or contains one ore more
+    ///     invalid characters. Use 
+    ///     <see cref="System.IO.Path.GetInvalidPathChars"/> to query for 
+    ///     invalid characters.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown if <paramref name="path"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="PathTooLongException">
+    ///     Thrown if the specified <paramref name="path"/>, file name, or
+    ///     both exceed the system-defined maximum length.
+    /// </exception>
+    /// <exception cref="DirectoryNotFoundException">
+    ///     Thrown if the specified <paramref name="path"/> is invalid (for
+    ///     example, it is on an unmapped drive).
+    /// </exception>
+    /// <exception cref="UnauthorizedAccessException">
+    ///     Thrown if the specified <paramref name="path"/> is a directory or
+    ///     the caller does not have the required permissions.
+    /// </exception>
+    /// <exception cref="FileNotFoundException">
+    ///     Thrown if the file specified in the <paramref name="path"/> is not
+    ///     found.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    ///     Thrown if the <paramref name="path"/> is in an inavlid format.
+    /// </exception>
+    /// <exception cref="IOException">
+    ///     Thrown if an I/O error occurs while attempting to open the file.
+    /// </exception>
     public static AsepriteDocument ReadFile(string path)
     {
         using AsepriteBinaryReader reader = new(File.OpenRead(path));
+        return ReadFile(reader);
+    }
 
+    internal static AsepriteDocument ReadFile(AsepriteBinaryReader reader)
+    {
         AsepriteDocument doc = new();
 
         //  Reference to the last group layer that is read so that subsequent
@@ -494,7 +530,7 @@ public static class AsepriteFileReader
                     {
                         lastUserData.UserData.Text = text;
                         lastUserData.UserData.Color = color;
-                        
+
                         if (lastUserData is Tag)
                         {
 

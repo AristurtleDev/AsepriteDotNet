@@ -23,36 +23,36 @@ using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
-public class UserData
+/// <summary>
+///     Represents custom user data set for a component in an Aseprite image.
+/// </summary>
+public sealed class UserData
 {
     /// <summary>
-    ///     Gets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="UserData"/> has a <see cref="UserData.Text"/> value.
+    ///     Gets whether <see cref="UserData.Text"/> has been set for this
+    ///     <see cref="UserData"/>.
     /// </summary>
     [MemberNotNullWhen(true, nameof(Text))]
     public bool HasText => Text is not null;
 
     /// <summary>
-    ///     Gets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="UserData"/> has a <see cref="UserData.Color"/> value.
+    ///     Gets whether <see cref="UserData.Color"/> has been set for this
+    ///     <see cref="UserData"/>.
     /// </summary>
     [MemberNotNullWhen(true, nameof(Color))]
     public bool HasColor => Color is not null;
 
     /// <summary>
-    ///     Gets or Sets a <see cref="string"/> that contains the text for this
-    ///     <see cref="UserData"/>.
+    ///     Gets the text set for this <see cref="UserData"/>, or 
+    ///     <see langword="null"/> if none was set.
     /// </summary>
     public string? Text { get; internal set; } = default;
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Color"/> value that defines the color of
-    ///     this <see cref="UserData"/>.
+    ///     Gets the <see cref="Color"/> set for this <see cref="UserData"/>, or
+    ///     <see langword="null"/> if none was set.
     /// </summary>
     public Color? Color { get; internal set; } = default;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="UserData"/> class.
-    /// </summary>
-    public UserData() { }
+    internal UserData() { }
 }

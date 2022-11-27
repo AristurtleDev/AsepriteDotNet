@@ -25,42 +25,23 @@ using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
-public class ImageCel : Cel
+public sealed class ImageCel : Cel
 {
-    private Size _size = new Size(1, 1);
+    /// <summary>
+    ///     Gets the width and height components of this <see cref="ImageCel"/>
+    ///     as a <see cref="Size"/> value.
+    /// </summary> 
+    public Size Size { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Size"/> value that defines the width and
-    ///     height of this <see cref="ImageCel"/>.
-    /// </summary>
-    /// <exception cref="ArgumentException">
-    ///     Thrown if the <see cref="Size.Width"/> or <see cref="Size.Height"/>
-    ///     value is not greater than 0 when setting value.
-    /// </exception>
-    public Size Size 
-    {
-        get => _size;
-        set
-        {
-            if(value.Width < 1 || value.Height < 1)
-            {
-                throw new ArgumentException(nameof(Size), $"{nameof(Size)} must have a width and height greater than 0 each");
-            }
-        }
-    }
-
-    /// <summary>
-    ///     Gets or Sets an <see cref="Array"/> of <see cref="byte"/> elements
-    ///     that represents the raw pixel data for this <see cref="ImageCel"/>.
+    ///     Gets an <see cref="Array"/> of <see cref="byte"/> elements that
+    ///     represents the raw pixel data for this <see cref="ImageCel"/>.
     /// </summary>
     /// <remarks>
     ///     Order of pixels is row by row, from top to bottom, for each scanline
     ///     read pixels from left to right.
     /// </remarks>
-    public byte[] Pixels { get; set; } = Array.Empty<byte>();
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ImageCel"/> class.
-    /// </summary>
-    public ImageCel() { }
+    public byte[] Pixels { get; internal set; } = Array.Empty<byte>();
+    
+    internal ImageCel() { }
 }

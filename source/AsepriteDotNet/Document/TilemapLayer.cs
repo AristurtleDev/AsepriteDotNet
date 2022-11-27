@@ -23,16 +23,16 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a tilemap layer in an Aseprite iamge.
+/// </summary>
 public class TilemapLayer : Layer
 {
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the index of
-    ///     the tileset used by this <see cref="TilemapLayer"/>.
+    ///     Gets the index of the <see cref="Tileset"/> used by this
+    ///     <see cref="TilemapLayer"/>.
     /// </summary>
-    public int TilesetIndex { get; set; }
+    public int TilesetIndex { get; internal set; }
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="TilemapLayer"/> class.
-    /// </summary>
-    public TilemapLayer() { }
+    internal TilemapLayer() { }
 }

@@ -23,11 +23,7 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
-public class ImageLayer : Layer
+public sealed class ImageLayer : Layer
 {
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="ImageLayer"/> class.
-    /// </summary>
-    public ImageLayer() { }
-
+    internal ImageLayer() { }
 }

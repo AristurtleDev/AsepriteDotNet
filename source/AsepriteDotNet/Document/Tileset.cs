@@ -25,58 +25,37 @@ using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a tileset in an Aseprite image.
+/// </summary>
 public class Tileset
 {
-    private Size _tileSize = new Size(1, 1);
-
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the ID of
-    ///     this <see cref="Tileset"/>.
+    ///     Gets the ID of this <see cref="Tileset"/>.
     /// </summary>
-    public int ID { get; set; }
+    public int ID { get; internal set; }
 
     /// <summary>
-    ///     Gets the total number of tiles in this <see cref="Tileset"/>.
-    ///     (Number of Pixels / (Tile Width * Tile Height)).
+    ///     Gets the total number of tiles in this ,<see cref="Tileset"/>.
     /// </summary>
-    public int TileCount => Pixels.Length / (TileSize.Width * TileSize.Height);
+    public int TileCount { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Size"/> value that defines the size of
-    ///     each tile in this <see cref="Tileset"/>.
-    /// </summary>
-    public Size TileSize
-    {
-        get => _tileSize;
-        set
-        {
-            if(value.Width <= 0 || value.Height <= 0)
-            {
-                throw new ArgumentException($"Invalid tile size {value.Width}x{value.Height}.  Width and height must be greater than zero.");
-            }
-
-            _tileSize = value;
-        }
-    }
-
-    /// <summary>
-    ///     Gets a <see cref="string"/> that contains the name of this
+    ///     Gets the width and height, in pixels of each tile in this
     ///     <see cref="Tileset"/>.
     /// </summary>
-    public string Name { get; set; } = "Tileset";
+    public Size TileSize { get; internal set; }
+
+    /// <summary>
+    ///     Gets the name of this <see cref="Tileset"/>.
+    /// </summary>
+    public string Name { get; internal set; } = string.Empty;
 
     /// <summary>
     ///     Gets or Sets an <see cref="Array"/> of <see cref="byte"/> elements
     ///     that represents the raw pixel data for this <see cref="Tileset"/>,
     /// </summary>
-    /// <remarks>
-    ///     Order of pixels is row by row, from top to bottom, for each scanline
-    ///     read pixels from left to right.
-    /// </remarks>
     public byte[] Pixels { get; set; } = Array.Empty<byte>();
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="Tileset"/> class.
-    /// </summary>
-    public Tileset() { }
+    internal Tileset() { }
 }

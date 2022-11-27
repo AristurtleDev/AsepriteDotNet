@@ -25,46 +25,37 @@ using System.Collections;
 
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a slice section in an Aseprite image.
+/// </summary>
 public class Slice : IUserData, IEnumerable<SliceKey>
 {
     private List<SliceKey> _keys = new();
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="Slice"/> and its keys are nine patch.
+    ///     Gets whether the <see cref="SliceKey"/> elements of this
+    ///     <see cref="Slice"/> are 9-patch.
     /// </summary>
-    public bool IsNinePatch { get; set; }
+    public bool IsNinePatch { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="Slice"/> and it's keys have pivot information.
+    ///     Gets whether the <see cref="SliceKey"/> elements of this
+    ///     <see cref="Slice"/> have pivot information.
     /// </summary>
-    public bool HasPivot { get; set; }
+    public bool HasPivot { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="string"/> containing the name of this
-    ///     <see cref="Slice"/>.
+    ///     Gets the name of this <see cref="Slice"/>.
     /// </summary>
-    public string Name { get; set; } = "Slice";
-
-    public UserData UserData { get; set; } = new();
+    public string Name { get; internal set; } = string.Empty;
 
     /// <summary>
-    ///     Creates a new instance of the <see cref="Slice"/> class.
+    ///     Gets the <see cref="UserData"/> for this <see cref="Slice"/>.
     /// </summary>
-    public Slice() { }
+    public UserData UserData { get; internal set; } = new();
 
-    /// <summary>
-    ///     Adds the given <paramref name="key"/> to this <see cref="Slice"/>.
-    /// </summary>
-    /// <param name="key">
-    ///     The <see cref="SliceKey"/> to add.
-    /// </param>
-    /// <returns>
-    ///     Returns <see langword="true"/> if the given <paramref name="key"/>
-    ///     was added successfully.  If the <paramref name="key"/>  has
-    ///     already been added, then this will return <see langword="false"/>.
-    /// </returns>
+    internal Slice() { }
+
     internal void AddKey(SliceKey key) => _keys.Add(key);
 
     /// <summary>

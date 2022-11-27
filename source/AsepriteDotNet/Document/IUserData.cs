@@ -22,5 +22,8 @@ namespace AsepriteDotNet.Document;
 
 public interface IUserData
 {
-    UserData UserData { get; set; }
+    /// <summary>
+    ///     When implemented, gets the <see cref="UserData"/> for an object.
+    /// </summary>
+    UserData UserData { get; }
 }

@@ -24,7 +24,7 @@ SOFTWARE.
 namespace AsepriteDotNet.Document;
 
 /// <summary>
-///     Defines the color depth mode used by an asperite image.
+///     Defines the color depth mode used by an Aseprite image.
 /// </summary>
 public enum ColorDepth : ushort
 {

@@ -25,11 +25,11 @@ using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a key of a slice in an Aseprite image.
+/// </summary>
 public class SliceKey
 {
-    private Rectangle _center;
-    private Point _pivot;
-
     /// <summary>
     ///     Gets the <see cref="Slice"/> this <see cref="SliceKey"/> belongs
     ///     too.
@@ -37,61 +37,34 @@ public class SliceKey
     public Slice Slice { get; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the frame
-    ///     number this <see cref="SliceKey"/> is valid for starting from to
-    ///     the end fo the animation.
+    ///     Gets the index of the <see cref="Frame"/> this 
+    ///     <see cref="SliceKey"/> is valid for stating from to the end of the
+    ///     animation.
     /// </summary>
-    public int Frame { get; set; }
+    public int Frame { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Rectangle"/> value that defines the bounds
-    ///     of this <see cref="SliceKey"/>
+    ///     Gets the bounds of this <see cref="SliceKey"/>.
     /// </summary>
-    public Rectangle Bounds { get; set; }
+    public Rectangle Bounds { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Rectangle"/> value that defines the bounds
-    ///     of the nine patch center rectangle of this <see cref="SliceKey"/>,
-    ///     or <see langword="null"/> if it is not a nine patch slice.
+    ///     Gets the bounds of the 9-patch center rectangle if it is part of
+    ///     a 9-patch <see cref="Slice"/>, <see langword="null"/> if not.
     /// </summary>
-    public Rectangle CenterBounds
-    {
-        get => Slice.IsNinePatch ? _center : Bounds;
-
-        set
-        {
-            if(Slice.IsNinePatch)
-            {
-                _center = value;
-            }
-        }
-    }
+    public Rectangle CenterBounds { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Pivot"/> value that defines the pivot
-    ///     point of this <see cref="SliceKey"/> relative to the origin, or
-    ///     <see langword="null"/> if it has no pivot information.
+    ///     Gets the xy-coordinate pivot point relative the origin of if the
+    ///     <see cref="Slice"/> contains pivot information,
+    ///     <see langword="null"/> if not.
     /// </summary>
-    /// <remarks>
-    ///     The origin in this context is always the X and Y components of the
-    ///     <see cref="Bounds"/> value.
-    /// </remarks>
-    public Point Pivot
-    {
-        get => Slice.HasPivot ? _pivot : new(0, 0);
-        set
-        {
-            if(Slice.HasPivot)
-            {
-                _pivot = value;
-            }
-        }
-    }
+    public Point Pivot { get; internal set; }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="SliceKey"/> class.
     /// </summary>
-    public SliceKey(Slice slice)
+    internal SliceKey(Slice slice)
     {
         Slice = slice;
         slice.AddKey(this);

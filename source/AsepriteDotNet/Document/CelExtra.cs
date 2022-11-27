@@ -23,40 +23,42 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
-public class CelExtra
+/// <summary>
+///     Represents extra precision data for a cel in an Aserpite image.
+/// </summary>
+public sealed class CelExtra
 {
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether 
-    ///     precise bounds are set.
+    ///     Gets whether precise bounds are set for the <see cref="Cel"/> this
+    ///     <see cref="CelExtra"/> is for.
     /// </summary>
-    public bool PreciseBoundsSet { get; set; }
+    public bool PreciseBoundsSet { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="float"/> value that defines the precise
-    ///     x-coordinate position of the cel.
+    ///     Gets the precise x-coordinate position, relative to the bounds of
+    ///     the sprite, of the <see cref="Cel"/> this <see cref="CelExtra"/> is
+    ///     for.
     /// </summary>
-    public float PreciseX { get; set; }
+    public float PreciseX { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="float"/> value that defines the precise
-    ///     y-coordinate position of the cel.
+    ///     Gets the precise y-coordinate position, relative to the bounds of
+    ///     the sprite, of the <see cref="Cel"/> this <see cref="CelExtra"/> is
+    ///     for.
     /// </summary>
-    public float PreciseY { get; set; }
+    public float PreciseY { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="float"/> value that defines the width of
-    ///     the cel in the sprite (scaled in real-time).
+    ///     Gets the width, scaled in real-time, of the <see cref="Cel"/> this
+    ///     <see cref="CelExtra"/> is for.
     /// </summary>
-    public float WidthInSprite { get; set; }
+    public float WidthInSprite { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="float"/> value that defines the height of
-    ///     the cel in the sprite (scaled in real-time).
+    ///     Gets the height, scaled in real-time, of the <see cref="Cel"/> this
+    ///     <see cref="CelExtra"/> is for.
     /// </summary>
-    public float HeightInSprite { get; set; }
+    public float HeightInSprite { get; internal set; }
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="CelExtra"/> class.
-    /// </summary>
-    public CelExtra() { }
+    internal CelExtra() { }
 }

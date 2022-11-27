@@ -26,51 +26,43 @@ using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a single frame cel of an Aseprite image.
+/// </summary>
 public abstract class Cel : IUserData
 {
-    private int _opacity = 255;
-
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the index of
-    ///     the layer this <see cref="Cel"/> is on.
+    ///     Gets the index of the <see cref="Layer"/> this <see cref="Cel"/>
+    ///     is on.
     /// </summary>
-    public int LayerIndex { get; set; }
+    public int LayerIndex { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Point"/> value that indicates the 
-    ///     top-left coordinate position of this <see cref="Cel"/>.
+    ///     Gets the top-left coordinate position of this <see cref="Cel"/>
+    ///     relative to the bounds of the sprite.
     /// </summary>
-    public Point Position { get; set; }
+    public Point Position { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that defines the opacity
-    ///     level of this <see cref="Cel" />.  When set, the value will be
-    ///     clamped in the inclusive range of 0 to 255.
+    ///     Gets the opacity level of this <see cref="Cel"/>,
     /// </summary>
-    public int Opacity
-    {
-        get => _opacity;
-        set
-        {
-            _opacity = Math.Clamp(value, 0, 255);
-        }
-    }
+    public int Opacity { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates if this
-    ///     <see cref="Cel"/> instance has extra data.
+    ///     Gets whether this <see cref="Cel"/> has extra data.
     /// </summary>
     [MemberNotNullWhen(true, nameof(ExtraData))]
     public bool HasExtraData => ExtraData is not null;
 
     /// <summary>
-    ///     Gets or Sets an instance of the  <see cref="CelExtra"/> class that
-    ///     defines extra data values for this <see cref="Cel"/>.
+    ///     Gets the <see cref="CelExtra"/> instance that contains the extra
+    ///     data for this <see cref="Cel"/>; or <see langword="null"/> if there
+    ///     is no extra data provided.
     /// </summary>
-    public CelExtra? ExtraData { get; set; } = default;
+    public CelExtra? ExtraData { get; internal set; } = default;
 
     /// <summary>
-    ///     Gets or Sets the <see cref="UserData"/> for this <see cref="Cel"/>.
+    ///     Gets the <see cref="UserData"/> set for this <see cref="Cel"/>.
     /// </summary>
     public UserData UserData { get; set; } = new();
 }

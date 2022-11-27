@@ -23,96 +23,36 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace AsepriteDotNet.Document;
 
-public class GroupLayer : Layer, IEnumerable<Layer>
+/// <summary>
+///     Represents a group layer that contains child layers in an Aseprite
+///     image.
+/// </summary>
+public sealed class GroupLayer : Layer, IEnumerable<Layer>
 {
-    private readonly List<Layer> _children = new();
-    private readonly HashSet<Layer> _childLookup = new();
-    /// <summary>
-    ///     Gets the child level of this <see cref="Layer"/>.
-    /// </summary>
-    /// <remarks>
-    ///     A <see cref="GroupLayer"/> will always have a child level of
-    ///     zero since it cannot be added as a child of another group.
-    /// </remarks>
-    public override int ChildLevel
-    {
-        get => base.ChildLevel;
-        internal set => throw new InvalidOperationException();
-    }
+    private readonly List<Layer> _children;
 
     /// <summary>
-    ///     Gets a <see cref="ReadOnlyCollection{T}"/> of this child
-    ///     <see cref="Layer"/> elements of this <see cref="GroupLayer"/>.
+    ///     Gets a read-only collection of all <see cref="Layer"/> elements that
+    ///     are children of this <see cref="GroupLayer"/>.
     /// </summary>
     public ReadOnlyCollection<Layer> Children { get; }
 
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="GroupLayer"/> class.
-    /// </summary>
-    public GroupLayer()
+    internal GroupLayer()
     {
+        _children = new();
         Children = _children.AsReadOnly();
     }
 
-    /// <summary>
-    ///     Adds the given <paramref name="layer"/> as a child of this
-    ///     <see cref="GroupLayer"/>.
-    /// </summary>
-    /// <remarks>
-    ///     A <see cref="GroupLayer"/> instnace cannot be added as a child
-    ///     of another <see cref="GroupLayer"/>.
-    /// </remarks>
-    /// <param name="layer">
-    ///     The <see cref="Layer"/> to add.
-    /// </param>
-    /// <returns>
-    ///     Returns <see langword="true"/> if the given <paramref name="layer"/>
-    ///     was added successfully.  If the <paramref name="layer"/> is a
-    ///     <see cref="GroupLayer"/>, or if the <paramref name="layer"/> has
-    ///     already been added, then this will return <see langword="false"/>.
-    /// </returns>
-    public bool AddChild(Layer layer)
+    internal void AddChild(Layer layer)
     {
-        if (layer is not GroupLayer && !_childLookup.Contains(layer))
-        {
-            _children.Add(layer);
-            _childLookup.Add(layer);
-            layer.ChildLevel = _children.Count - 1;
-            return true;
-
-        }
-
-        return false;
+        Debug.Assert(layer is not GroupLayer, "Cannot add group layer as child");
+        _children.Add(layer);
     }
-
-    /// <summary>
-    ///     Removes the specified <paramref name="layer"/> from this
-    ///     <see cref="GroupLayer"/>.
-    /// </summary>
-    /// <param name="layer">
-    ///     The <see cref="Layer"/> to remove.
-    /// </param>
-    /// <returns>
-    ///     <see langword="true"/> if the <paramref name="layer"/> was removed
-    ///     successfully; otherwise, <see langword="false"/>.
-    /// </returns>
-    public bool RemoveChild(Layer layer)
-    {
-        if (layer is not GroupLayer && _childLookup.Contains(layer))
-        {
-            _children.Remove(layer);
-            _childLookup.Remove(layer);
-            layer.ChildLevel = 0;
-            return true;
-        }
-
-        return false;
-    }
-
+    
     /// <summary>
     ///     Returns an enumerator that itereates through the child
     ///     <see cref="Layer"/> elements in this <see cref="GroupLayer"/>.

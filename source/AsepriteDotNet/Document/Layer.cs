@@ -23,81 +23,49 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a layer in an Aseprite image.
+/// </summary>
 public abstract class Layer : IUserData
 {
-    private int _opacity;
+    /// <summary>
+    ///     Gets whether this <see cref="Layer"/> is visible.
+    /// </summary>
+    public bool IsVisible { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="Layer"/> is visible.
+    ///     Gets whether this <see cref="Layer"/> is a background layer.
     /// </summary>
-    public bool IsVisible { get; set; } = true;
+    public bool IsBackgroundLayer { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="Layer"/> is editable.
+    ///     Gets whether this <see cref="Layer"/> is a reference layer.
     /// </summary>
-    public bool IsEditable { get; set; } = true;
+    public bool IsReferenceLayer { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
-    ///     movement of this <see cref="Layer"/> is locked in the Aseprite UI.
+    ///     Gets the child level of this <see cref="Layer"/> relative to the
+    ///     previous <see cref="Layer"/>.
     /// </summary>
-    public bool IsMovementLocked { get; set; } = false;
+    public virtual int ChildLevel { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="Layer"/> is the background layer.
+    ///     Gets the <see cref="BlendMode"/> used by this <see cref="Layer"/>.
     /// </summary>
-    public bool IsBackgroundLayer { get; set; } = false;
+    public BlendMode BlendMode { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicats whether this
-    ///     <see cref="Layer"/> perfers linked cels.
+    ///     Gets the opacity level of this <see cref="Layer"/>.
     /// </summary>
-    public bool PrefersLinkedCels { get; set; } = false;
+    public int Opacity { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="Layer"/> is displed collapsed in the Asperite UI.
+    ///     Gets the name of this <see cref="Layer"/>.
     /// </summary>
-    public bool IsDisplayedCollapsed { get; set; } = false;
+    public string Name { get; internal set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or Sets a <see cref="bool"/> value that indicates whether this
-    ///     <see cref="Layer"/> is a reference layer.
+    ///     Gets the <see cref="UserData"/> of this <see cref="Layer"/>.
     /// </summary>
-    public bool IsReferenceLayer { get; set; } = false;
-    
-    /// <summary>
-    ///     Gets the child level of this <see cref="Layer"/>.
-    /// </summary>
-    public virtual int ChildLevel { get; internal set; } = 0;
-
-    /// <summary>
-    ///     Gets or Sets a <see cref="BlendMode"/> value that indicates the
-    ///     blend mode used by this layer.
-    /// </summary>
-    public BlendMode BlendMode { get; set; } = BlendMode.Normal;
-
-    /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that defines the opacity
-    ///     level of this layer.  When set, the value will be clamped in the
-    ///     inclusive range of 0 to 255.
-    /// </summary>
-    public int Opacity
-    {
-        get => _opacity;
-        set
-        {
-            _opacity = Math.Clamp(value, 0, 255);
-        }
-    }
-
-    /// <summary>
-    ///     Gets or Sets the name of this layer.
-    /// </summary>
-    public string Name { get; set; } = "Layer";
-
-    public UserData UserData { get; set; } = new();
+    public UserData UserData { get; internal set; } = new();
 }

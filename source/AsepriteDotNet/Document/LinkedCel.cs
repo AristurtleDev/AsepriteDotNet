@@ -23,16 +23,17 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
-public class LinkedCel : Cel
+/// <summary>
+///     Represents a cel in an Aseprite image that is linked with another cel
+///     in a different frame.
+/// </summary>
+public sealed class LinkedCel : Cel
 {
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the frame
-    ///     position of the cel this is linked with.
+    ///     Gets the index of the <see cref="Frame"/> that contains the 
+    ///     <see cref="Cel"/> this <see cref="LinkedCel"/> is linked with.
     /// </summary>
-    public int Frame { get; set; }
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="LinkedCel"/> class.
-    /// </summary>
-    public LinkedCel() { }
+    public int Frame { get; internal set; }
+    
+    internal LinkedCel() { }
 }

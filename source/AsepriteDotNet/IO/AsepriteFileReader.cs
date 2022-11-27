@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
+using System.Diagnostics;
 using System.Drawing;
 
 using AsepriteDotNet.Document;
@@ -28,10 +29,14 @@ using AsepriteDotNet.IO.Compression;
 
 namespace AsepriteDotNet.IO;
 
+/// <summary>
+///     Utility class for reading an Aseprite file from disk.
+/// </summary>
 public static class AsepriteFileReader
 {
     private const ushort ASE_HEADER_MAGIC = 0xA5E0;                 //  File Header Magic Number
     private const int ASE_HEADER_SIZE = 128;                        //  File Header Length, In Bytes
+    private const uint ASE_HEADER_FLAG_LAYER_OPACITY_VALID = 1;     //  Header Flag (Is Layer Opacity Valid)
 
     private const ushort ASE_FRAME_MAGIC = 0xF1FA;                  //  Frame Magic Number
 
@@ -91,18 +96,15 @@ public static class AsepriteFileReader
     ///     is being read. The exception message contains the details on what
     ///     value was invalid.
     /// </exception>
-    public static void ReadFile(string path)
+    public static AsepriteDocument ReadFile(string path)
     {
-        ReadResult<int> result = new();
-        List<Frame> frames = new();
-        List<Layer> layers = new();
-        GroupLayer? lastGroupLayer = default;
-        List<Tag> tags = new();
-        List<Slice> slices = new();
-        List<Tileset> tilesets = new();
-        Color[] palette = Array.Empty<Color>();
-
         using AsepriteBinaryReader reader = new(File.OpenRead(path));
+
+        AsepriteDocument doc = new();
+
+        //  Reference to the last group layer that is read so that subsequent
+        //  child layers can be added to it.
+        GroupLayer? lastGroupLayer = default;
 
         //  Read the Aseprite file header
         _ = reader.ReadDword();             //  File size (ignored, don't need)
@@ -124,6 +126,8 @@ public static class AsepriteFileReader
             throw new InvalidOperationException($"Invalid canvas size {width}x{height}.");
         }
 
+        doc.Size = new Size(width, height);
+
         ushort depth = reader.ReadWord();   //  Color depth (bits per pixel)
 
         if (!Enum.IsDefined<ColorDepth>((ColorDepth)depth))
@@ -132,38 +136,52 @@ public static class AsepriteFileReader
             throw new InvalidOperationException($"Invalid color depth: {depth}");
         }
 
+        doc.ColorDepth = (ColorDepth)depth;
+
         uint hflags = reader.ReadDword();   //  Header flags
 
-        bool isLayerOpacityValid = (hflags & 1) != 0;
+        bool isLayerOpacityValid = HasFlag(hflags, ASE_HEADER_FLAG_LAYER_OPACITY_VALID);
 
-        _ = reader.ReadWord();              //  Speed (ms between frames) (deprecated)
-        _ = reader.ReadDword();             //  Set to zero (ignored)
-        _ = reader.ReadDword();             //  Set to zero (ignored)
-        byte tindex = reader.ReadByte();    //  Index of transparent color in palette
+        if (!isLayerOpacityValid)
+        {
+            doc.AddWarning("Layer opacity valid flag is not set. All layer opacity will default to 255");
+        }
 
-        if (depth != 8)
+        _ = reader.ReadWord();                      //  Speed (ms between frames) (deprecated)
+        _ = reader.ReadDword();                     //  Set to zero (ignored)
+        _ = reader.ReadDword();                     //  Set to zero (ignored)
+        byte transparentIndex = reader.ReadByte();  //  Index of transparent color in palette
+
+        if (doc.ColorDepth != ColorDepth.Indexed)
         {
             //  Transparent color index is only valid in indexed depth
-            tindex = 0;
+            transparentIndex = 0;
+            doc.AddWarning("Transparent index only valid for Indexed Color Depth. Defaulting to 0");
         }
+
+        doc.Palette.TransparentIndex = transparentIndex;
+
+        _ = reader.ReadBytes(3);            //  Ignore these bytes
+        ushort ncolors = reader.ReadWord(); //  Number of colors
 
         //  Remainder of header is not needed, skipping to end of header
         reader.Seek(ASE_HEADER_SIZE);
 
-        Header header = new()
-        {
-            Frames = nframes,
-            Size = new Size(width, height),
-            ColorDepth = (ColorDepth)depth,
-            TransparentIndex = tindex
-        };
-
         //  Read frame-by-frame until all frames are read.
         for (int fnum = 0; fnum < nframes; fnum++)
         {
-            List<Cel> cels = new List<Cel>();
+            Frame frame = new();
+
+            //  Reference to the last cel that was read so we can apply a 
+            //  Cel Extra chunk to it if one is read after.
             Cel? lastCel = default;
+
+            //  Reference to the last chunk that can have user data so we can
+            //  apply a User Data chunk to it when one is read.
             IUserData? lastUserData = default;
+
+            //  Tracks the iteration of the tags when reading user data for
+            //  tags chunk.
             int tagIterator = 0;
 
             //  Read the frame header
@@ -177,7 +195,7 @@ public static class AsepriteFileReader
             }
 
             int nchunks = reader.ReadWord();        //  Old field which specified chunk count
-            ushort duration = reader.ReadWord();    //  Frame duration, in milliseconds
+            frame.Duration = reader.ReadWord();     //  Frame duration, in milliseconds
             _ = reader.ReadBytes(2);                //  For future (set to zero)
             uint moreChunks = reader.ReadDword();   //  New field which specifies chunk count
 
@@ -215,8 +233,8 @@ public static class AsepriteFileReader
                     //  Validate blend mode
                     if (!Enum.IsDefined<BlendMode>((BlendMode)blend))
                     {
-                        blend = 0;
-                        result.Warnings.Add($"Unknown blend mode '{blend}' found in layer '{name}'. Defaulting to mode 0 (normal).");
+                        reader.Dispose();
+                        throw new InvalidOperationException($"Unknown blend mode '{blend}' foudn in layer '{name}'");
                     }
 
                     Layer layer;
@@ -256,15 +274,12 @@ public static class AsepriteFileReader
                     }
                     else
                     {
+                        reader.Dispose();
                         throw new InvalidOperationException($"Unknown layer type '{ltype}'");
                     }
 
                     layer.IsVisible = HasFlag(ltype, ASE_LAYER_FLAG_VISIBLE);
-                    layer.IsEditable = HasFlag(ltype, ASE_LAYER_FLAG_EDITABLE);
-                    layer.IsMovementLocked = HasFlag(ltype, ASE_LAYER_FLAG_LOCKED);
                     layer.IsBackgroundLayer = HasFlag(ltype, ASE_LAYER_FLAG_BACKGROUND);
-                    layer.PrefersLinkedCels = HasFlag(ltype, ASE_LAYER_FLAG_PREFERS_LINKED);
-                    layer.IsDisplayedCollapsed = HasFlag(ltype, ASE_LAYER_FLAG_COLLAPSED);
                     layer.IsReferenceLayer = HasFlag(ltype, ASE_LAYER_FLAG_REFERENCE);
 
                     if (level != 0 && lastGroupLayer is not null)
@@ -278,6 +293,7 @@ public static class AsepriteFileReader
                     }
 
                     lastUserData = layer;
+                    doc.Add(layer);
 
                 }
                 else if (ctype == ASE_CHUNK_CEL)
@@ -348,6 +364,7 @@ public static class AsepriteFileReader
                     }
                     else
                     {
+                        reader.Dispose();
                         throw new InvalidOperationException($"Unknown cel type '{type}'");
                     }
 
@@ -355,9 +372,9 @@ public static class AsepriteFileReader
                     cel.Position = new Point(x, y);
                     cel.Opacity = opacity;
 
-                    cels.Add(cel);
                     lastCel = cel;
                     lastUserData = cel;
+                    frame.AddCel(cel);
                 }
                 else if (ctype == ASE_CHUNK_CEL_EXTRA)
                 {
@@ -397,6 +414,7 @@ public static class AsepriteFileReader
                         //  Validate direction value
                         if (!Enum.IsDefined<LoopDirection>((LoopDirection)direction))
                         {
+                            reader.Dispose();
                             throw new InvalidOperationException($"Unknown loop direction '{direction}'");
                         }
 
@@ -416,11 +434,11 @@ public static class AsepriteFileReader
                             Name = name
                         };
 
-                        tags.Add(tag);
+                        doc.Add(tag);
                     }
 
                     tagIterator = 0;
-                    lastUserData = tags.FirstOrDefault();
+                    lastUserData = doc.Tags.FirstOrDefault();
                 }
                 else if (ctype == ASE_CHUNK_PALETTE)
                 {
@@ -431,10 +449,7 @@ public static class AsepriteFileReader
 
                     if (nsize > 0)
                     {
-                        //  Need to resize palette array
-                        Color[] npalette = new Color[nsize];
-                        Array.Copy(palette, npalette, palette.Length);
-                        palette = npalette;
+                        doc.Palette.Resize((int)nsize);
                     }
 
                     for (uint i = from; i <= to; i++)
@@ -449,9 +464,7 @@ public static class AsepriteFileReader
                         {
                             _ = reader.ReadString();    //  Color name (ignored)
                         }
-
-                        palette[i] = Color.FromArgb(a, r, g, b);
-
+                        doc.Palette[(int)i] = Color.FromArgb(a, r, g, b);
                     }
                 }
                 else if (ctype == ASE_CHUNK_USER_DATA)
@@ -461,28 +474,27 @@ public static class AsepriteFileReader
                     string? text = default;
                     if (HasFlag(flags, ASE_USER_DATA_FLAG_HAS_TEXT))
                     {
-                        text = reader.ReadString(); //  User Data text
+                        text = reader.ReadString();     //  User Data text
                     }
 
                     Color? color = default;
                     if (HasFlag(flags, ASE_USER_DATA_FLAG_HAS_COLOR))
                     {
-                        byte r = reader.ReadByte(); //  Color Red (0 - 255)
-                        byte g = reader.ReadByte(); //  Color Green (0 - 255)
-                        byte b = reader.ReadByte(); //  Color Blue (0 - 255)
-                        byte a = reader.ReadByte(); //  Color Alpha (0 - 255)
+                        byte r = reader.ReadByte();     //  Color Red (0 - 255)
+                        byte g = reader.ReadByte();     //  Color Green (0 - 255)
+                        byte b = reader.ReadByte();     //  Color Blue (0 - 255)
+                        byte a = reader.ReadByte();     //  Color Alpha (0 - 255)
 
                         color = Color.FromArgb(a, r, g, b);
                     }
 
+                    Debug.Assert(lastUserData is not null);
+
                     if (lastUserData is not null)
                     {
-                        lastUserData.UserData = new UserData()
-                        {
-                            Text = text,
-                            Color = color
-                        };
-
+                        lastUserData.UserData.Text = text;
+                        lastUserData.UserData.Color = color;
+                        
                         if (lastUserData is Tag)
                         {
 
@@ -501,9 +513,9 @@ public static class AsepriteFileReader
                             //  collection
                             tagIterator++;
 
-                            if (tagIterator < tags.Count)
+                            if (tagIterator < doc.Tags.Count)
                             {
-                                lastUserData = tags[tagIterator];
+                                lastUserData = doc.Tags[tagIterator];
                             }
                             else
                             {
@@ -560,7 +572,7 @@ public static class AsepriteFileReader
                         }
                     }
 
-                    slices.Add(slice);
+                    doc.Add(slice);
                     lastUserData = slice;
                 }
                 else if (ctype == ASE_CHUNK_TILESET)
@@ -594,7 +606,7 @@ public static class AsepriteFileReader
                             Pixels = Zlib.Deflate(pixels)
                         };
 
-                        tilesets.Add(tileset);
+                        doc.Add(tileset);
                     }
                     else
                     {
@@ -603,42 +615,39 @@ public static class AsepriteFileReader
                 }
                 else if (ctype == ASE_CHUNK_OLD_PALETTE1)
                 {
-                    result.Warnings.Add($"Old Palette Chunk (0x{ctype:X4}) ignored");
+                    doc.AddWarning($"Old Palette Chunk (0x{ctype:X4}) ignored");
                 }
                 else if (ctype == ASE_CHUNK_OLD_PALETTE2)
                 {
-                    result.Warnings.Add($"Old Palette Chunk (0x{ctype:X4}) ignored");
+                    doc.AddWarning($"Old Palette Chunk (0x{ctype:X4}) ignored");
                 }
                 else if (ctype == ASE_CHUNK_COLOR_PROFILE)
                 {
-                    result.Warnings.Add($"Color Profile Chunk (0x{ctype:X4}) ignored");
+                    doc.AddWarning($"Color Profile Chunk (0x{ctype:X4}) ignored");
                 }
                 else if (ctype == ASE_CHUNK_EXTERNAL_FILES)
                 {
-                    result.Warnings.Add($"External Files Chunk (0x{ctype:X4}) ignored");
+                    doc.AddWarning($"External Files Chunk (0x{ctype:X4}) ignored");
                 }
                 else if (ctype == ASE_CHUNK_MASK)
                 {
-                    result.Warnings.Add($"Mask Chunk (0x{ctype:X4}) ignored");
+                    doc.AddWarning($"Mask Chunk (0x{ctype:X4}) ignored");
                 }
                 else if (ctype == ASE_CHUNK_PATH)
                 {
-                    result.Warnings.Add($"Path Chunk (0x{ctype:X4}) ignored");
+                    doc.AddWarning($"Path Chunk (0x{ctype:X4}) ignored");
                 }
             }
 
-            Frame frame = new()
-            {
-                Duration = duration
-            };
-
-            frame.Cels.AddRange(cels);
-
-            frames.Add(frame);
+            doc.Add(frame);
         }
 
-        header.NumberOfColors = palette.Length;
+        if (doc.Palette.Count != ncolors)
+        {
+            doc.AddWarning($"Number of colors in header ({ncolors}) does not match final palette count ({doc.Palette.Count})");
+        }
 
+        return doc;
     }
 
     private static bool HasFlag(uint value, uint flag) => (value & flag) != 0;

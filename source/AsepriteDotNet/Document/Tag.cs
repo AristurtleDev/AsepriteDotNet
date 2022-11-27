@@ -22,45 +22,43 @@ using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
-public class Tag : IUserData
+/// <summary>
+///     Represents an animation Tag in an Asperite image.
+/// </summary>
+public sealed class Tag : IUserData
 {
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the inclusive
-    ///     index of the frame the animation this <see cref="Tag"/> is for
-    ///     starts on.
+    ///     Gets the inclusive index of the frame the animation for this
+    ///     <see cref="Tag"/> starts on.
     /// </summary>
-    public int From { get; set; }
+    public int From { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the inclusive
-    ///     index of the frame the animation this <see cref="Tag"/> is for goes
-    ///     to.
+    ///     Gets the inclusive index of the frame the animation for this
+    ///     <see cref="Tag"/> ends on.
     /// </summary>
-    public int To { get; set; }
+    public int To { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="LoopDirection"/> value that defines the 
-    ///     animation loop direction for the animation this <see cref="Tag"/>
-    ///     is for.
-    /// </summary>
-    public LoopDirection LoopDirection { get; set; } = LoopDirection.Forward;
-
-    /// <summary>
-    ///     Gets or Sets a <see cref="Color"/> value that defines the color of
+    ///     Gets the <see cref="LoopDirection"/> value for the animation for
     ///     this <see cref="Tag"/>.
     /// </summary>
-    public Color Color { get; set; }
+    public LoopDirection LoopDirection { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets a <see cref="string"/> that contains the name of this
-    ///     <see cref="Tag"/>.
+    ///     Gest the color of this <see cref="Tag"/>.
     /// </summary>
-    public string Name { get; set; } = "Tag";
-
-    public UserData UserData { get; set; } = new();
+    public Color Color { get; internal set; }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Tag"/> class.
+    ///     Gets the name of this <see cref="Tag"/>,
     /// </summary>
-    public Tag() { }
+    public string Name { get; internal set; } = string.Empty;
+
+    /// <summary>
+    ///     Gets the <see cref="UserData"/> for this <see cref="Tag"/>.
+    /// </summary>
+    public UserData UserData { get; internal set; } = new();
+
+    internal Tag() { }
 }

@@ -18,24 +18,56 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
+using System.Collections;
+using System.Collections.ObjectModel;
+
 namespace AsepriteDotNet.Document;
 
-public sealed class Frame
+/// <summary>
+///     Represents a frame in an Aseprite image.
+/// </summary>
+public sealed class Frame : IEnumerable<Cel>
 {
+    private readonly List<Cel> _cels;
+
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the duration,
-    ///     in milliseconds, of this <see cref="Frame"/> in an animation.
+    ///     Gets the duration, in milliseconds, of this <see cref="Frame"/> when
+    ///     used as part of an animation.
     /// </summary>
     public int Duration { get; set; } = 100;
 
     /// <summary>
-    ///     Gets the collection of <see cref="Cel"/> elements in this
-    ///     <see cref="Frame"/>.
+    ///     Gets a read-only collection of all <see cref="Cel"/> instances in
+    ///     this <see cref="Frame"/>.
     /// </summary>
-    public List<Cel> Cels { get; } = new();
+    public ReadOnlyCollection<Cel> Cels { get; }
+
+    internal Frame()
+    {
+        _cels = new();
+        Cels = _cels.AsReadOnly();
+    }
+
+    internal void AddCel(Cel cel) => _cels.Add(cel);
+
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="Frame"/> class.
+    ///     Returns an enumerator that iterates through the <see cref="Cel"/>
+    ///     elements in this <see cref="Frame"/>.
     /// </summary>
-    public Frame() { }
+    /// <returns>
+    ///     An enumerator that iterates through the <see cref="Cel"/> elements
+    ///     in this <see cref="Frame"/>.
+    /// </returns>
+    public IEnumerator<Cel> GetEnumerator() => _cels.GetEnumerator();
+
+    /// <summary>
+    ///     Returns an enumerator that iterates through the <see cref="Cel"/>
+    ///     elements in this <see cref="Frame"/>.
+    /// </summary>
+    /// <returns>
+    ///     An enumerator that iterates through the <see cref="Cel"/> elements
+    ///     in this <see cref="Frame"/>.
+    /// </returns>
+    IEnumerator IEnumerable.GetEnumerator() => _cels.GetEnumerator();
 }

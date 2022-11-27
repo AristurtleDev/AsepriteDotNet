@@ -25,76 +25,53 @@ using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
-public class TilemapCel : Cel
+/// <summary>
+///     Represents a tilemap cel in an Aseprite image.
+/// </summary>
+public sealed class TilemapCel : Cel
 {
-    private Size _size = new Size(1, 1);
 
     /// <summary>
-    ///     Gets or Sets a <see cref="Size"/> value that defines the width and
-    ///     height of this <see cref="TilemapCel"/>.
+    ///     Gets the width and height components of this 
+    ///     <see cref="TilemapCel"/>.
+    /// </summary> 
+    public Size Size { get; internal set; }
+
+    /// <summary>
+    ///     Gets the number of bits per tile for this <see cref="TilemapCel"/>.
     /// </summary>
-    /// <exception cref="ArgumentException">
-    ///     Thrown if the <see cref="Size.Width"/> or <see cref="Size.Height"/>
-    ///     value is not greater than 0 when setting value.
-    /// </exception>
-    public Size Size
-    {
-        get => _size;
-        set
-        {
-            if (value.Width < 1 || value.Height < 1)
-            {
-                throw new ArgumentException(nameof(Size), $"{nameof(Size)} must have a width and height greater than 0 each");
-            }
-        }
-    }
+    public int BitsPerTile { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value taht defines the number of
-    ///     bits per tile.
+    ///     Gets the bitmask for tile ID for this <see cref="TilemapCel"/>.
     /// </summary>
-    /// <remarks>
-    ///     Per Aseprite file spec, at the moment this is always 32-bits per
-    ///     tile.
-    /// </remarks>
-    public int BitsPerTile { get; } = 32;
+    public int TileIdBitmask { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the bitmask
-    ///     for tile ID.
+    ///     Gets the bitmask for x-flip for this <see cref="TilemapCel"/>.
     /// </summary>
-    public int TileIdBitmask { get; set; }
+    public int XFlipBitmask { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the bitmask
-    ///     for X flip.
+    ///     Gets the bitmask for y-flip for this <see cref="TilemapCel"/>.
     /// </summary>
-    public int XFlipBitmask { get; set; }
+    public int YFlipBitmask { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the bitmask
-    ///     for Y flip.
+    ///     Gets the bitmask for 90CW rotation for this 
+    ///     <see cref="TilemapCel"/>.
     /// </summary>
-    public int YFlipBitmask { get; set; }
+    public int RotationBitmask { get; internal set; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="int"/> value that indicates the bitmask
-    ///     for 90CW rotation.
-    /// </summary>
-    public int RotationBitmask { get; set; }
-
-    /// <summary>
-    ///     Gets or Sets an <see cref="Array"/> of <see cref="byte"/> elements
-    ///     that represents the raw tile data for this <see cref="TilemapCel"/>.
+    ///     Gets  an <see cref="Array"/> of <see cref="byte"/> elements that
+    ///     represents the raw tile data for this <see cref="TilemapCel"/>.
     /// </summary>
     /// <remarks>
     ///     Order of tiles is row by row, from top to bottom, for each scanline
     ///     read tiles from left to right.
     /// </remarks>
-    public byte[] Tiles { get; set; } = Array.Empty<byte>();
+    public byte[] Tiles { get; internal set; } = Array.Empty<byte>();
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="TilemapCel"/> class.
-    /// </summary>
-    public TilemapCel() { }
+    internal TilemapCel() { }
 }

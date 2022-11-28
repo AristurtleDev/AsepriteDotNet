@@ -25,4 +25,8 @@
     <ProjectReference Include="..\AsepriteDotNet\AsepriteDotNet.csproj" />
   </ItemGroup>
 
+    <ItemGroup>
+    <None Include="Files/**" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
+
 </Project>

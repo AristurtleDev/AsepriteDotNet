@@ -85,6 +85,12 @@ public static class AsepriteFileReader
     private const uint ASE_TILESET_FLAG_EXTERNAL_FILE = 1;          //  Tileset Flag (Includes Link To External File)
     private const uint ASE_TILESET_FLAG_EMBEDDED = 2;               //  Tileset Flag (Includes Tiles Inside File)
 
+    private const byte TILE_ID_SHIFT = 0;                           //  Tile ID Bitmask Shift
+    private const uint TILE_ID_MASK = 0x1fffffff;                   //  Tile ID Bitmask
+    private const uint TILE_FLIP_X_MASK = 0x20000000;               //  Tile Flip X Bitmask
+    private const uint TILE_FLIP_Y_MASK = 0x40000000;               //  Tile Flip Y Bitmask
+    private const uint TILE_90CW_ROTATION_MASK = 0x80000000;        //  Tile 90CW Rotation Bitmask
+
     /// <summary>
     ///     Reads the Asperite file from the specified <paramref name="path"/>.
     /// </summary>
@@ -227,7 +233,7 @@ public static class AsepriteFileReader
             if (fmagic != ASE_FRAME_MAGIC)
             {
                 reader.Dispose();
-                throw new InvalidOperationException($"Invalid frame magic number (0x{hmagic:X4}) in frame {fnum}.");
+                throw new InvalidOperationException($"Invalid frame magic number (0x{fmagic:X4}) in frame {fnum}.");
             }
 
             int nchunks = reader.ReadWord();        //  Old field which specified chunk count
@@ -314,9 +320,9 @@ public static class AsepriteFileReader
                         throw new InvalidOperationException($"Unknown layer type '{ltype}'");
                     }
 
-                    layer.IsVisible = HasFlag(ltype, ASE_LAYER_FLAG_VISIBLE);
-                    layer.IsBackgroundLayer = HasFlag(ltype, ASE_LAYER_FLAG_BACKGROUND);
-                    layer.IsReferenceLayer = HasFlag(ltype, ASE_LAYER_FLAG_REFERENCE);
+                    layer.IsVisible = HasFlag(lflags, ASE_LAYER_FLAG_VISIBLE);
+                    layer.IsBackgroundLayer = HasFlag(lflags, ASE_LAYER_FLAG_BACKGROUND);
+                    layer.IsReferenceLayer = HasFlag(lflags, ASE_LAYER_FLAG_REFERENCE);
 
                     if (level != 0 && lastGroupLayer is not null)
                     {
@@ -347,7 +353,9 @@ public static class AsepriteFileReader
                     {
                         ushort w = reader.ReadWord();                   //  Width, in pixels
                         ushort h = reader.ReadWord();                   //  Height, in pixels
-                        byte[] pixels = reader.ReadToPosition(cend);    //  Raw pixel data
+                        byte[] pixelData = reader.ReadToPosition(cend); //  Raw pixel data
+
+                        Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
 
                         cel = new ImageCel()
                         {
@@ -368,35 +376,73 @@ public static class AsepriteFileReader
                     {
                         ushort w = reader.ReadWord();                   //  Width, in pixels
                         ushort h = reader.ReadWord();                   //  Height, in pixels
-                        byte[] pixels = reader.ReadToPosition(cend);    //  Raw pixel data compressed with Zlib
+                        byte[] compressed = reader.ReadToPosition(cend); //  Raw pixel data compressed with Zlib
+                        byte[] pixelData = Zlib.Deflate(compressed);
+                        Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
 
                         cel = new ImageCel()
                         {
                             Size = new Size(w, h),
-                            Pixels = Zlib.Deflate(pixels)
+                            Pixels = pixels
                         };
                     }
                     else if (type == ASE_CEL_TYPE_COMPRESSED_TILEMAP)
                     {
-                        ushort w = reader.ReadWord();               //  Width, in number of tiles
-                        ushort h = reader.ReadWord();               //  Height, in number of tiles
-                        ushort btp = reader.ReadWord();             //  Bits per tile
-                        uint id = reader.ReadDword();               //  Bitmask for Tile ID
-                        uint xflip = reader.ReadDword();            //  Bitmask for X Flip
-                        uint yflip = reader.ReadDword();            //  Bitmask for Y Flip
-                        uint rotation = reader.ReadDword();         //  Bitmask for 90CW rotation
-                        _ = reader.ReadBytes(10);                   //  Reserved
-                        byte[] tiles = reader.ReadToPosition(cend); //  Raw tile data compressed with Zlib
+                        ushort w = reader.ReadWord();                       //  Width, in number of tiles
+                        ushort h = reader.ReadWord();                       //  Height, in number of tiles
+                        ushort bpt = reader.ReadWord();                     //  Bits per tile
+                        uint id = reader.ReadDword();                       //  Bitmask for Tile ID
+                        uint xflip = reader.ReadDword();                    //  Bitmask for X Flip
+                        uint yflip = reader.ReadDword();                    //  Bitmask for Y Flip
+                        uint rotation = reader.ReadDword();                 //  Bitmask for 90CW rotation
+                        _ = reader.ReadBytes(10);                           //  Reserved
+                        byte[] compressed = reader.ReadToPosition(cend);    //  Raw tile data compressed with Zlib
+
+                        // cel = new TilemapCel()
+                        // {
+                        //     Size = new Size(w, h),
+                        //     BitsPerTile = bpt,
+                        //     TileIdBitmask = id,
+                        //     XFlipBitmask = xflip,
+                        //     YFlipBitmask = yflip,
+                        //     RotationBitmask = rotation,
+                        //     Tiles = Zlib.Deflate(compressed)
+                        // };
+
+                        byte[] tileData = Zlib.Deflate(compressed);
+                        //  Per Aseprite file spec, the "bits" per tile is, at
+                        //  the moment, always 32-bits.  This means it's 4-bytes
+                        //  per tile (32 / 8 = 4).  Meaning that each tile value
+                        //  is a uint (DWORD)
+                        int bytesPerTile = 4;
+                        Tile[] tiles = new Tile[tileData.Length / bytesPerTile];
+
+                        for (int i = 0, b = 0; i < tiles.Length; i++, b += bytesPerTile)
+                        {
+                            byte[] dword = tileData[b..(b + bytesPerTile)];
+                            uint value = BitConverter.ToUInt32(dword);
+                            Tile tile = new Tile
+                            {
+                                TileID = (value & TILE_ID_MASK) >> TILE_ID_SHIFT,
+                                XFlip = (value & TILE_FLIP_X_MASK),
+                                YFlip = (value & TILE_FLIP_Y_MASK),
+                                Rotate90 = (value & TILE_90CW_ROTATION_MASK)
+                            };
+                            tiles[i] = tile;
+                        }
 
                         cel = new TilemapCel()
                         {
                             Size = new Size(w, h),
-                            TileIdBitmask = (int)id,
-                            XFlipBitmask = (int)xflip,
-                            YFlipBitmask = (int)yflip,
-                            RotationBitmask = (int)rotation,
-                            Tiles = Zlib.Deflate(tiles)
+                            BitsPerTile = bpt,
+                            TileIdBitmask = id,
+                            XFlipBitmask = xflip,
+                            YFlipBitmask = yflip,
+                            RotationBitmask = rotation,
+                            Tiles = tiles
                         };
+
+
                     }
                     else
                     {
@@ -615,7 +661,7 @@ public static class AsepriteFileReader
                 {
                     uint id = reader.ReadDword();       //  Tileset ID
                     uint flags = reader.ReadDword();    //  Tileset flags
-                    _ = reader.ReadDword();             //  Nubmer of tiles (ignored, calculated in class)
+                    uint count = reader.ReadDword();    //  Number of tiles
                     ushort w = reader.ReadWord();       //  Tile width
                     ushort h = reader.ReadWord();       //  Tile height
                     _ = reader.ReadShort();             //  Base index (ignoring, only used in Asperite UI)
@@ -631,15 +677,19 @@ public static class AsepriteFileReader
 
                     if (HasFlag(flags, ASE_TILESET_FLAG_EMBEDDED))
                     {
-                        uint len = reader.ReadDword();              //  Compressed data length
-                        byte[] pixels = reader.ReadBytes((int)len); //  Compressed tileset image
+                        uint len = reader.ReadDword();                  //  Compressed data length
+                        byte[] compressed = reader.ReadBytes((int)len); //  Compressed tileset image
+
+                        byte[] pixelData = Zlib.Deflate(compressed);
+                        Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
 
                         Tileset tileset = new()
                         {
                             ID = (int)id,
+                            TileCount = (int)count,
                             TileSize = new Size(w, h),
                             Name = name,
-                            Pixels = Zlib.Deflate(pixels)
+                            Pixels = pixels
                         };
 
                         doc.Add(tileset);
@@ -652,27 +702,35 @@ public static class AsepriteFileReader
                 else if (ctype == ASE_CHUNK_OLD_PALETTE1)
                 {
                     doc.AddWarning($"Old Palette Chunk (0x{ctype:X4}) ignored");
+                    reader.Seek(cend);
                 }
                 else if (ctype == ASE_CHUNK_OLD_PALETTE2)
                 {
                     doc.AddWarning($"Old Palette Chunk (0x{ctype:X4}) ignored");
+                    reader.Seek(cend);
                 }
                 else if (ctype == ASE_CHUNK_COLOR_PROFILE)
                 {
                     doc.AddWarning($"Color Profile Chunk (0x{ctype:X4}) ignored");
+                    reader.Seek(cend);
                 }
                 else if (ctype == ASE_CHUNK_EXTERNAL_FILES)
                 {
                     doc.AddWarning($"External Files Chunk (0x{ctype:X4}) ignored");
+                    reader.Seek(cend);
                 }
                 else if (ctype == ASE_CHUNK_MASK)
                 {
                     doc.AddWarning($"Mask Chunk (0x{ctype:X4}) ignored");
+                    reader.Seek(cend);
                 }
                 else if (ctype == ASE_CHUNK_PATH)
                 {
                     doc.AddWarning($"Path Chunk (0x{ctype:X4}) ignored");
+                    reader.Seek(cend);
                 }
+
+                Debug.Assert(reader.Position == cend);
             }
 
             doc.Add(frame);
@@ -687,4 +745,71 @@ public static class AsepriteFileReader
     }
 
     private static bool HasFlag(uint value, uint flag) => (value & flag) != 0;
+
+    internal static Color[] PixelsToColor(byte[] pixels, ColorDepth depth, Palette palette)
+    {
+        return depth switch
+        {
+            ColorDepth.Indexed => IndexedPixelsToColor(pixels, palette),
+            ColorDepth.Grayscale => GrayscalePixelsToColor(pixels),
+            ColorDepth.RGBA => RGBAPixelsToColor(pixels),
+            _ => throw new InvalidOperationException("Unknown Color Depth")
+        };
+    }
+
+    internal static Color[] RGBAPixelsToColor(byte[] pixels)
+    {
+        int bytesPerPixel = (int)ColorDepth.RGBA / 8;
+        Color[] results = new Color[pixels.Length / bytesPerPixel];
+
+        for (int i = 0, b = 0; i < results.Length; i++, b += bytesPerPixel)
+        {
+            byte red = pixels[b];
+            byte green = pixels[b + 1];
+            byte blue = pixels[b + 2];
+            byte alpha = pixels[b + 3];
+            results[i] = Color.FromArgb(alpha, red, green, blue);
+        }
+
+        return results;
+    }
+
+    internal static Color[] GrayscalePixelsToColor(byte[] pixels)
+    {
+        int bytesPerPixel = (int)ColorDepth.Grayscale / 8;
+        Color[] results = new Color[pixels.Length / bytesPerPixel];
+
+        for (int i = 0, b = 0; i < results.Length; i++, b += bytesPerPixel)
+        {
+            byte red = pixels[b];
+            byte green = pixels[b];
+            byte blue = pixels[b];
+            byte alpha = pixels[b + 1];
+            results[i] = Color.FromArgb(alpha, red, green, blue);
+        }
+
+        return results;
+    }
+
+    internal static Color[] IndexedPixelsToColor(byte[] pixels, Palette palette)
+    {
+        int bytesPerPixel = (int)ColorDepth.Indexed / 8;
+        Color[] results = new Color[pixels.Length / bytesPerPixel];
+
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            int index = pixels[i];
+
+            if (index == palette.TransparentIndex)
+            {
+                results[i] = Color.FromArgb(0, 0, 0, 0);
+            }
+            else
+            {
+                results[i] = palette[index];
+            }
+        }
+
+        return results;
+    }
 }

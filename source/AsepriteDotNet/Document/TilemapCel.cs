@@ -45,23 +45,23 @@ public sealed class TilemapCel : Cel
     /// <summary>
     ///     Gets the bitmask for tile ID for this <see cref="TilemapCel"/>.
     /// </summary>
-    public int TileIdBitmask { get; internal set; }
+    public uint TileIdBitmask { get; internal set; }
 
     /// <summary>
     ///     Gets the bitmask for x-flip for this <see cref="TilemapCel"/>.
     /// </summary>
-    public int XFlipBitmask { get; internal set; }
+    public uint XFlipBitmask { get; internal set; }
 
     /// <summary>
     ///     Gets the bitmask for y-flip for this <see cref="TilemapCel"/>.
     /// </summary>
-    public int YFlipBitmask { get; internal set; }
+    public uint YFlipBitmask { get; internal set; }
 
     /// <summary>
     ///     Gets the bitmask for 90CW rotation for this 
     ///     <see cref="TilemapCel"/>.
     /// </summary>
-    public int RotationBitmask { get; internal set; }
+    public uint RotationBitmask { get; internal set; }
 
     /// <summary>
     ///     Gets  an <see cref="Array"/> of <see cref="byte"/> elements that
@@ -71,7 +71,8 @@ public sealed class TilemapCel : Cel
     ///     Order of tiles is row by row, from top to bottom, for each scanline
     ///     read tiles from left to right.
     /// </remarks>
-    public byte[] Tiles { get; internal set; } = Array.Empty<byte>();
+    // public byte[] Tiles { get; internal set; } = Array.Empty<byte>();
+    public Tile[] Tiles { get; internal set; } = Array.Empty<Tile>();
 
     internal TilemapCel() { }
 }

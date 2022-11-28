@@ -21,27 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Drawing;
-
 namespace AsepriteDotNet.Document;
 
-public sealed class ImageCel : Cel
+public sealed class Tile
 {
-    /// <summary>
-    ///     Gets the width and height components of this <see cref="ImageCel"/>
-    ///     as a <see cref="Size"/> value.
-    /// </summary> 
-    public Size Size { get; internal set; }
 
-    /// <summary>
-    ///     Gets an <see cref="Array"/> of <see cref="Color"/> elements that
-    ///     represents the raw pixel data for this <see cref="ImageCel"/>.
-    /// </summary>
-    /// <remarks>
-    ///     Order of pixels is row by row, from top to bottom, for each scanline
-    ///     read pixels from left to right.
-    /// </remarks>
-    public Color[] Pixels { get; internal set; } = Array.Empty<Color>();
-    
-    internal ImageCel() { }
+
+    public uint TileID { get; internal set; }
+    public uint XFlip { get; internal set; }
+    public uint YFlip { get; internal set; }
+    public uint Rotate90 { get; internal set; }
+
+    internal Tile() { }
 }

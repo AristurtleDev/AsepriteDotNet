@@ -27,6 +27,8 @@ namespace AsepriteDotNet.Document;
 /// </summary>
 public sealed class Tag : IUserData
 {
+    private Color _oldVersionColor;
+
     /// <summary>
     ///     Gets the inclusive index of the frame the animation for this
     ///     <see cref="Tag"/> starts on.
@@ -48,7 +50,20 @@ public sealed class Tag : IUserData
     /// <summary>
     ///     Gest the color of this <see cref="Tag"/>.
     /// </summary>
-    public Color Color { get; internal set; }
+    public Color Color
+    {
+        get
+        {
+            if(UserData.HasColor)
+            {
+                return UserData.Color.Value;
+            }
+
+            return _oldVersionColor;
+        }
+
+        set => _oldVersionColor = value;
+    }
 
     /// <summary>
     ///     Gets the name of this <see cref="Tag"/>,

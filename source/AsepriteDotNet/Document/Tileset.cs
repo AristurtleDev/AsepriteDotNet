@@ -52,10 +52,10 @@ public class Tileset
     public string Name { get; internal set; } = string.Empty;
 
     /// <summary>
-    ///     Gets or Sets an <see cref="Array"/> of <see cref="Color"/> elements
+    ///     Gets or Sets an <see cref="Array"/> of <see cref="AsepriteColor"/> elements
     ///     that represents the raw pixel data for this <see cref="Tileset"/>,
     /// </summary>
-    public Color[] Pixels { get; set; } = Array.Empty<Color>();
+    public AsepriteColor[] Pixels { get; set; } = Array.Empty<AsepriteColor>();
 
     internal Tileset() { }
 }

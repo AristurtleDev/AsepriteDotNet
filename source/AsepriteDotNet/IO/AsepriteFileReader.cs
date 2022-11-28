@@ -134,15 +134,15 @@ public static class AsepriteFileReader
     /// <exception cref="IOException">
     ///     Thrown if an I/O error occurs while attempting to open the file.
     /// </exception>
-    public static AsepriteDocument ReadFile(string path)
+    public static AsepriteFile ReadFile(string path)
     {
         using AsepriteBinaryReader reader = new(File.OpenRead(path));
         return ReadFile(reader);
     }
 
-    internal static AsepriteDocument ReadFile(AsepriteBinaryReader reader)
+    internal static AsepriteFile ReadFile(AsepriteBinaryReader reader)
     {
-        AsepriteDocument doc = new();
+        AsepriteFile doc = new();
 
         //  Reference to the last group layer that is read so that subsequent
         //  child layers can be added to it.

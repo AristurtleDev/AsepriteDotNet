@@ -26,7 +26,7 @@ namespace AsepriteDotNet.Document;
 /// <summary>
 ///     Represents the contents of an aserpite file.
 /// </summary>
-public sealed class AsepriteDocument
+public sealed class AsepriteFile
 {
     private List<Frame> _frames = new();
     private List<Layer> _layers = new();
@@ -37,59 +37,59 @@ public sealed class AsepriteDocument
 
     /// <summary>
     ///     Gets the width and height, in pixels, of the sprite in this
-    ///     <see cref="AsepriteDocument"/>.
+    ///     <see cref="AsepriteFile"/>.
     /// </summary>
     public Size Size { get; internal set; }
 
     /// <summary>
     ///     Gets the <see cref="ColorDepth"/> (bits per pixel) used by this
-    ///     <see cref="AsepriteDocument"/>.
+    ///     <see cref="AsepriteFile"/>.
     /// </summary>
     public ColorDepth ColorDepth { get; internal set; }
 
     /// <summary>
     ///     Gets a read-only collection of all <see cref="Frame"/> elements for
-    ///     this <see cref="AsepriteDocument"/>.
+    ///     this <see cref="AsepriteFile"/>.
     /// </summary>
     public ReadOnlyCollection<Frame> Frames { get; }
 
     /// <summary>
     ///     Gets a read-only collection of all <see cref="Layer"/> elements for
-    ///     this <see cref="AsepriteDocument"/>.
+    ///     this <see cref="AsepriteFile"/>.
     /// </summary>
     public ReadOnlyCollection<Layer> Layers { get; }
 
     /// <summary>
     ///     Gets a read-only collection of all <see cref="Tag"/> elements for
-    ///     this <see cref="AsepriteDocument"/>.
+    ///     this <see cref="AsepriteFile"/>.
     /// </summary>
     public ReadOnlyCollection<Tag> Tags { get; }
 
     /// <summary>
     ///     Gets a read-only collection of all <see cref="Slice"/> elements for
-    ///     this <see cref="AsepriteDocument"/>.
+    ///     this <see cref="AsepriteFile"/>.
     /// </summary>
     public ReadOnlyCollection<Slice> Slices { get; }
 
     /// <summary>
     ///     Gets a read-only collection of all <see cref="Tileset"/> elements
-    ///     for this <see cref="AsepriteDocument"/>.
+    ///     for this <see cref="AsepriteFile"/>.
     /// </summary>
     public ReadOnlyCollection<Tileset> Tilesets { get; }
 
     /// <summary>
     ///     Gets a read-only collection of all warnings that were procduced
-    ///     while importing this <see cref="AsepriteDocument"/>.
+    ///     while importing this <see cref="AsepriteFile"/>.
     /// </summary>
     public ReadOnlyCollection<string> Warnings { get; }
 
     /// <summary>
     ///     Gets the <see cref="Palette"/> for this 
-    ///     <see cref="AsepriteDocument"/>
+    ///     <see cref="AsepriteFile"/>
     /// </summary>
     public Palette Palette { get; } = new();
 
-    internal AsepriteDocument()
+    internal AsepriteFile()
     {
         Frames = _frames.AsReadOnly();
         Layers = _layers.AsReadOnly();

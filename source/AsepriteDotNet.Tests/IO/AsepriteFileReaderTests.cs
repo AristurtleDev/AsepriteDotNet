@@ -40,7 +40,7 @@ public sealed class AsepriteFileReaderTest
     public void AsepriteFileReader_ReadFileTest()
     {
         string path = GetPath("read-test.aseprite");
-        AsepriteDocument doc = AsepriteFileReader.ReadFile(path);
+        AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
         //  Expected pallette colors
         Color pal0 = Color.FromArgb(255, 223, 7, 114);
@@ -123,7 +123,7 @@ public sealed class AsepriteFileReaderTest
     public void AsepriteFileReader_ColorModeRGBA_PixelsTest()
     {
         string path = GetPath("rgba-pixel-test.aseprite");
-        AsepriteDocument doc = AsepriteFileReader.ReadFile(path);
+        AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
         Assert.Equal(10, doc.Palette.Count);
 
@@ -167,7 +167,7 @@ public sealed class AsepriteFileReaderTest
     public void AsepriteFileReader_ColorModeIndexed_PixelsTest()
     {
         string path = GetPath("indexed-pixel-test.aseprite");
-        AsepriteDocument doc = AsepriteFileReader.ReadFile(path);
+        AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
         Assert.Equal(11, doc.Palette.Count);
 
@@ -211,7 +211,7 @@ public sealed class AsepriteFileReaderTest
     public void AsepriteFileReader_GrayscaleModeRGBA_PixelsTest()
     {
         string path = GetPath("grayscale-pixel-test.aseprite");
-        AsepriteDocument doc = AsepriteFileReader.ReadFile(path);
+        AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
         Assert.Equal(8, doc.Palette.Count);
 
@@ -253,7 +253,7 @@ public sealed class AsepriteFileReaderTest
     public void AsepriteFileReader_TilemapTest()
     {
         string path = GetPath("tilemap-test.aseprite");
-        AsepriteDocument doc = AsepriteFileReader.ReadFile(path);
+        AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
         Color tran = Color.FromArgb(0, 0, 0, 0);
         Color pal0 = doc.Palette[0];

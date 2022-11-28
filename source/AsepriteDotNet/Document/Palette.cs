@@ -29,19 +29,19 @@ using System.Drawing;
 /// <summary>
 ///     Represents the palette of colors in an Aseprite image.
 /// </summary>
-public sealed class Palette : IEnumerable<Color>
+public sealed class Palette : IEnumerable<AsepriteColor>
 {
-    private Color[] _colors = Array.Empty<Color>();
+    private AsepriteColor[] _colors = Array.Empty<AsepriteColor>();
 
     /// <summary>
-    ///     Gets the <see cref="Color"/> element at the specified
+    ///     Gets the <see cref="AsepriteColor"/> element at the specified
     ///     <paramref name="index"/> from this <see cref="Palette"/>.
     /// </summary>
     /// <param name="index">
-    ///     The index of the <see cref="Color"/> element.
+    ///     The index of the <see cref="AsepriteColor"/> element.
     /// </param>
     /// <returns>
-    ///     The <see cref="Color"/> element at the specified 
+    ///     The <see cref="AsepriteColor"/> element at the specified 
     ///     <paramref name="index"/> from this <see cref="Palette"/>.
     /// </returns>
     /// <exception cref="ArgumentOutOfRangeException">
@@ -49,7 +49,7 @@ public sealed class Palette : IEnumerable<Color>
     ///     <paramref name="index"/> is equal to or greater than
     ///     <see cref="Count"/>.
     /// </exception>
-    public Color this[int index]
+    public AsepriteColor this[int index]
     {
         get
         {
@@ -73,7 +73,7 @@ public sealed class Palette : IEnumerable<Color>
     }
 
     /// <summary>
-    ///     Gets the index of the <see cref="Color"/> element in this
+    ///     Gets the index of the <see cref="AsepriteColor"/> element in this
     ///     <see cref="Palette"/> that represents a transparent pixel.
     /// </summary>
     /// <remarks>
@@ -83,27 +83,27 @@ public sealed class Palette : IEnumerable<Color>
     public int TransparentIndex { get; internal set; }
 
     /// <summary>
-    ///     Get the total number of <see cref="Color"/> elements in this
+    ///     Get the total number of <see cref="AsepriteColor"/> elements in this
     ///     <see cref="Palette"/>.
     /// </summary>
     public int Count => _colors.Length;
 
     internal void Resize(int newSize)
     {
-        Color[] newColors = new Color[newSize];
+        AsepriteColor[] newColors = new AsepriteColor[newSize];
         Array.Copy(_colors, newColors, _colors.Length);
         _colors = newColors;
     }
 
     /// <summary>
-    ///     Returns an enumerator that iterates through the <see cref="Color"/>
+    ///     Returns an enumerator that iterates through the <see cref="AsepriteColor"/>
     ///     elements in this <see cref="Palette"/> instance.
     /// </summary>
     /// <returns>
-    ///     An enumerator that iterates through the <see cref="Color"/> elements
+    ///     An enumerator that iterates through the <see cref="AsepriteColor"/> elements
     ///     in this <see cref="Palette"/> instance.
     /// </returns>
-    public IEnumerator<Color> GetEnumerator()
+    public IEnumerator<AsepriteColor> GetEnumerator()
     {
         for (int i = 0; i < _colors.Length; i++)
         {
@@ -112,11 +112,11 @@ public sealed class Palette : IEnumerable<Color>
     }
 
     /// <summary>
-    ///     Returns an enumerator that iterates through the <see cref="Color"/>
+    ///     Returns an enumerator that iterates through the <see cref="AsepriteColor"/>
     ///     elements in this <see cref="Palette"/> instance.
     /// </summary>
     /// <returns>
-    ///     An enumerator that iterates through the <see cref="Color"/> elements
+    ///     An enumerator that iterates through the <see cref="AsepriteColor"/> elements
     ///     in this <see cref="Palette"/> instance.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

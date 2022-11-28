@@ -52,7 +52,7 @@ public sealed class UserData
     ///     Gets the <see cref="Color"/> set for this <see cref="UserData"/>, or
     ///     <see langword="null"/> if none was set.
     /// </summary>
-    public Color? Color { get; internal set; } = default;
+    public AsepriteColor? Color { get; internal set; } = default;
 
     internal UserData() { }
 }

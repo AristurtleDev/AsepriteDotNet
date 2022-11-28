@@ -6,6 +6,32 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>AsepriteDotNet</PackageId>
+    <!-- <PackageIcon>icon</PackageIcon> -->
+    <!-- <PackageReadmeFile>README.md</PackageReadmeFile> -->
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <Authors>Christopher Whitley</Authors>
+    <Company>Aristurtle</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright (c) 2022 Christoipher Whitley</Copyright>
+    <PackageProjectUrl>https://github.com/AristurtleDev/AsepriteDotNet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AristurtleDev/AsepriteDotNet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Aseprite, reader, pixel art</PackageTags>
+    <Description>
+      A .NET library for reading Aseprite (.aseprite) files.
+    </Description>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+   <!-- <ItemGroup>
+    <None Include="..\path\to\icon" Pack="true" PackagePath="" />
+    <None Include="..\path\to\readme" Pack="true" PackagePath="" />
+  </ItemGroup> -->
+
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>AsepriteDotNet.Tests</_Parameter1>

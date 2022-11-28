@@ -385,32 +385,24 @@ public sealed class AsepriteFileReaderTest
 
         TilemapCel tilesCel = Assert.IsType<TilemapCel>(doc.Frames[0].Cels[1]);
 
-        //  These values at the moment will always be the same, no matter the
-        //  structure of the tile cel.  Not sure if this may change in the 
-        //  future for Aseprite, but for now, we'll just ensure we read the
-        //  const values correctly.
         Assert.Equal(32, tilesCel.BitsPerTile);
         Assert.Equal((uint)0x1fffffff, tilesCel.TileIdBitmask);
         Assert.Equal((uint)0x20000000, tilesCel.XFlipBitmask);
         Assert.Equal((uint)0x40000000, tilesCel.YFlipBitmask);
         Assert.Equal(0x80000000, tilesCel.RotationBitmask);
+        Assert.Equal(16, tilesCel.Tiles.Length);
 
-        Console.WriteLine($"Tiles Length: {tilesCel.Tiles.Length}");
-        for (int i = 0; i < tilesCel.Tiles.Length; i++)
+        uint[] ids = new uint[]
         {
-            Tile tile = tilesCel.Tiles[i];
-            Console.WriteLine
-            (
-                $"""
-                Index={i} TileId={tile.TileID} Xflip={tile.XFlip} YFlip={tile.YFlip} Rot={tile.Rotate90}
-                """
-            );
-        }
+            1, 2, 3, 1,
+            3, 4, 5, 2,
+            2, 6, 7, 3,
+            1, 3, 2, 1
+        };
 
+        Assert.Equal(ids, tilesCel.Tiles.Select(tile => tile.TileID).ToArray());
 
-
-
-
-
+        //  Can't test Tile.XFlip, Tile.YFlip, and Tile.Rotate90 becuase these
+        //  aren't actually implemented in Aserpite yet.
     }
 }

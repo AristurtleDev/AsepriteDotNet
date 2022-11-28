@@ -424,9 +424,11 @@ public static class AsepriteFileReader
                             Tile tile = new Tile
                             {
                                 TileID = (value & TILE_ID_MASK) >> TILE_ID_SHIFT,
+                                #pragma warning disable 0618
                                 XFlip = (value & TILE_FLIP_X_MASK),
                                 YFlip = (value & TILE_FLIP_Y_MASK),
                                 Rotate90 = (value & TILE_90CW_ROTATION_MASK)
+                                #pragma warning restore 0618
                             };
                             tiles[i] = tile;
                         }

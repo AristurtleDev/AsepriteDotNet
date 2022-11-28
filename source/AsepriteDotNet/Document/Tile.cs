@@ -23,13 +23,23 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a tile reference in a tilemap cel in an Asperite image.
+/// </summary>
 public sealed class Tile
 {
-
-
+    /// <summary>
+    ///     Gets the ID of the tile in the tileset
+    /// </summary>
     public uint TileID { get; internal set; }
+
+    [Obsolete("Tile X-Flip is not implemented in Aseprite yet and this will always be 0", false)]
     public uint XFlip { get; internal set; }
+
+    [Obsolete("Tile Y-Flip is not implemented in Aseprite yet and this will always be 0", false)]
     public uint YFlip { get; internal set; }
+
+    [Obsolete("Tile Rotation is not implemented in Aseprite yet and this will always be 0", false)]
     public uint Rotate90 { get; internal set; }
 
     internal Tile() { }

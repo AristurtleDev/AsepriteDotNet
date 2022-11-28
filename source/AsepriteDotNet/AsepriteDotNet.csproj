@@ -8,8 +8,6 @@
 
   <PropertyGroup>
     <PackageId>AsepriteDotNet</PackageId>
-    <!-- <PackageIcon>icon</PackageIcon> -->
-    <!-- <PackageReadmeFile>README.md</PackageReadmeFile> -->
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
@@ -18,16 +16,19 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2022 Christoipher Whitley</Copyright>
     <PackageProjectUrl>https://github.com/AristurtleDev/AsepriteDotNet</PackageProjectUrl>
+    <!-- <PackageIcon>icon</PackageIcon> -->
+    <!-- <PackageReadmeFile>README.md</PackageReadmeFile> -->
     <RepositoryUrl>https://github.com/AristurtleDev/AsepriteDotNet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>main</RepositoryBranch>
     <PackageTags>Aseprite, reader, pixel art</PackageTags>
     <Description>
-      A .NET library for reading Aseprite (.aseprite) files.
+      A .NET library for importing Aseprite (.aseprite/.ase) with supporting classes easily navigate the data. 
     </Description>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
-   <!-- <ItemGroup>
+  <!-- <ItemGroup>
     <None Include="..\path\to\icon" Pack="true" PackagePath="" />
     <None Include="..\path\to\readme" Pack="true" PackagePath="" />
   </ItemGroup> -->

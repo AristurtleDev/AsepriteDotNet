@@ -57,10 +57,33 @@ namespace AsepriteDotNet.ThirdParty;
 
 internal static class Aseprite
 {
-    private const byte RGBA_R_SHIFT = 0;
-    private const byte RGBA_G_SHIFT = 8;
-    private const byte RGBA_B_SHIFT = 16;
-    private const byte RGBA_A_SHIFT = 24;
+    public static class ColorT
+    {
+        public const byte RGBA_R_SHIFT = 0;
+        public const byte RGBA_G_SHIFT = 8;
+        public const byte RGBA_B_SHIFT = 16;
+        public const byte RGBA_A_SHIFT = 24;
+
+        public const uint rgba_r_mask = 0x000000ff;
+        public const uint rgba_g_mask = 0x0000ff00;
+        public const uint rgba_b_mask = 0x00ff0000;
+        public const uint rgba_rgb_mask = 0x00ffffff;
+        public const uint rgba_a_mask = 0xff000000;
+
+        public static byte Rgba_GetR(uint c) => unchecked((byte)((c >> RGBA_R_SHIFT) & 0xFF));
+        public static byte Rgba_GetG(uint c) => unchecked((byte)((c >> RGBA_G_SHIFT) & 0xFF));
+        public static byte Rgba_GetB(uint c) => unchecked((byte)((c >> RGBA_B_SHIFT) & 0xFF));
+        public static byte Rgba_GetA(uint c) => unchecked((byte)((c >> RGBA_A_SHIFT) & 0xFF));
+        
+
+
+
+    }
+
+
+
+
+    
 
     private static uint RGBA(Color color) => ((uint)color.R << RGBA_R_SHIFT) |
                                              ((uint)color.G << RGBA_G_SHIFT) |

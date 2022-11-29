@@ -36,6 +36,11 @@ public sealed class Frame : IEnumerable<Cel>
     /// </summary>
     public int Duration { get; set; } = 100;
 
+    public Cel this[int index]
+    {
+        get => _cels[index];
+    }
+
     /// <summary>
     ///     Gets a read-only collection of all <see cref="Cel"/> instances in
     ///     this <see cref="Frame"/>.

@@ -34,14 +34,14 @@ public sealed class ImageCel : Cel
     public Size Size { get; internal set; }
 
     /// <summary>
-    ///     Gets an <see cref="Array"/> of <see cref="AsepriteColor"/> elements that
+    ///     Gets an <see cref="Array"/> of <see cref="Color"/> elements that
     ///     represents the raw pixel data for this <see cref="ImageCel"/>.
     /// </summary>
     /// <remarks>
     ///     Order of pixels is row by row, from top to bottom, for each scanline
     ///     read pixels from left to right.
     /// </remarks>
-    public AsepriteColor[] Pixels { get; internal set; } = Array.Empty<AsepriteColor>();
+    public Color[] Pixels { get; internal set; } = Array.Empty<Color>();
     
     internal ImageCel() { }
 }

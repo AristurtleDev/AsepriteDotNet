@@ -49,10 +49,10 @@ public sealed class UserData
     public string? Text { get; internal set; } = default;
 
     /// <summary>
-    ///     Gets the <see cref="Color"/> set for this <see cref="UserData"/>, or
+    ///     Gets the <see cref="Color"/> set for this <see cref="UserData"/>, or 
     ///     <see langword="null"/> if none was set.
     /// </summary>
-    public AsepriteColor? Color { get; internal set; } = default;
+    public Color? Color { get; internal set; } = default;
 
     internal UserData() { }
 }

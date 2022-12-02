@@ -30,7 +30,13 @@ namespace AsepriteDotNet.Image;
 //  Reference: https://www.w3.org/TR/2003/REC-PNG-20031110/#5DataRep
 public static class Png
 {
-    private const int MAX_IDAT_LEN = 8192;  //  Forcing 8Kb max size for IDAT
+    //  Common IDAT chunk sizes are between 8 and 32 Kib.  Opting to use
+    //  8Kib for this project.
+    private const int MAX_IDAT_LEN = 8192;
+
+    //  Each horizontal scanline will be 1Kib. Combining this with the max IDAT
+    //  length above, this means each IDAT chunk will be 8 scanlines
+    private const int SCANLINE_LEN = 1024;
 
     private static readonly byte[] _header = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
     private static readonly uint[] _crcTable = new uint[256];
@@ -133,7 +139,7 @@ public static class Png
 
         using DeflateStream deflate = new DeflateStream(ms, CompressionMode.Compress, leaveOpen: true);
 
-        
+
     }
 
     //  Chunks consist of three or four parts
@@ -245,4 +251,41 @@ public static class Png
         return (int)(b0 | b1 | b2 | b3);
 
     }
+
+    /*
+         Update a running Adler-32 checksum with the bytes buf[0..len-1]
+       and return the updated checksum. The Adler-32 checksum should be
+       initialized to 1.
+
+       Usage example:
+
+         unsigned long adler = 1L;
+
+         while (read_buffer(buffer, length) != EOF) {
+           adler = update_adler32(adler, buffer, length);
+         }
+         if (adler != original_adler) error();
+      */
+
+    private const uint BASE = 65521; /* largest prime smaller than 65536 */
+    private static uint update_adler32(uint adler, ReadOnlySpan<byte> buf, int len)
+    {
+        uint s1 = adler & 0xffff;
+        uint s2 = (adler >> 16) & 0xffff;
+        int n;
+
+        for (n = 0; n < len; n++)
+        {
+            s1 = (s1 + buf[n]) % BASE;
+            s2 = (s2 + s1) % BASE;
+        }
+        return (s2 << 16) + s1;
+    }
+
+    /* Return the adler32 of the bytes buf[0..len-1] */
+    private static uint adler32(ReadOnlySpan<byte> buf, int len)
+    {
+        return update_adler32(1, buf, len);
+    }
+
 }

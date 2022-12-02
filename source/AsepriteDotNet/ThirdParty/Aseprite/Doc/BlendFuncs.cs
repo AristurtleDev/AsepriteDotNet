@@ -58,6 +58,7 @@ using System.Drawing;
 
 namespace AsepriteDotNet.ThirdParty.Aseprite.Doc;
 
+
 internal static class BlendFuncs
 {
     public static byte blend_multiply(byte b, byte s) => MUL_UN8(b, s);

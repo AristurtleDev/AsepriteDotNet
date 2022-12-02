@@ -81,7 +81,7 @@ internal static class Combine32
 
     public static byte MUL_UN8(byte a, byte b)
     {
-        byte t = (byte)(a * (ushort)b + ONE_HALF);
+        int t = a * b + ONE_HALF;
         return (byte)(((t >> G_SHIFT) + t) >> G_SHIFT);
     }
 

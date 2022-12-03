@@ -24,26 +24,66 @@ SOFTWARE.
 using System.Buffers.Binary;
 using System.Drawing;
 using System.IO.Compression;
+using System.Text;
+
+using AsepriteDotNet.Compression;
 
 namespace AsepriteDotNet.Image;
 
-//  Reference: https://www.w3.org/TR/2003/REC-PNG-20031110/#5DataRep
+//  Reference: https://www.w3.org/TR/png-3
 public static class Png
 {
     //  Common IDAT chunk sizes are between 8 and 32 Kib.  Opting to use
     //  8Kib for this project.
     private const int MAX_IDAT_LEN = 8192;
 
-    //  Each horizontal scanline will be 1Kib. Combining this with the max IDAT
-    //  length above, this means each IDAT chunk will be 8 scanlines
-    private const int SCANLINE_LEN = 1024;
-
-    private static readonly byte[] _header = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
-    private static readonly uint[] _crcTable = new uint[256];
-
+    /// <summary>
+    ///     Saves the given <paramref name="data"/> to disk at the specified
+    ///     <paramref name="path"/> as a .png image file
+    /// </summary>
+    /// <param name="path">
+    ///     The absolute path to where the file should be saved.
+    /// </param>
+    /// <param name="size">
+    ///     A <see cref="Size"/> value that defines the width and height
+    ///     of the final image.
+    /// </param>
+    /// <param name="data">
+    ///     The pixel data of the image.
+    /// </param>
     public static void SaveTo(string path, Size size, Color[] data)
     {
+        using FileStream fs = File.OpenWrite(path);
+        using BinaryWriter writer = new(fs, Encoding.UTF8);
+        WriteSignature(writer);
+        WriteIHDR(writer, size);
+        WriteIDAT(writer, size, data);
+        WriteIEND(writer);
+    }
 
+    //  PNG Signature
+    //
+    //  The first eight bytes of a PNG always contains the following (decimal)
+    //  values: 137, 80, 78, 71, 13, 10, 26, 10
+    //
+    //  Which are (in hexidecimal): 89, 50, 4E, r7, 0D, 0A, 1A, 0A
+    //
+    //  Reference: https://www.w3.org/TR/png-3/#5PNG-file-signature
+    private static void WriteSignature(BinaryWriter writer)
+    {
+        ReadOnlySpan<byte> signature = stackalloc byte[8]
+        {
+            0x89,
+            0x50,   //  P
+            0x4E,   //  N
+            0x47,   //  G
+            0x0D,   //  Carriage Return
+            0x0A,   //  Line Feed
+            0x1A,   //  CTRL-Z
+            0x0A    //  Carriage Return
+        };
+
+        writer.Write(signature);
     }
 
     //  IHDR
@@ -113,7 +153,7 @@ public static class Png
     //      | Adam7                     |   1       |
     //       ---------------------------------------
     //
-    //  Reference: https://www.w3.org/TR/2003/REC-PNG-20031110/#11IHDR
+    //  Reference: https://www.w3.org/TR/png-3/#11IHDR
     private static void WriteIHDR(BinaryWriter writer, Size size)
     {
         Span<byte> ihdr = stackalloc byte[13];
@@ -129,17 +169,121 @@ public static class Png
         WriteChunk(writer, "IHDR", ihdr);
     }
 
-    private static void WriteIDAT(BinaryWriter writer, Color[] data)
+    //  IDAT
+    //
+    //  The IDAT chunk contains the actual image data, which is the output of
+    //  the compression stream.
+    //
+    //  The compression stream is a deflate stream including the Adler-32
+    //  trailer.  
+    //
+    //  Each scanline of the image begins with a single byte that defines the
+    //  filter used on that scanline.
+    //
+    //  The IDAT can be split over multiple chunks.  If so, they must appear
+    //  consecutivly with no other intervening chunks.
+    //
+    //  If the IDAT is split over multiple chunks, the compression stream is
+    //  the concatenation of the contents of the data fileds of all IDAT chunks.
+    //
+    //  Reference: https://www.w3.org/TR/png-3/#11IDAT
+    //             https://www.w3.org/TR/png-3/#10Compression
+    //             https://www.w3.org/TR/png-3/#7Scanline
+    //             https://www.w3.org/TR/png-3/#7Filtering
+    private static void WriteIDAT(BinaryWriter writer, Size size, Color[] data)
     {
+        void Flush(MemoryStream stream)
+        {
+            Span<byte> output = stream.GetBuffer();
+            int remainder = (int)stream.Length;
+            int offset = 0;
+
+            while (remainder >= MAX_IDAT_LEN)
+            {
+                int len = Math.Min(remainder, MAX_IDAT_LEN);
+                WriteChunk(writer, "IDAT", output.Slice(offset, len));
+                offset += len;
+                remainder -= len;
+            }
+
+            if (remainder > 0)
+            {
+                output.Slice(offset).CopyTo(output);
+                stream.Position = remainder;
+                stream.SetLength(remainder);
+            }
+        }
+
+        void FlushAll(MemoryStream stream)
+        {
+            Span<byte> output = stream.GetBuffer();
+            int remainder = (int)stream.Length;
+            int offset = 0;
+
+            while (remainder > 0)
+            {
+                int len = Math.Min(remainder, MAX_IDAT_LEN);
+                WriteChunk(writer, "IDAT", output.Slice(offset, len));
+                offset += len;
+                remainder -= len;
+            }
+        }
+
         using MemoryStream ms = new();
 
         //  Zlib deflate header for Default Compression
         ms.WriteByte(0x78);
         ms.WriteByte(0x9C);
 
-        using DeflateStream deflate = new DeflateStream(ms, CompressionMode.Compress, leaveOpen: true);
+        Adler32 adler = new();
+
+        using (DeflateStream deflate = new DeflateStream(ms, CompressionMode.Compress, leaveOpen: true))
+        {
+            ReadOnlySpan<byte> filter = stackalloc byte[1] { 0 };   //  Filter mode 0
+            for (int i = 0; i < data.Length; i += size.Width)
+            {
+                deflate.Write(filter);
+                adler.Update(filter);
+
+                Color[] scanline = data[(i)..(i + size.Width)];
+                for (int c = 0; c < scanline.Length; c++)
+                {
+                    ReadOnlySpan<byte> pixel = new byte[4]
+                    {
+                        scanline[c].R,
+                        scanline[c].G,
+                        scanline[c].B,
+                        scanline[c].A
+                    };
+                    deflate.Write(pixel);
+                    adler.Update(pixel);
 
 
+                    if (ms.Length >= MAX_IDAT_LEN)
+                    {
+                        Flush(ms);
+                    }
+                }
+            }
+        }
+
+        using (BinaryWriter adlerWriter = new(ms, Encoding.UTF8, leaveOpen: true))
+        {
+            adlerWriter.Write(ToBigEndian((int)adler.CurrentValue));
+        }
+
+        FlushAll(ms);
+    }
+
+    //  IEND
+    //
+    //  The IEND chunk marks the end of the PNG datastream.
+    //  The chunk data field for IEND is empty
+    //
+    //  Reference: https://www.w3.org/TR/png-3/#11IEND
+    private static void WriteIEND(BinaryWriter writer)
+    {
+        WriteChunk(writer, "IEND", ReadOnlySpan<byte>.Empty);
     }
 
     //  Chunks consist of three or four parts
@@ -168,7 +312,7 @@ public static class Png
     //      chunk length field. CRC is always present, even if the chunk data
     //      field is excluded.
     //
-    //  Reference: https://www.w3.org/TR/2003/REC-PNG-20031110/#11Chunks
+    //  Reference: https://www.w3.org/TR/png-3/#5Chunk-layout
     private static void WriteChunk(BinaryWriter writer, string chunkType, ReadOnlySpan<byte> data)
     {
         //  Write the length
@@ -193,40 +337,14 @@ public static class Png
         writer.Write(typeAndData);
 
         //  Calcluate the CRC of the type and data
-        int crc = CRC(typeAndData);
+        int crc = (int)CRC.Calculate(typeAndData);
 
         //  Write the crc
         writer.Write(ToBigEndian(crc));
     }
 
-    //  CRC fields are calculated using standardized CRC methods with pre and
-    //  post conditioning, as defined in ISO-3309 and ITU-T V.42
-    //
-    //  In PNG, the 32-bit CRC is initialized to all 1's, and then data from
-    //  each byte is processed from the least significant bit (1) to the most
-    //  significant bit (128).  After all data is processed, the CRC is
-    //  inverted (its ones complement is taken)
-    //
-    //  Refernece: https://www.w3.org/TR/2003/REC-PNG-20031110/#5CRC-algorithm
-    //  Reference: https://www.w3.org/TR/2003/REC-PNG-20031110/#D-CRCAppendix
-    private static int CRC(ReadOnlySpan<byte> buffer)
-    {
-        //  Initialize all bits to 1
-        uint crc = 0xFFFFFFFF;
 
-        //  Process each bit
-        for (int n = 0; n < buffer.Length; n++)
-        {
-            crc = _crcTable[(crc ^ buffer[n]) & 0xFF] ^ (crc >> 8);
-        }
-
-        //  Invert the crc
-        crc ^= 0xffffffff;
-
-        return (int)crc;
-    }
-
-    //  Per https://www.w3.org/TR/2003/REC-PNG-20031110/#7Integers-and-byte-order
+    //  Per https://www.w3.org/TR/png-3/#7Integers-and-byte-order
     //      
     //      "All integers that require more than one byte shall be in network 
     //      byte order"
@@ -249,43 +367,5 @@ public static class Png
         uint b3 = (b & 0xFF000000) >> 24;   //  Most significant to least significant.
 
         return (int)(b0 | b1 | b2 | b3);
-
     }
-
-    /*
-         Update a running Adler-32 checksum with the bytes buf[0..len-1]
-       and return the updated checksum. The Adler-32 checksum should be
-       initialized to 1.
-
-       Usage example:
-
-         unsigned long adler = 1L;
-
-         while (read_buffer(buffer, length) != EOF) {
-           adler = update_adler32(adler, buffer, length);
-         }
-         if (adler != original_adler) error();
-      */
-
-    private const uint BASE = 65521; /* largest prime smaller than 65536 */
-    private static uint update_adler32(uint adler, ReadOnlySpan<byte> buf, int len)
-    {
-        uint s1 = adler & 0xffff;
-        uint s2 = (adler >> 16) & 0xffff;
-        int n;
-
-        for (n = 0; n < len; n++)
-        {
-            s1 = (s1 + buf[n]) % BASE;
-            s2 = (s2 + s1) % BASE;
-        }
-        return (s2 << 16) + s1;
-    }
-
-    /* Return the adler32 of the bytes buf[0..len-1] */
-    private static uint adler32(ReadOnlySpan<byte> buf, int len)
-    {
-        return update_adler32(1, buf, len);
-    }
-
 }

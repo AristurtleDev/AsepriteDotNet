@@ -23,7 +23,7 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.IO.Compression;
 
-using AsepriteDotNet.IO.Compression;
+using AsepriteDotNet.Compression;
 
 namespace AsepriteDotNet.Tests;
 

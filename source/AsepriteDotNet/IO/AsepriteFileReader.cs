@@ -25,7 +25,7 @@ using System.Diagnostics;
 using System.Drawing;
 
 using AsepriteDotNet.Document;
-using AsepriteDotNet.IO.Compression;
+using AsepriteDotNet.Compression;
 
 namespace AsepriteDotNet.IO;
 

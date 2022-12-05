@@ -28,5 +28,6 @@ namespace AsepriteDotNet.Image.Sheet;
 public sealed class SpritesheetAnimation
 {
     public List<SpritesheetFrame> Frames { get; set; } = new();
+    public string Name { get; set; } = "Animation";
     public LoopDirection Direction { get; set; }
 }

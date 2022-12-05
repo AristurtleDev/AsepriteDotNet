@@ -111,7 +111,7 @@ public sealed class AsepriteFile
     {
         Color[] flattened = new Color[Size.Width * Size.Height];
 
-        for (int celNum = 0; celNum < Frames.Count; celNum++)
+        for (int celNum = 0; celNum < frame.Cels.Count; celNum++)
         {
             Color[] pixels = Array.Empty<Color>();
             Size celSize = Size.Empty;

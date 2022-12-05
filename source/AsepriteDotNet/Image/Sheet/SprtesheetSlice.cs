@@ -21,27 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-namespace AsepriteDotNet.Document;
+using System.Drawing;
 
-public enum BlendMode
+namespace AsepriteDotNet.Image.Sheet;
+
+public sealed class SpritesheetSlice
 {
-    Normal = 0,
-    Multiply = 1,
-    Screen = 2,
-    Overlay = 3,
-    Darken = 4,
-    Lighten = 5,
-    ColorDodge = 6,
-    ColorBurn = 7,
-    HardLight = 8,
-    SoftLight = 9,
-    Difference = 10,
-    Exclusion = 11,
-    Hue = 12,
-    Saturation = 13,
-    Color = 14,
-    Luminosity = 15,
-    Addition = 16,
-    Subtract = 17,
-    Divide = 18
+    public Rectangle Bounds { get; set; }
+    public Rectangle CenterBounds { get; set; }
+    public Point Pivot { get; set; }
+    public Point Origin { get; set; }
+    public string Name { get; set; } = string.Empty;
 }

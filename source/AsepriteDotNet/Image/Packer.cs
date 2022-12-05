@@ -40,6 +40,7 @@ public class Packer
     private bool _mergeDuplicates;
     private int _borderPadding;
     private int _borderSpacing;
+    private int _innerPadding;
 
 
     public Packer(Size frameSize)
@@ -115,10 +116,15 @@ public class Packer
                 rows++;
             }
 
-            width = columns * _frameSize.Width;
-            height = rows * _frameSize.Height;
-
-
+            width = (columns * _frameSize.Width) +
+                     (_borderPadding * 2) +
+                     (_borderSpacing * (columns - 1)) +
+                     (_innerPadding * 2 * columns);
+                     
+            height = (rows * _frameSize.Height) +
+                     (_borderPadding * 2) +
+                     (_borderSpacing * (rows - 1)) +
+                     (_innerPadding * 2 * rows);
 
         }
     }

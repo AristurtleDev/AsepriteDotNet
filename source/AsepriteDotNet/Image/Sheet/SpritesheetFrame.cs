@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Drawing;
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Image.Sheet;
 
@@ -29,5 +29,5 @@ public sealed class SpritesheetFrame
 {
     public Rectangle SourceRectangle { get; set; }
     public List<SpritesheetSlice> Slices { get; set; } = new();
-    public int Duration { get; set; } 
+    public int Duration { get; set; }
 }

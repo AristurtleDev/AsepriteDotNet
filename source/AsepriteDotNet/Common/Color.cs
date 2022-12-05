@@ -159,13 +159,13 @@ public struct Color
         }
     }
 
-    private static byte MUL_UN8(int a, int b)
+    internal static byte MUL_UN8(int a, int b)
     {
         int t = (a * b) + 0x80;
         return (byte)(((t >> 8) + t) >> 8);
     }
 
-    private static byte DIV_UN8(int a, int b)
+    internal static byte DIV_UN8(int a, int b)
     {
         return (byte)(((ushort)a * 0xFF + (b / 2)) / b);
     }

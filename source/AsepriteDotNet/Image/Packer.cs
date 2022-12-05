@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Drawing;
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Image;
 
@@ -120,7 +120,7 @@ public class Packer
                      (_borderPadding * 2) +
                      (_borderSpacing * (columns - 1)) +
                      (_innerPadding * 2 * columns);
-                     
+
             height = (rows * _frameSize.Height) +
                      (_borderPadding * 2) +
                      (_borderSpacing * (rows - 1)) +

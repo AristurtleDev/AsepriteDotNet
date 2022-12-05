@@ -19,7 +19,8 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Collections.ObjectModel;
-using System.Drawing;
+
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Document;
 
@@ -144,14 +145,14 @@ public sealed class AsepriteFile
                         throw new NotImplementedException();
                     }
                 }
-                else if(cel is TilemapCel tilemapCel)
+                else if (cel is TilemapCel tilemapCel)
                 {
                     throw new NotImplementedException();
                 }
 
-                if(pixels.Length > 0)
+                if (pixels.Length > 0)
                 {
-                    byte opacity = ThirdParty.Pixman.Combine32.MUL_UN8((byte)cel.Opacity, (byte)layer.Opacity);
+                    byte opacity = Color.MUL_UN8(cel.Opacity, layer.Opacity);
 
                     for (int p = 0; p < pixels.Length; p++)
                     {
@@ -170,7 +171,7 @@ public sealed class AsepriteFile
 
                         Color backdrop = flattened[index];
                         Color source = pixels[p];
-                        flattened[index] = ThirdParty.Aseprite.Doc.BlendFuncs.Blend(layer.BlendMode, backdrop, source, opacity);
+                        flattened[index] = Color.Blend(layer.BlendMode, backdrop, source, opacity);
                     }
                 }
             }

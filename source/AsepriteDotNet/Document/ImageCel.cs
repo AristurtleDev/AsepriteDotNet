@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Drawing;
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Document;
 
@@ -42,6 +42,6 @@ public sealed class ImageCel : Cel
     ///     read pixels from left to right.
     /// </remarks>
     public Color[] Pixels { get; internal set; } = Array.Empty<Color>();
-    
+
     internal ImageCel() { }
 }

@@ -21,15 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Drawing;
 
+using AsepriteDotNet.Common;
 using AsepriteDotNet.Document;
 
 namespace AsepriteDotNet.Image.Sheet;
 
 public sealed class AsepriteSheet
 {
-    public List<SpritesheetFrame> Frames {get; set;} = new();
+    public List<SpritesheetFrame> Frames { get; set; } = new();
     public List<SpritesheetAnimation> Animations { get; set; } = new();
     public Color[] Pixels { get; set; } = Array.Empty<Color>();
 

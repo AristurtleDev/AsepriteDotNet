@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.Diagnostics;
-using System.Drawing;
 
-using AsepriteDotNet.Document;
 using AsepriteDotNet.Compression;
+using AsepriteDotNet.Common;
+using AsepriteDotNet.Document;
 
 namespace AsepriteDotNet.IO;
 
@@ -424,11 +424,11 @@ public static class AsepriteFileReader
                             Tile tile = new Tile
                             {
                                 TileID = (value & TILE_ID_MASK) >> TILE_ID_SHIFT,
-                                #pragma warning disable 0618
+#pragma warning disable 0618
                                 XFlip = (value & TILE_FLIP_X_MASK),
                                 YFlip = (value & TILE_FLIP_Y_MASK),
                                 Rotate90 = (value & TILE_90CW_ROTATION_MASK)
-                                #pragma warning restore 0618
+#pragma warning restore 0618
                             };
                             tiles[i] = tile;
                         }
@@ -514,7 +514,7 @@ public static class AsepriteFileReader
                             From = from,
                             To = to,
                             LoopDirection = (LoopDirection)direction,
-                            Color = Color.FromArgb(255, r, g, b),
+                            Color = Color.FromRGBA(r, g, b, 255),
                             Name = name
                         };
 
@@ -548,7 +548,7 @@ public static class AsepriteFileReader
                         {
                             _ = reader.ReadString();    //  Color name (ignored)
                         }
-                        doc.Palette[(int)i] = Color.FromArgb(a, r, g, b);
+                        doc.Palette[(int)i] = Color.FromRGBA(r, g, b, a);
                     }
                 }
                 else if (ctype == ASE_CHUNK_USER_DATA)
@@ -569,7 +569,7 @@ public static class AsepriteFileReader
                         byte b = reader.ReadByte();     //  Color Blue (0 - 255)
                         byte a = reader.ReadByte();     //  Color Alpha (0 - 255)
 
-                        color = Color.FromArgb(a, r, g, b);
+                        color = Color.FromRGBA(r, g, b, a);
                     }
 
                     Debug.Assert(lastUserData is not null);
@@ -770,7 +770,7 @@ public static class AsepriteFileReader
             byte green = pixels[b + 1];
             byte blue = pixels[b + 2];
             byte alpha = pixels[b + 3];
-            results[i] = Color.FromArgb(alpha, red, green, blue);
+            results[i] = Color.FromRGBA(red, green, blue, alpha);
         }
 
         return results;
@@ -787,7 +787,7 @@ public static class AsepriteFileReader
             byte green = pixels[b];
             byte blue = pixels[b];
             byte alpha = pixels[b + 1];
-            results[i] = Color.FromArgb(alpha, red, green, blue);
+            results[i] = Color.FromRGBA(red, green, blue, alpha);
         }
 
         return results;
@@ -804,7 +804,7 @@ public static class AsepriteFileReader
 
             if (index == palette.TransparentIndex)
             {
-                results[i] = Color.FromArgb(0, 0, 0, 0);
+                results[i] = Color.FromRGBA(0, 0, 0, 0);
             }
             else
             {

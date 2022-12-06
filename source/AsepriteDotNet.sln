@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsepriteDotNet", "AsepriteD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsepriteDotNet.Tests", "AsepriteDotNet.Tests\AsepriteDotNet.Tests.csproj", "{0C468952-122C-4BAF-BBA1-9D1BCF0AED38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpritesheetSandbox", "SpritesheetSandbox\SpritesheetSandbox.csproj", "{49641EF6-B132-4AE0-A8CE-D6A21C4F921A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +24,5 @@ Global
 		{0C468952-122C-4BAF-BBA1-9D1BCF0AED38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C468952-122C-4BAF-BBA1-9D1BCF0AED38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C468952-122C-4BAF-BBA1-9D1BCF0AED38}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49641EF6-B132-4AE0-A8CE-D6A21C4F921A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49641EF6-B132-4AE0-A8CE-D6A21C4F921A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49641EF6-B132-4AE0-A8CE-D6A21C4F921A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49641EF6-B132-4AE0-A8CE-D6A21C4F921A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

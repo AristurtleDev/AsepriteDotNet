@@ -260,5 +260,8 @@ public sealed class AsepriteSheet
         return sheet;
     }
 
-
+    public void SaveAsPng(string path)
+    {
+        Png.SaveTo(path, Size, Pixels);
+    }
 }

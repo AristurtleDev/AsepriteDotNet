@@ -121,7 +121,7 @@ public sealed class AsepriteFile
 
             //  If only visible and layer cel is on is not visible,
             //  skip processing
-            if (!onlyVisible || (onlyVisible && !layer.IsVisible))
+            if (!onlyVisible || (onlyVisible && layer.IsVisible))
             {
                 if (cel is ImageCel imageCel)
                 {
@@ -157,7 +157,7 @@ public sealed class AsepriteFile
                     for (int p = 0; p < pixels.Length; p++)
                     {
                         int x = (p % celSize.Width) + celPos.X;
-                        int y = (p / celSize.Height) + celPos.Y;
+                        int y = (p / celSize.Width) + celPos.Y;
                         int index = y * Size.Width + x;
 
                         //  Sometimes a cell can have a negative x and/or y 

@@ -58,6 +58,8 @@ public struct Color
         return FromRGBA(RGBA(red, green, blue, alpha));
     }
 
+    public override string ToString() => $"R={R} G={G} B={B} A={A}";
+
     private (int, int, int, int) GetRGBAValues() => (R, G, B, A);
 
     public static Color FromRGBA(uint argb) => new Color(argb);
@@ -223,6 +225,7 @@ public struct Color
         return Normal(backdrop, new Color(rgba), opacity);
     }
 
+    //  not working
     private static Color Overlay(Color backdrop, Color source, int opacity)
     {
         int overlay(int b, int s)
@@ -322,6 +325,7 @@ public struct Color
         return Normal(backdrop, new Color(rgba), opacity);
     }
 
+    //  Not working
     private static Color HardLight(Color backdrop, Color source, int opacity)
     {
         int hardlight(int b, int s)

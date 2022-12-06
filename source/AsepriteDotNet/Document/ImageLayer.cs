@@ -25,5 +25,6 @@ namespace AsepriteDotNet.Document;
 
 public sealed class ImageLayer : Layer
 {
-    internal ImageLayer() { }
+    internal ImageLayer(bool isVisible, bool isBackground, bool isReference, int childLevel, BlendMode blend, int opacity, string name)
+        : base(isVisible, isBackground, isReference, childLevel, blend, opacity, name) { }
 }

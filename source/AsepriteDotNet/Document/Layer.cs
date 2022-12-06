@@ -31,41 +31,52 @@ public abstract class Layer : IUserData
     /// <summary>
     ///     Gets whether this <see cref="Layer"/> is visible.
     /// </summary>
-    public bool IsVisible { get; internal set; }
+    public bool IsVisible { get; }
 
     /// <summary>
     ///     Gets whether this <see cref="Layer"/> is a background layer.
     /// </summary>
-    public bool IsBackgroundLayer { get; internal set; }
+    public bool IsBackgroundLayer { get; }
 
     /// <summary>
     ///     Gets whether this <see cref="Layer"/> is a reference layer.
     /// </summary>
-    public bool IsReferenceLayer { get; internal set; }
+    public bool IsReferenceLayer { get; }
 
     /// <summary>
     ///     Gets the child level of this <see cref="Layer"/> relative to the
     ///     previous <see cref="Layer"/>.
     /// </summary>
-    public virtual int ChildLevel { get; internal set; }
+    public virtual int ChildLevel { get; }
 
     /// <summary>
     ///     Gets the <see cref="BlendMode"/> used by this <see cref="Layer"/>.
     /// </summary>
-    public BlendMode BlendMode { get; internal set; }
+    public BlendMode BlendMode { get; }
 
     /// <summary>
     ///     Gets the opacity level of this <see cref="Layer"/>.
     /// </summary>
-    public int Opacity { get; internal set; }
+    public int Opacity { get; }
 
     /// <summary>
     ///     Gets the name of this <see cref="Layer"/>.
     /// </summary>
-    public string Name { get; internal set; } = string.Empty;
+    public string Name { get; }
 
     /// <summary>
     ///     Gets the <see cref="UserData"/> of this <see cref="Layer"/>.
     /// </summary>
     public UserData UserData { get; internal set; } = new();
+
+    internal Layer(bool isVisible, bool isBackground, bool isReference, int childLevel, BlendMode blend, int opacity, string name)
+    {
+        IsVisible = isVisible;
+        IsBackgroundLayer = isBackground;
+        IsReferenceLayer = isReference;
+        ChildLevel = childLevel;
+        BlendMode = blend;
+        Opacity = opacity;
+        Name = name;
+    }
 }

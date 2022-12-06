@@ -23,6 +23,9 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Common;
 
+/// <summary>
+///     Represents an RGBA color value.
+/// </summary>
 public struct Color
 {
     private const byte RGBA_R_SHIFT = 0;

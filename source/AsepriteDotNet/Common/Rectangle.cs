@@ -22,6 +22,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace AsepriteDotNet.Common;
 
+/// <summary>
+///     Represents a rectangular boundry.
+/// </summary>
 public struct Rectangle
 {
     public static readonly Rectangle Empty = new Rectangle(0, 0, 0, 0);

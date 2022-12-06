@@ -36,25 +36,26 @@ public class Slice : IUserData, IEnumerable<SliceKey>
     ///     Gets whether the <see cref="SliceKey"/> elements of this
     ///     <see cref="Slice"/> are 9-patch.
     /// </summary>
-    public bool IsNinePatch { get; internal set; }
+    public bool IsNinePatch { get; }
 
     /// <summary>
     ///     Gets whether the <see cref="SliceKey"/> elements of this
     ///     <see cref="Slice"/> have pivot information.
     /// </summary>
-    public bool HasPivot { get; internal set; }
+    public bool HasPivot { get; }
 
     /// <summary>
     ///     Gets the name of this <see cref="Slice"/>.
     /// </summary>
-    public string Name { get; internal set; } = string.Empty;
+    public string Name { get; }
 
     /// <summary>
     ///     Gets the <see cref="UserData"/> for this <see cref="Slice"/>.
     /// </summary>
     public UserData UserData { get; internal set; } = new();
 
-    internal Slice() { }
+    internal Slice(bool isNinePatch, bool hasPivot, string name) =>
+        (IsNinePatch, HasPivot, Name) = (isNinePatch, hasPivot, name);
 
     internal void AddKey(SliceKey key) => _keys.Add(key);
 

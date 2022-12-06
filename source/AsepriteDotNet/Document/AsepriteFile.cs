@@ -40,13 +40,13 @@ public sealed class AsepriteFile
     ///     Gets the width and height, in pixels, of the sprite in this
     ///     <see cref="AsepriteFile"/>.
     /// </summary>
-    public Size Size { get; internal set; }
+    public Size Size { get; }
 
     /// <summary>
     ///     Gets the <see cref="ColorDepth"/> (bits per pixel) used by this
     ///     <see cref="AsepriteFile"/>.
     /// </summary>
-    public ColorDepth ColorDepth { get; internal set; }
+    public ColorDepth ColorDepth { get; }
 
     /// <summary>
     ///     Gets a read-only collection of all <see cref="Frame"/> elements for
@@ -88,10 +88,13 @@ public sealed class AsepriteFile
     ///     Gets the <see cref="Palette"/> for this 
     ///     <see cref="AsepriteFile"/>
     /// </summary>
-    public Palette Palette { get; } = new();
+    public Palette Palette { get; }
 
-    internal AsepriteFile()
+    internal AsepriteFile(Palette palette, Size size, ColorDepth colorDepth)
     {
+        Size = size;
+        ColorDepth = colorDepth;
+        Palette = palette;
         Frames = _frames.AsReadOnly();
         Layers = _layers.AsReadOnly();
         Tags = _tags.AsReadOnly();
@@ -140,11 +143,10 @@ public sealed class AsepriteFile
             Size celSize = Size.Empty;
             Point celPos = Point.Empty;
             Cel cel = frame[celNum];
-            Layer layer = Layers[cel.LayerIndex];
 
             //  If only visible and layer cel is on is not visible,
             //  skip processing
-            if (!onlyVisible || (onlyVisible && layer.IsVisible))
+            if (!onlyVisible || (onlyVisible && cel.Layer.IsVisible))
             {
                 if (cel is ImageCel imageCel)
                 {
@@ -154,16 +156,13 @@ public sealed class AsepriteFile
                 }
                 else if (cel is LinkedCel linkedCel)
                 {
-                    Frame linkedFrame = Frames[linkedCel.Frame];
-                    Cel otherCel = linkedFrame[celNum];
-
-                    if (otherCel is ImageCel otherImageCel)
+                    if (linkedCel.Cel is ImageCel otherImageCel)
                     {
                         pixels = otherImageCel.Pixels;
                         celSize = otherImageCel.Size;
                         celPos = otherImageCel.Position;
                     }
-                    else if (otherCel is TilemapCel otherTileMapCel)
+                    else if (linkedCel.Cel is TilemapCel otherTileMapCel)
                     {
                         continue;   //  Tilemap cels not supported
                     }
@@ -175,7 +174,7 @@ public sealed class AsepriteFile
 
                 if (pixels.Length > 0)
                 {
-                    byte opacity = Color.MUL_UN8(cel.Opacity, layer.Opacity);
+                    byte opacity = Color.MUL_UN8(cel.Opacity, cel.Layer.Opacity);
 
                     for (int p = 0; p < pixels.Length; p++)
                     {
@@ -194,7 +193,7 @@ public sealed class AsepriteFile
 
                         Color backdrop = flattened[index];
                         Color source = pixels[p];
-                        flattened[index] = Color.Blend(layer.BlendMode, backdrop, source, opacity);
+                        flattened[index] = Color.Blend(cel.Layer.BlendMode, backdrop, source, opacity);
                     }
                 }
             }

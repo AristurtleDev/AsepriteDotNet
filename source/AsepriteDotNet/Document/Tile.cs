@@ -31,16 +31,19 @@ public sealed class Tile
     /// <summary>
     ///     Gets the ID of the tile in the tileset
     /// </summary>
-    public uint TileID { get; internal set; }
+    public uint TileID { get; }
 
     [Obsolete("Tile X-Flip is not implemented in Aseprite yet and this will always be 0", false)]
-    public uint XFlip { get; internal set; }
+    public uint XFlip { get; }
 
     [Obsolete("Tile Y-Flip is not implemented in Aseprite yet and this will always be 0", false)]
-    public uint YFlip { get; internal set; }
+    public uint YFlip { get; }
 
     [Obsolete("Tile Rotation is not implemented in Aseprite yet and this will always be 0", false)]
-    public uint Rotate90 { get; internal set; }
+    public uint Rotate90 { get; }
 
-    internal Tile() { }
+    internal Tile(uint id, uint xflip, uint yflip, uint rotate) =>
+#pragma warning disable 0618
+        (TileID, XFlip, YFlip, Rotate90) = (id, xflip, yflip, rotate);
+#pragma warning restore 0618
 }

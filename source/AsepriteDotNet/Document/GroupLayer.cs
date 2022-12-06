@@ -41,7 +41,8 @@ public sealed class GroupLayer : Layer, IEnumerable<Layer>
     /// </summary>
     public ReadOnlyCollection<Layer> Children { get; }
 
-    internal GroupLayer()
+    internal GroupLayer(bool isVisible, bool isBackground, bool isReference, int childLevel, BlendMode blend, int opacity, string name)
+        : base(isVisible, isBackground, isReference, childLevel, blend, opacity, name)
     {
         _children = new();
         Children = _children.AsReadOnly();
@@ -52,7 +53,7 @@ public sealed class GroupLayer : Layer, IEnumerable<Layer>
         Debug.Assert(layer is not GroupLayer, "Cannot add group layer as child");
         _children.Add(layer);
     }
-    
+
     /// <summary>
     ///     Returns an enumerator that itereates through the child
     ///     <see cref="Layer"/> elements in this <see cref="GroupLayer"/>.

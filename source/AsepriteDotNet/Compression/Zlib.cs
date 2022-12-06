@@ -22,6 +22,9 @@ using System.IO.Compression;
 
 namespace AsepriteDotNet.Compression;
 
+/// <summary>
+///     Utility class for working with zlib compressed data.
+/// </summary>
 internal static class Zlib
 {
     public static byte[] Deflate(byte[] buffer)

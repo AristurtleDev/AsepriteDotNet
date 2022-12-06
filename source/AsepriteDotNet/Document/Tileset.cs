@@ -33,29 +33,30 @@ public class Tileset
     /// <summary>
     ///     Gets the ID of this <see cref="Tileset"/>.
     /// </summary>
-    public int ID { get; internal set; }
+    public int ID { get; }
 
     /// <summary>
     ///     Gets the total number of tiles in this ,<see cref="Tileset"/>.
     /// </summary>
-    public int TileCount { get; internal set; }
+    public int TileCount { get; }
 
     /// <summary>
     ///     Gets the width and height, in pixels of each tile in this
     ///     <see cref="Tileset"/>.
     /// </summary>
-    public Size TileSize { get; internal set; }
+    public Size TileSize { get; }
 
     /// <summary>
     ///     Gets the name of this <see cref="Tileset"/>.
     /// </summary>
-    public string Name { get; internal set; } = string.Empty;
+    public string Name { get; }
 
     /// <summary>
     ///     Gets or Sets an <see cref="Array"/> of <see cref="Color"/> elements 
     ///     that represents the raw pixel data for this <see cref="Tileset"/>.
     /// </summary>
-    public Color[] Pixels { get; set; } = Array.Empty<Color>();
+    public Color[] Pixels { get; }
 
-    internal Tileset() { }
+    internal Tileset(int id, int count, Size tileSize, string name, Color[] pixels) =>
+        (ID, TileCount, TileSize, Name, Pixels) = (id, count, tileSize, name, pixels);
 }

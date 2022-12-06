@@ -22,6 +22,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace AsepriteDotNet.Common;
 
+/// <summary>
+///     Represents the width and height of something.
+/// </summary>
 public struct Size : IEquatable<Size>
 {
     /// <summary>

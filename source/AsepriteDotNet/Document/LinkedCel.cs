@@ -21,6 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
+using AsepriteDotNet.Common;
+
 namespace AsepriteDotNet.Document;
 
 /// <summary>
@@ -30,10 +32,11 @@ namespace AsepriteDotNet.Document;
 public sealed class LinkedCel : Cel
 {
     /// <summary>
-    ///     Gets the index of the <see cref="Frame"/> that contains the 
-    ///     <see cref="Cel"/> this <see cref="LinkedCel"/> is linked with.
+    ///     Gets the <see cref="Cel"/> that this <see cref="LinkedCel"/> is
+    ///     linked to.
     /// </summary>
-    public int Frame { get; internal set; }
-    
-    internal LinkedCel() { }
+    public Cel Cel { get; }
+
+    internal LinkedCel(Cel other, Layer layer, Point position, int opacity)
+        : base(layer, position, opacity) => Cel = other;
 }

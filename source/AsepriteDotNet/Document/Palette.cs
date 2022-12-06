@@ -82,13 +82,15 @@ public sealed class Palette : IEnumerable<Color>
     ///     This value is only valid when the Asprite image used a color depth
     ///     mode of <see cref="ColorDepth.Indexed"/>.
     /// </remarks>
-    public int TransparentIndex { get; internal set; }
+    public int TransparentIndex { get; }
 
     /// <summary>
     ///     Get the total number of <see cref="Color"/> elements in this
     ///     <see cref="Palette"/>.
     /// </summary>
     public int Count => _colors.Length;
+
+    internal Palette(int transparentIndex) => TransparentIndex = transparentIndex;
 
     internal void Resize(int newSize)
     {

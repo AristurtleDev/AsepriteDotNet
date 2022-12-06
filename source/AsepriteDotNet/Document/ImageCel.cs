@@ -31,7 +31,7 @@ public sealed class ImageCel : Cel
     ///     Gets the width and height components of this <see cref="ImageCel"/>
     ///     as a <see cref="Size"/> value.
     /// </summary> 
-    public Size Size { get; internal set; }
+    public Size Size { get; }
 
     /// <summary>
     ///     Gets an <see cref="Array"/> of <see cref="Color"/> elements that
@@ -41,7 +41,8 @@ public sealed class ImageCel : Cel
     ///     Order of pixels is row by row, from top to bottom, for each scanline
     ///     read pixels from left to right.
     /// </remarks>
-    public Color[] Pixels { get; internal set; } = Array.Empty<Color>();
+    public Color[] Pixels { get; } = Array.Empty<Color>();
 
-    internal ImageCel() { }
+    internal ImageCel(Size size, Color[] pixels, Layer layer, Point position, int opacity)
+        : base(layer, position, opacity) => (Size, Pixels) = (size, pixels);
 }

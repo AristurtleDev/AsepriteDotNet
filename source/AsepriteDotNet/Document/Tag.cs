@@ -33,19 +33,19 @@ public sealed class Tag : IUserData
     ///     Gets the inclusive index of the frame the animation for this
     ///     <see cref="Tag"/> starts on.
     /// </summary>
-    public int From { get; internal set; }
+    public int From { get; }
 
     /// <summary>
     ///     Gets the inclusive index of the frame the animation for this
     ///     <see cref="Tag"/> ends on.
     /// </summary>
-    public int To { get; internal set; }
+    public int To { get; }
 
     /// <summary>
     ///     Gets the <see cref="LoopDirection"/> value for the animation for
     ///     this <see cref="Tag"/>.
     /// </summary>
-    public LoopDirection LoopDirection { get; internal set; }
+    public LoopDirection LoopDirection { get; }
 
     /// <summary>
     ///     Gest the color of this <see cref="Tag"/>.
@@ -61,19 +61,18 @@ public sealed class Tag : IUserData
 
             return _oldVersionColor;
         }
-
-        set => _oldVersionColor = value;
     }
 
     /// <summary>
     ///     Gets the name of this <see cref="Tag"/>,
     /// </summary>
-    public string Name { get; internal set; } = string.Empty;
+    public string Name { get; }
 
     /// <summary>
     ///     Gets the <see cref="UserData"/> for this <see cref="Tag"/>.
     /// </summary>
     public UserData UserData { get; internal set; } = new();
 
-    internal Tag() { }
+    internal Tag(int from, int to, LoopDirection direction, Color color, string name) =>
+        (From, To, LoopDirection, _oldVersionColor, Name) = (from, to, direction, color, name);
 }

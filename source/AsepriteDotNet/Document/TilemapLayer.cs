@@ -29,10 +29,11 @@ namespace AsepriteDotNet.Document;
 public class TilemapLayer : Layer
 {
     /// <summary>
-    ///     Gets the index of the <see cref="Tileset"/> used by this
+    ///     Gets the <see cref="Tileset"/> used by this 
     ///     <see cref="TilemapLayer"/>.
     /// </summary>
-    public int TilesetIndex { get; internal set; }
+    public Tileset Tileset { get; }
 
-    internal TilemapLayer() { }
+    internal TilemapLayer(Tileset tileset, bool isVisible, bool isBackground, bool isReference, int childLevel, BlendMode blend, int opacity, string name)
+        : base(isVisible, isBackground, isReference, childLevel, blend, opacity, name) => Tileset = tileset;
 }

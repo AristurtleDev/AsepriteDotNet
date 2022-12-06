@@ -23,6 +23,9 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Compression;
 
+/// <summary>
+///     Utility class for calculating a CRC checksum.
+/// </summary>
 internal class CRC
 {
     /// <summary>

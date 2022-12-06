@@ -33,21 +33,20 @@ namespace AsepriteDotNet.Document;
 public abstract class Cel : IUserData
 {
     /// <summary>
-    ///     Gets the index of the <see cref="Layer"/> this <see cref="Cel"/>
-    ///     is on.
+    ///     Gets the <see cref="Layer"/> that this <see cref="Cel"/> is on.
     /// </summary>
-    public int LayerIndex { get; internal set; }
+    public Layer Layer { get; internal set; }
 
     /// <summary>
     ///     Gets the top-left coordinate position of this <see cref="Cel"/>
     ///     relative to the bounds of the sprite.
     /// </summary>
-    public Point Position { get; internal set; }
+    public Point Position { get; }
 
     /// <summary>
     ///     Gets the opacity level of this <see cref="Cel"/>,
     /// </summary>
-    public int Opacity { get; internal set; }
+    public int Opacity { get; }
 
     /// <summary>
     ///     Gets whether this <see cref="Cel"/> has extra data.
@@ -60,10 +59,15 @@ public abstract class Cel : IUserData
     ///     data for this <see cref="Cel"/>; or <see langword="null"/> if there
     ///     is no extra data provided.
     /// </summary>
-    public CelExtra? ExtraData { get; internal set; } = default;
+    public CelExtra? ExtraData { get; private set; } = default;
 
     /// <summary>
     ///     Gets the <see cref="UserData"/> set for this <see cref="Cel"/>.
     /// </summary>
     public UserData UserData { get; set; } = new();
+
+    internal Cel(Layer layer, Point position, int opacity) =>
+        (Layer, Position, Opacity) = (layer, position, opacity);
+
+    internal void WithExtraData(CelExtra data) => ExtraData = data;
 }

@@ -32,33 +32,40 @@ public sealed class CelExtra
     ///     Gets whether precise bounds are set for the <see cref="Cel"/> this
     ///     <see cref="CelExtra"/> is for.
     /// </summary>
-    public bool PreciseBoundsSet { get; internal set; }
+    public bool PreciseBoundsSet { get; }
 
     /// <summary>
     ///     Gets the precise x-coordinate position, relative to the bounds of
     ///     the sprite, of the <see cref="Cel"/> this <see cref="CelExtra"/> is
     ///     for.
     /// </summary>
-    public float PreciseX { get; internal set; }
+    public float PreciseX { get; }
 
     /// <summary>
     ///     Gets the precise y-coordinate position, relative to the bounds of
     ///     the sprite, of the <see cref="Cel"/> this <see cref="CelExtra"/> is
     ///     for.
     /// </summary>
-    public float PreciseY { get; internal set; }
+    public float PreciseY { get; }
 
     /// <summary>
     ///     Gets the width, scaled in real-time, of the <see cref="Cel"/> this
     ///     <see cref="CelExtra"/> is for.
     /// </summary>
-    public float WidthInSprite { get; internal set; }
+    public float WidthInSprite { get; }
 
     /// <summary>
     ///     Gets the height, scaled in real-time, of the <see cref="Cel"/> this
     ///     <see cref="CelExtra"/> is for.
     /// </summary>
-    public float HeightInSprite { get; internal set; }
+    public float HeightInSprite { get; }
 
-    internal CelExtra() { }
+    internal CelExtra(bool preciseBoundsSet, float preciseX, float preciseY, float widthInSprite, float heightInSprite)
+    {
+        PreciseBoundsSet = preciseBoundsSet;
+        PreciseX = preciseX;
+        PreciseY = preciseY;
+        WidthInSprite = widthInSprite;
+        HeightInSprite = heightInSprite;
+    }
 }

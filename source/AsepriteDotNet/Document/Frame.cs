@@ -34,8 +34,18 @@ public sealed class Frame : IEnumerable<Cel>
     ///     Gets the duration, in milliseconds, of this <see cref="Frame"/> when
     ///     used as part of an animation.
     /// </summary>
-    public int Duration { get; set; } = 100;
+    public int Duration { get; }
 
+    /// <summary>
+    ///     Gets the <see cref="Cel"/> in this frame at the specified index.
+    /// </summary>
+    /// <param name="index">
+    ///     The index of the <see cref="Cel"/> to retrieve.
+    /// </param>
+    /// <returns>
+    ///     The <see cref="Cel"/> at the specified index in this 
+    ///     <see cref="Frame"/>.
+    /// </returns>
     public Cel this[int index]
     {
         get => _cels[index];
@@ -47,9 +57,10 @@ public sealed class Frame : IEnumerable<Cel>
     /// </summary>
     public ReadOnlyCollection<Cel> Cels { get; }
 
-    internal Frame()
+    internal Frame(int duration, List<Cel> cels)
     {
-        _cels = new();
+        Duration = duration;
+        _cels = cels;
         Cels = _cels.AsReadOnly();
     }
 

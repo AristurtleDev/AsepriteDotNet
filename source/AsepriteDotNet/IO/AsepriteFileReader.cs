@@ -142,8 +142,6 @@ public static class AsepriteFileReader
 
     internal static AsepriteFile ReadFile(AsepriteBinaryReader reader)
     {
-        AsepriteFile doc = new();
-
         //  Reference to the last group layer that is read so that subsequent
         //  child layers can be added to it.
         GroupLayer? lastGroupLayer = default;
@@ -168,8 +166,6 @@ public static class AsepriteFileReader
             throw new InvalidOperationException($"Invalid canvas size {width}x{height}.");
         }
 
-        doc.Size = new Size(width, height);
-
         ushort depth = reader.ReadWord();   //  Color depth (bits per pixel)
 
         if (!Enum.IsDefined<ColorDepth>((ColorDepth)depth))
@@ -178,30 +174,32 @@ public static class AsepriteFileReader
             throw new InvalidOperationException($"Invalid color depth: {depth}");
         }
 
-        doc.ColorDepth = (ColorDepth)depth;
-
         uint hflags = reader.ReadDword();   //  Header flags
 
         bool isLayerOpacityValid = HasFlag(hflags, ASE_HEADER_FLAG_LAYER_OPACITY_VALID);
-
-        if (!isLayerOpacityValid)
-        {
-            doc.AddWarning("Layer opacity valid flag is not set. All layer opacity will default to 255");
-        }
 
         _ = reader.ReadWord();                      //  Speed (ms between frames) (deprecated)
         _ = reader.ReadDword();                     //  Set to zero (ignored)
         _ = reader.ReadDword();                     //  Set to zero (ignored)
         byte transparentIndex = reader.ReadByte();  //  Index of transparent color in palette
 
-        if (doc.ColorDepth != ColorDepth.Indexed)
+
+
+        Palette palette = new(transparentIndex);
+        AsepriteFile doc = new(palette, new Size(width, height), (ColorDepth)depth);
+
+        if (!isLayerOpacityValid)
+        {
+            doc.AddWarning("Layer opacity valid flag is not set. All layer opacity will default to 255");
+        }
+
+        if (transparentIndex > 0 && doc.ColorDepth != ColorDepth.Indexed)
         {
             //  Transparent color index is only valid in indexed depth
             transparentIndex = 0;
             doc.AddWarning("Transparent index only valid for Indexed Color Depth. Defaulting to 0");
         }
 
-        doc.Palette.TransparentIndex = transparentIndex;
 
         _ = reader.ReadBytes(3);            //  Ignore these bytes
         ushort ncolors = reader.ReadWord(); //  Number of colors
@@ -212,7 +210,7 @@ public static class AsepriteFileReader
         //  Read frame-by-frame until all frames are read.
         for (int fnum = 0; fnum < nframes; fnum++)
         {
-            Frame frame = new();
+            List<Cel> cels = new();
 
             //  Reference to the last cel that was read so we can apply a 
             //  Cel Extra chunk to it if one is read after.
@@ -237,7 +235,7 @@ public static class AsepriteFileReader
             }
 
             int nchunks = reader.ReadWord();        //  Old field which specified chunk count
-            frame.Duration = reader.ReadWord();     //  Frame duration, in milliseconds
+            ushort duration = reader.ReadWord();    //  Frame duration, in millisecond
             _ = reader.ReadBytes(2);                //  For future (set to zero)
             uint moreChunks = reader.ReadDword();   //  New field which specifies chunk count
 
@@ -279,50 +277,33 @@ public static class AsepriteFileReader
                         throw new InvalidOperationException($"Unknown blend mode '{blend}' foudn in layer '{name}'");
                     }
 
+                    bool isVisible = HasFlag(lflags, ASE_LAYER_FLAG_VISIBLE);
+                    bool isBackground = HasFlag(lflags, ASE_LAYER_FLAG_BACKGROUND);
+                    bool isReference = HasFlag(lflags, ASE_LAYER_FLAG_REFERENCE);
+                    BlendMode mode = (BlendMode)blend;
+
                     Layer layer;
 
                     if (ltype == ASE_LAYER_TYPE_NORMAL)
                     {
-                        layer = new ImageLayer()
-                        {
-                            ChildLevel = level,
-                            BlendMode = (BlendMode)blend,
-                            Opacity = opacity,
-                            Name = name
-                        };
+                        layer = new ImageLayer(isVisible, isBackground, isReference, level, mode, opacity, name);
                     }
                     else if (ltype == ASE_LAYER_TYPE_GROUP)
                     {
-                        layer = new GroupLayer()
-                        {
-                            ChildLevel = level,
-                            BlendMode = (BlendMode)blend,
-                            Opacity = opacity,
-                            Name = name
-                        };
+                        layer = new GroupLayer(isVisible, isBackground, isReference, level, mode, opacity, name);
                     }
                     else if (ltype == ASE_LAYER_TYPE_TILEMAP)
                     {
                         uint index = reader.ReadDword();    //  Tilset index
+                        Tileset tileset = doc.Tilesets[(int)index];
 
-                        layer = new TilemapLayer()
-                        {
-                            ChildLevel = level,
-                            BlendMode = (BlendMode)blend,
-                            Opacity = opacity,
-                            Name = name,
-                            TilesetIndex = (int)index
-                        };
+                        layer = new TilemapLayer(tileset, isVisible, isBackground, isReference, level, mode, opacity, name);
                     }
                     else
                     {
                         reader.Dispose();
                         throw new InvalidOperationException($"Unknown layer type '{ltype}'");
                     }
-
-                    layer.IsVisible = HasFlag(lflags, ASE_LAYER_FLAG_VISIBLE);
-                    layer.IsBackgroundLayer = HasFlag(lflags, ASE_LAYER_FLAG_BACKGROUND);
-                    layer.IsReferenceLayer = HasFlag(lflags, ASE_LAYER_FLAG_REFERENCE);
 
                     if (level != 0 && lastGroupLayer is not null)
                     {
@@ -348,6 +329,8 @@ public static class AsepriteFileReader
                     _ = reader.ReadBytes(7);            //  For future (set to zero)
 
                     Cel cel;
+                    Point position = new Point(x, y);
+                    Layer celLayer = doc.Layers[index];
 
                     if (type == ASE_CEL_TYPE_RAW_IMAGE)
                     {
@@ -356,21 +339,15 @@ public static class AsepriteFileReader
                         byte[] pixelData = reader.ReadToPosition(cend); //  Raw pixel data
 
                         Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
-
-                        cel = new ImageCel()
-                        {
-                            Size = new Size(w, h),
-                            Pixels = pixels
-                        };
+                        Size size = new Size(w, h);
+                        cel = new ImageCel(size, pixels, celLayer, position, opacity);
                     }
                     else if (type == ASE_CEL_TYPE_LINKED)
                     {
                         ushort findex = reader.ReadWord();  //  Frame position to link with
 
-                        cel = new LinkedCel()
-                        {
-                            Frame = findex
-                        };
+                        Cel otherCel = doc.Frames[findex].Cels[cels.Count];
+                        cel = new LinkedCel(otherCel, celLayer, position, opacity);
                     }
                     else if (type == ASE_CEL_TYPE_COMPRESSED_IMAGE)
                     {
@@ -380,11 +357,8 @@ public static class AsepriteFileReader
                         byte[] pixelData = Zlib.Deflate(compressed);
                         Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
 
-                        cel = new ImageCel()
-                        {
-                            Size = new Size(w, h),
-                            Pixels = pixels
-                        };
+                        Size size = new Size(w, h);
+                        cel = new ImageCel(size, pixels, celLayer, position, opacity);
                     }
                     else if (type == ASE_CEL_TYPE_COMPRESSED_TILEMAP)
                     {
@@ -398,18 +372,10 @@ public static class AsepriteFileReader
                         _ = reader.ReadBytes(10);                           //  Reserved
                         byte[] compressed = reader.ReadToPosition(cend);    //  Raw tile data compressed with Zlib
 
-                        // cel = new TilemapCel()
-                        // {
-                        //     Size = new Size(w, h),
-                        //     BitsPerTile = bpt,
-                        //     TileIdBitmask = id,
-                        //     XFlipBitmask = xflip,
-                        //     YFlipBitmask = yflip,
-                        //     RotationBitmask = rotation,
-                        //     Tiles = Zlib.Deflate(compressed)
-                        // };
-
                         byte[] tileData = Zlib.Deflate(compressed);
+
+                        Size size = new Size(w, h);
+
                         //  Per Aseprite file spec, the "bits" per tile is, at
                         //  the moment, always 32-bits.  This means it's 4-bytes
                         //  per tile (32 / 8 = 4).  Meaning that each tile value
@@ -421,30 +387,16 @@ public static class AsepriteFileReader
                         {
                             byte[] dword = tileData[b..(b + bytesPerTile)];
                             uint value = BitConverter.ToUInt32(dword);
-                            Tile tile = new Tile
-                            {
-                                TileID = (value & TILE_ID_MASK) >> TILE_ID_SHIFT,
-#pragma warning disable 0618
-                                XFlip = (value & TILE_FLIP_X_MASK),
-                                YFlip = (value & TILE_FLIP_Y_MASK),
-                                Rotate90 = (value & TILE_90CW_ROTATION_MASK)
-#pragma warning restore 0618
-                            };
+                            uint tileId = (value & TILE_ID_MASK) >> TILE_ID_SHIFT;
+                            uint xFlip = (value & TILE_FLIP_X_MASK);
+                            uint yFlip = (value & TILE_FLIP_Y_MASK);
+                            uint rotate = (value & TILE_90CW_ROTATION_MASK);
+
+                            Tile tile = new(tileId, xflip, yflip, rotate);
                             tiles[i] = tile;
                         }
 
-                        cel = new TilemapCel()
-                        {
-                            Size = new Size(w, h),
-                            BitsPerTile = bpt,
-                            TileIdBitmask = id,
-                            XFlipBitmask = xflip,
-                            YFlipBitmask = yflip,
-                            RotationBitmask = rotation,
-                            Tiles = tiles
-                        };
-
-
+                        cel = new TilemapCel(size, bpt, id, xflip, yflip, rotation, tiles, celLayer, position, opacity);
                     }
                     else
                     {
@@ -452,13 +404,9 @@ public static class AsepriteFileReader
                         throw new InvalidOperationException($"Unknown cel type '{type}'");
                     }
 
-                    cel.LayerIndex = index;
-                    cel.Position = new Point(x, y);
-                    cel.Opacity = opacity;
-
                     lastCel = cel;
                     lastUserData = cel;
-                    frame.AddCel(cel);
+                    cels.Add(cel);
                 }
                 else if (ctype == ASE_CHUNK_CEL_EXTRA)
                 {
@@ -469,18 +417,13 @@ public static class AsepriteFileReader
                     float h = reader.ReadFixed();       //  Height of the cel in sprite (scaled in realtime)
                     _ = reader.ReadBytes(16);           //  For future (set to zero)
 
-                    CelExtra extra = new()
-                    {
-                        PreciseBoundsSet = HasFlag(flags, ASE_CEL_EXTRA_FLAG_PRECISE_BOUNDS_SET),
-                        PreciseX = x,
-                        PreciseY = y,
-                        WidthInSprite = w,
-                        HeightInSprite = h
-                    };
+                    bool boundsset = HasFlag(flags, ASE_CEL_EXTRA_FLAG_PRECISE_BOUNDS_SET);
+
+                    CelExtra extra = new(boundsset, x, y, w, h);
 
                     if (lastCel is not null)
                     {
-                        lastCel.ExtraData = extra;
+                        lastCel.WithExtraData(extra);
                         lastCel = null;
                     }
                 }
@@ -509,14 +452,10 @@ public static class AsepriteFileReader
                         _ = reader.ReadByte();              //  Extra byte (zero)
                         string name = reader.ReadString();  //  Tag name
 
-                        Tag tag = new()
-                        {
-                            From = from,
-                            To = to,
-                            LoopDirection = (LoopDirection)direction,
-                            Color = Color.FromRGBA(r, g, b, 255),
-                            Name = name
-                        };
+                        LoopDirection loopDirection = (LoopDirection)direction;
+                        Color tagColor = Color.FromRGBA(r, g, b, 255);
+
+                        Tag tag = new(from, to, loopDirection, tagColor, name);
 
                         doc.Add(tag);
                     }
@@ -616,12 +555,11 @@ public static class AsepriteFileReader
                     _ = reader.ReadDword();             //  Reserved
                     string name = reader.ReadString();  //  Name
 
-                    Slice slice = new()
-                    {
-                        Name = name,
-                        IsNinePatch = HasFlag(flags, ASE_SLICE_FLAGS_IS_NINE_PATCH),
-                        HasPivot = HasFlag(flags, ASE_SLICE_FLAGS_HAS_PIVOT)
-                    };
+                    bool isNinePatch = HasFlag(flags, ASE_SLICE_FLAGS_IS_NINE_PATCH);
+                    bool hasPivot = HasFlag(flags, ASE_SLICE_FLAGS_HAS_PIVOT);
+
+                    Slice slice = new(isNinePatch, hasPivot, name);
+
 
                     for (uint i = 0; i < nkeys; i++)
                     {
@@ -631,11 +569,9 @@ public static class AsepriteFileReader
                         uint w = reader.ReadDword();        //  Slice Width (can be 0 if slice is hidden)
                         uint h = reader.ReadDword();        //  Slice Height (can be 0 if slice is hidden)
 
-                        SliceKey key = new(slice)
-                        {
-                            Frame = (int)kframe,
-                            Bounds = new Rectangle(x, y, (int)w, (int)h)
-                        };
+                        Rectangle bounds = new Rectangle(x, y, (int)w, (int)h);
+                        Rectangle center = bounds;
+                        Point pivot = new Point(0, 0);
 
                         if (slice.IsNinePatch)
                         {
@@ -644,7 +580,7 @@ public static class AsepriteFileReader
                             uint cw = reader.ReadDword();   //  Center width
                             uint ch = reader.ReadDword();   //  Center height
 
-                            key.CenterBounds = new Rectangle(cx, cy, (int)cw, (int)ch);
+                            center = new Rectangle(cx, cy, (int)cw, (int)ch);
                         }
 
                         if (slice.HasPivot)
@@ -652,8 +588,10 @@ public static class AsepriteFileReader
                             int px = reader.ReadLong(); //  Pivot X position (relative to the slice origin)
                             int py = reader.ReadLong(); //  Pivot Y position (relative to the slice origin)
 
-                            key.Pivot = new Point(px, py);
+                            pivot = new Point(px, py);
                         }
+
+                        SliceKey key = new(slice, (int)kframe, bounds, center, pivot);
                     }
 
                     doc.Add(slice);
@@ -685,14 +623,9 @@ public static class AsepriteFileReader
                         byte[] pixelData = Zlib.Deflate(compressed);
                         Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
 
-                        Tileset tileset = new()
-                        {
-                            ID = (int)id,
-                            TileCount = (int)count,
-                            TileSize = new Size(w, h),
-                            Name = name,
-                            Pixels = pixels
-                        };
+                        Size tileSize = new Size(w, h);
+
+                        Tileset tileset = new((int)id, (int)count, tileSize, name, pixels);
 
                         doc.Add(tileset);
                     }
@@ -735,6 +668,7 @@ public static class AsepriteFileReader
                 Debug.Assert(reader.Position == cend);
             }
 
+            Frame frame = new(duration, cels);
             doc.Add(frame);
         }
 

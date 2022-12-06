@@ -22,6 +22,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace AsepriteDotNet.Common;
 
+/// <summary>
+///     Represents the x- and y-coordinates of osmething within a two
+///     dimenstional plane.
+/// </summary>
 public struct Point : IEquatable<Point>
 {
     /// <summary>

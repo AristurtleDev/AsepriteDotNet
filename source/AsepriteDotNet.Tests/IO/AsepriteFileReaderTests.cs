@@ -83,7 +83,7 @@ public sealed class AsepriteFileReaderTest
         Assert.Equal("blendmode-difference", doc.Layers[5].Name);
         Assert.Equal(BlendMode.Difference, doc.Layers[5].BlendMode);
         Assert.Equal("tilemap", doc.Layers[6].Name);
-        Assert.Equal(0, Assert.IsType<TilemapLayer>(doc.Layers[6]).TilesetIndex);
+        Assert.Equal(0, Assert.IsType<TilemapLayer>(doc.Layers[6]).Tileset.ID);
         Assert.Equal(2, Assert.IsType<GroupLayer>(doc.Layers[7]).Children.Count);
         Assert.Equal(1, doc.Layers[8].ChildLevel);
         Assert.Equal(1, doc.Layers[9].ChildLevel);
@@ -111,7 +111,7 @@ public sealed class AsepriteFileReaderTest
 
         //  Validate Cels
         ImageCel fgCel = Assert.IsType<ImageCel>(doc.Frames[2].Cels[1]);
-        Assert.Equal(10, fgCel.LayerIndex);
+        Assert.Equal("foreground", fgCel.Layer.Name);
         Assert.Equal(new Size(16, 16), fgCel.Size);
         Assert.Equal(new Point(8, 8), fgCel.Position);
         Assert.Equal(fgCel.Size.Width * fgCel.Size.Height, fgCel.Pixels.Length);
@@ -379,7 +379,8 @@ public sealed class AsepriteFileReaderTest
 
 
         TilemapLayer tilesLayer = Assert.IsType<TilemapLayer>(doc.Layers[1]);
-        Assert.Equal(tileset.ID, tilesLayer.TilesetIndex);
+        Assert.Equal(tileset, tilesLayer.Tileset);
+        // Assert.Equal(tileset.ID, tilesLayer.TilesetIndex);
 
         TilemapCel tilesCel = Assert.IsType<TilemapCel>(doc.Frames[0].Cels[1]);
 

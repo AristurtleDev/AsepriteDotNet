@@ -35,33 +35,33 @@ public sealed class TilemapCel : Cel
     ///     Gets the width and height components of this 
     ///     <see cref="TilemapCel"/>.
     /// </summary> 
-    public Size Size { get; internal set; }
+    public Size Size { get; }
 
     /// <summary>
     ///     Gets the number of bits per tile for this <see cref="TilemapCel"/>.
     /// </summary>
-    public int BitsPerTile { get; internal set; }
+    public int BitsPerTile { get; }
 
     /// <summary>
     ///     Gets the bitmask for tile ID for this <see cref="TilemapCel"/>.
     /// </summary>
-    public uint TileIdBitmask { get; internal set; }
+    public uint TileIdBitmask { get; }
 
     /// <summary>
     ///     Gets the bitmask for x-flip for this <see cref="TilemapCel"/>.
     /// </summary>
-    public uint XFlipBitmask { get; internal set; }
+    public uint XFlipBitmask { get; }
 
     /// <summary>
     ///     Gets the bitmask for y-flip for this <see cref="TilemapCel"/>.
     /// </summary>
-    public uint YFlipBitmask { get; internal set; }
+    public uint YFlipBitmask { get; }
 
     /// <summary>
     ///     Gets the bitmask for 90CW rotation for this 
     ///     <see cref="TilemapCel"/>.
     /// </summary>
-    public uint RotationBitmask { get; internal set; }
+    public uint RotationBitmask { get; }
 
     /// <summary>
     ///     Gets  an <see cref="Array"/> of <see cref="byte"/> elements that
@@ -71,8 +71,17 @@ public sealed class TilemapCel : Cel
     ///     Order of tiles is row by row, from top to bottom, for each scanline
     ///     read tiles from left to right.
     /// </remarks>
-    // public byte[] Tiles { get; internal set; } = Array.Empty<byte>();
-    public Tile[] Tiles { get; internal set; } = Array.Empty<Tile>();
+    public Tile[] Tiles { get; }
 
-    internal TilemapCel() { }
+    internal TilemapCel(Size size, int bitsPerTile, uint tileIdBitmask, uint xFlipBitmask, uint yFlipBitmask, uint rotationBitmask, Tile[] tiles, Layer layer, Point position, int opacity)
+        : base(layer, position, opacity)
+    {
+        Size = size;
+        BitsPerTile = bitsPerTile;
+        TileIdBitmask = tileIdBitmask;
+        XFlipBitmask = xFlipBitmask;
+        YFlipBitmask = yFlipBitmask;
+        RotationBitmask = rotationBitmask;
+        Tiles = tiles;
+    }
 }

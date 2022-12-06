@@ -41,32 +41,35 @@ public class SliceKey
     ///     <see cref="SliceKey"/> is valid for stating from to the end of the
     ///     animation.
     /// </summary>
-    public int Frame { get; internal set; }
+    public int Frame { get; }
 
     /// <summary>
     ///     Gets the bounds of this <see cref="SliceKey"/>.
     /// </summary>
-    public Rectangle Bounds { get; internal set; }
+    public Rectangle Bounds { get; }
 
     /// <summary>
     ///     Gets the bounds of the 9-patch center rectangle if it is part of
     ///     a 9-patch <see cref="Slice"/>, <see langword="null"/> if not.
     /// </summary>
-    public Rectangle CenterBounds { get; internal set; }
+    public Rectangle CenterBounds { get; }
 
     /// <summary>
     ///     Gets the xy-coordinate pivot point relative the origin of if the
     ///     <see cref="Slice"/> contains pivot information,
     ///     <see langword="null"/> if not.
     /// </summary>
-    public Point Pivot { get; internal set; }
+    public Point Pivot { get; }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="SliceKey"/> class.
     /// </summary>
-    internal SliceKey(Slice slice)
+    internal SliceKey(Slice slice, int frame, Rectangle bounds, Rectangle center, Point pivot)
     {
         Slice = slice;
         slice.AddKey(this);
+        Bounds = bounds;
+        CenterBounds = center;
+        Pivot = pivot;
     }
 }

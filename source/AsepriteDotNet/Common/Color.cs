@@ -25,30 +25,75 @@ namespace AsepriteDotNet.Common;
 
 public struct Color
 {
-    internal const byte RGBA_R_SHIFT = 0;
-    internal const byte RGBA_G_SHIFT = 8;
-    internal const byte RGBA_B_SHIFT = 16;
-    internal const byte RGBA_A_SHIFT = 24;
-    internal const uint RGBA_R_MASK = 0x000000ff;
-    internal const uint RGBA_G_MASK = 0x0000ff00;
-    internal const uint RGBA_B_MASK = 0x00ff0000;
-    internal const uint RGBA_RGB_MASK = 0x00ffffff;
-    internal const uint RGBA_A_MASK = 0xff000000;
-    internal const byte ONE_HALF = 0x80;
-    internal const byte MASK = 0xFF;
+    private const byte RGBA_R_SHIFT = 0;
+    private const byte RGBA_G_SHIFT = 8;
+    private const byte RGBA_B_SHIFT = 16;
+    private const byte RGBA_A_SHIFT = 24;
+    private const uint RGBA_R_MASK = 0x000000ff;
+    private const uint RGBA_G_MASK = 0x0000ff00;
+    private const uint RGBA_B_MASK = 0x00ff0000;
+    private const uint RGBA_RGB_MASK = 0x00ffffff;
+    private const uint RGBA_A_MASK = 0xff000000;
+    private const byte ONE_HALF = 0x80;
+    private const byte MASK = 0xFF;
+
+    /// <summary>   
+    ///     Returns a <see cref="Color"/> value that represents a transparent
+    ///     color of R=0 G=0 B=0 A=0
+    /// </summary>
+    public static readonly Color Transparent = Color.FromRGBA(0, 0, 0, 0);
 
     private uint _value;
 
-    public byte R => unchecked((byte)((_value >> RGBA_R_SHIFT) & 0xFF));
-    public byte G => unchecked((byte)((_value >> RGBA_G_SHIFT) & 0xFF));
-    public byte B => unchecked((byte)((_value >> RGBA_B_SHIFT) & 0xFF));
-    public byte A => unchecked((byte)((_value >> RGBA_A_SHIFT) & 0xFF));
+    /// <summary>
+    ///     Gets the red component of this <see cref="Color"/> value.
+    /// </summary>
+    public readonly byte R => unchecked((byte)((_value >> RGBA_R_SHIFT) & 0xFF));
+
+    /// <summary>
+    ///     Gets the green component of this <see cref="Color"/> value.
+    /// </summary>
+    public readonly byte G => unchecked((byte)((_value >> RGBA_G_SHIFT) & 0xFF));
+
+    /// <summary>
+    ///     Gets the blue component of this <see cref="Color"/> value.
+    /// </summary>
+    public readonly byte B => unchecked((byte)((_value >> RGBA_B_SHIFT) & 0xFF));
+
+    /// <summary>
+    ///     Gets the alpha component of this <see cref="Color"/> value.
+    /// </summary>
+    public readonly byte A => unchecked((byte)((_value >> RGBA_A_SHIFT) & 0xFF));
 
     private Color(uint value)
     {
         _value = value;
     }
 
+    /// <summary>
+    ///     Creates a <see cref="Color"/> value from the four RGBA component
+    ///     (red, green, blue, alpha) values.
+    /// </summary>
+    /// <remarks>
+    ///     This method is passed 32-bit integers for each component value,
+    ///     however, each component is limited to 8-bits.
+    /// </remarks>
+    /// <param name="red">
+    ///     The red component. Valid values are 0 through 255 inclusivly.
+    /// </param>
+    /// <param name="green">
+    ///     The green component. Valid values are 0 through 255 inclusivly.
+    /// </param>
+    /// <param name="blue">
+    ///     The blue component. Valid values are 0 through 255 inclusivly.
+    /// </param>
+    /// <param name="alpha">
+    ///     The alpha component. Valid values are 0 through 255 inclusivly.
+    /// </param>
+    /// <returns>
+    ///     The <see cref="Color"/> value that is created from the specified
+    ///     component values.
+    /// </returns>
     public static Color FromRGBA(int red, int green, int blue, int alpha)
     {
         CheckByte(red, nameof(red));
@@ -58,37 +103,95 @@ public struct Color
         return FromRGBA(RGBA(red, green, blue, alpha));
     }
 
+    /// <summary>
+    ///     Returns a human-readable string representation of this
+    ///     <see cref="Color"/>.
+    /// </summary>
+    /// <returns>
+    ///     A string that contains the RGBA component names and values in the
+    ///     format  <code>"R={R} G={G} B={B} A={A}"</code>
+    /// </returns>
     public override string ToString() => $"R={R} G={G} B={B} A={A}";
 
-    private (int, int, int, int) GetRGBAValues() => (R, G, B, A);
-
+    /// <summary>
+    ///     Creates a new <see cref="Color"/> from from a 32-bit unsigned
+    ///     integer value.
+    /// </summary>
+    /// <param name="argb">
+    ///     The value specifhing the 32-bit RGBA value.
+    /// </param>
+    /// <returns>
+    ///     The <see cref="Color"/> value that is created from the specified
+    ///     32-bit unsigned integer.
+    /// </returns>
     public static Color FromRGBA(uint argb) => new Color(argb);
 
-    public static Color Blend(BlendMode mode, Color backdrop, Color source, int opacity) => mode switch
+    /// <summary>
+    ///     Blends two <see cref="Color"/> values using a specified
+    ///     <see cref="BlendMode"/>.
+    /// </summary>
+    /// <param name="mode">
+    ///     The <see cref="BlendMode"/> to use for blending the two colors.
+    /// </param>
+    /// <param name="backdrop">
+    ///     The <see cref="Color"/> value that is behind the 
+    ///     <paramref name="source"/>. 
+    /// </param>
+    /// <param name="source">
+    ///     The <see cref="Color"/> value that is on top of the
+    ///     <paramref name="backdrop"/>.
+    /// </param>
+    /// <param name="opacity">
+    ///     The opacity of the container (e.g. layer) that the 
+    ///     <paramref name="source"/> exists on.
+    /// </param>
+    /// <returns>
+    ///     A new <see cref="Color"/> value that is the result of blending the
+    ///     <paramref name="source"/> with the <paramref name="backdrop"/>
+    ///     using the specified <see cref="BlendMode"/>.
+    /// </returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static Color Blend(BlendMode mode, Color backdrop, Color source, int opacity)
     {
-        #pragma warning disable format
-        BlendMode.Normal     => Normal(backdrop, source, opacity),
-        BlendMode.Multiply   => Multiply(backdrop, source, opacity),
-        BlendMode.Screen     => Screen(backdrop, source, opacity),
-        BlendMode.Overlay    => Overlay(backdrop, source, opacity),
-        BlendMode.Darken     => Darken(backdrop, source, opacity),
-        BlendMode.Lighten    => Lighten(backdrop, source, opacity),
-        BlendMode.ColorDodge => ColorDodge(backdrop, source, opacity),
-        BlendMode.ColorBurn  => ColorBurn(backdrop, source, opacity),
-        BlendMode.HardLight  => HardLight(backdrop, source, opacity),
-        BlendMode.SoftLight  => SoftLight(backdrop, source, opacity),
-        BlendMode.Difference => Difference(backdrop, source, opacity),
-        BlendMode.Exclusion  => Exclusion(backdrop, source, opacity),
-        BlendMode.Hue        => HslHue(backdrop, source, opacity),
-        BlendMode.Saturation => HslSaturation(backdrop, source, opacity),
-        BlendMode.Color      => HslColor(backdrop, source, opacity),
-        BlendMode.Luminosity => HslLuminosity(backdrop, source, opacity),
-        BlendMode.Addition   => Addition(backdrop, source, opacity),
-        BlendMode.Subtract   => Subtract(backdrop, source, opacity),
-        BlendMode.Divide     => Divide(backdrop, source, opacity),
-        _                    => throw new InvalidOperationException($"Unknown blend mode '{mode}'")
-        #pragma warning restore format
-    };
+        if (backdrop.A == 0 && source.A == 0)
+        {
+            return Transparent;
+        }
+        else if (backdrop.A == 0)
+        {
+            return source;
+        }
+        else if (source.A == 0)
+        {
+            return backdrop;
+        }
+
+        return mode switch
+        {
+            #pragma warning disable format
+            BlendMode.Normal     => Normal(backdrop, source, opacity),
+            BlendMode.Multiply   => Multiply(backdrop, source, opacity),
+            BlendMode.Screen     => Screen(backdrop, source, opacity),
+            BlendMode.Overlay    => Overlay(backdrop, source, opacity),
+            BlendMode.Darken     => Darken(backdrop, source, opacity),
+            BlendMode.Lighten    => Lighten(backdrop, source, opacity),
+            BlendMode.ColorDodge => ColorDodge(backdrop, source, opacity),
+            BlendMode.ColorBurn  => ColorBurn(backdrop, source, opacity),
+            BlendMode.HardLight  => HardLight(backdrop, source, opacity),
+            BlendMode.SoftLight  => SoftLight(backdrop, source, opacity),
+            BlendMode.Difference => Difference(backdrop, source, opacity),
+            BlendMode.Exclusion  => Exclusion(backdrop, source, opacity),
+            BlendMode.Hue        => HslHue(backdrop, source, opacity),
+            BlendMode.Saturation => HslSaturation(backdrop, source, opacity),
+            BlendMode.Color      => HslColor(backdrop, source, opacity),
+            BlendMode.Luminosity => HslLuminosity(backdrop, source, opacity),
+            BlendMode.Addition   => Addition(backdrop, source, opacity),
+            BlendMode.Subtract   => Subtract(backdrop, source, opacity),
+            BlendMode.Divide     => Divide(backdrop, source, opacity),
+            _                    => throw new InvalidOperationException($"Unknown blend mode '{mode}'")
+            #pragma warning restore format
+        };
+    }
 
     private static void CheckByte(int value, string name)
     {
@@ -225,18 +328,19 @@ public struct Color
         return Normal(backdrop, new Color(rgba), opacity);
     }
 
-    //  not working
     private static Color Overlay(Color backdrop, Color source, int opacity)
     {
         int overlay(int b, int s)
         {
             if (b < 128)
             {
-                return MUL_UN8(s, b << 1);
+                b <<= 1;
+                return MUL_UN8(s, b);
             }
             else
             {
-                return s + b - MUL_UN8(s, b << 1);
+                b = (b << 1) - 255;
+                return s + b - MUL_UN8(s, b);
             }
         }
 
@@ -332,11 +436,13 @@ public struct Color
         {
             if (s < 128)
             {
-                return MUL_UN8(b, s << 1);
+                s <<= 1;
+                return MUL_UN8(b, s);
             }
             else
             {
-                return b + (s << 1) - MUL_UN8(b, s << 1);
+                s = (s << 1) - 255;
+                return b + s - MUL_UN8(b, s);
             }
         }
 

@@ -23,7 +23,7 @@ namespace AsepriteDotNet.Compression;
 /// <summary>
 ///     Utility class for calculating an Adler-32 checksum
 /// </summary>
-public class Adler32
+internal class Adler32
 {
     private const uint BASE = 65521;    //  Largest prime smaller than 65536
     private const int NMAX = 5552;      //  NMAX is the largest n such that 255n(+1)/2 + (n+1)(BASE-1) <= 2^32-1

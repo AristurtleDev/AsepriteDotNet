@@ -107,6 +107,29 @@ public sealed class AsepriteFile
     internal void Add(Tileset tileset) => _tilesets.Add(tileset);
     internal void AddWarning(string message) => _warnings.Add(message);
 
+    /// <summary>
+    ///     Flattens the specified <see cref="Frame"/> by blending each
+    ///     <see cref="Cel"/> in the <see cref="Frame"/>, starting with the top
+    ///     most cel and blending down.  The result is an array of
+    ///     <see cref="Color"/> elements representing the final flattened image
+    ///     of the frame.
+    /// </summary>
+    /// <remarks>
+    ///     Any instance of a <see cref="TilemapCel"/> within the 
+    ///     <see cref="Frame"/> is ignored.
+    /// </remarks>
+    /// <param name="frame">
+    ///     The <see cref="Frame"/> to flatten
+    /// </param>
+    /// <param name="onlyVisible">
+    ///     Whether only the <see cref="Cel"/> elements that are on a 
+    ///     <see cref="Layer"/> that is visible should be included.
+    /// </param>
+    /// <returns>
+    ///     A new <see cref="Array"/> of <see cref="Color"/> elements that
+    ///     represent the image of the <see cref="Frame"/> once it has been
+    ///     flattened.
+    /// </returns>
     public Color[] FlattenFrame(Frame frame, bool onlyVisible)
     {
         Color[] flattened = new Color[Size.Width * Size.Height];
@@ -142,12 +165,12 @@ public sealed class AsepriteFile
                     }
                     else if (otherCel is TilemapCel otherTileMapCel)
                     {
-                        throw new NotImplementedException();
+                        continue;   //  Tilemap cels not supported
                     }
                 }
                 else if (cel is TilemapCel tilemapCel)
                 {
-                    throw new NotImplementedException();
+                    continue;   //  Tilemap cels not supported
                 }
 
                 if (pixels.Length > 0)

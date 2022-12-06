@@ -23,7 +23,7 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Compression;
 
-public class CRC
+internal class CRC
 {
     /// <summary>
     ///     The default initial CRC value.

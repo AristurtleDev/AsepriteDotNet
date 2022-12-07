@@ -22,9 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.Diagnostics;
+using System.Drawing;
 
 using AsepriteDotNet.Compression;
-using AsepriteDotNet.Common;
 using AsepriteDotNet.Document;
 
 namespace AsepriteDotNet.IO;
@@ -52,7 +52,7 @@ public static class AsepriteFileReader
     private const ushort ASE_CHUNK_TAGS = 0x2018;                   //  Tags Chunk
     private const ushort ASE_CHUNK_PALETTE = 0x2019;                //  Palette Chunk
     private const ushort ASE_CHUNK_USER_DATA = 0x2020;              //  User Data Cunk
-    private const ushort ASE_CHUNK_SLICE = 0x2021;                  //  Slice Chunk
+    private const ushort ASE_CHUNK_SLICE = 0x2022;                  //  Slice Chunk
     private const ushort ASE_CHUNK_TILESET = 0x2023;                //  Tileset Chunk
 
     private const ushort ASE_LAYER_TYPE_NORMAL = 0;                 //  Layer Type Normal (Image) Layer
@@ -218,7 +218,7 @@ public static class AsepriteFileReader
 
             //  Reference to the last chunk that can have user data so we can
             //  apply a User Data chunk to it when one is read.
-            IUserData? lastUserData = default;
+            IUserData? lastWithUserdata = default;
 
             //  Tracks the iteration of the tags when reading user data for
             //  tags chunk.
@@ -248,6 +248,10 @@ public static class AsepriteFileReader
             //  Read chunk-by-chunk until all chunks in this frame are read.
             for (int cnum = 0; cnum < nchunks; cnum++)
             {
+                if(cnum == 53)
+                {
+                    ;
+                }
                 long cstart = reader.Position;
                 uint clen = reader.ReadDword();     //  Size of chunk, in bytes
                 ushort ctype = reader.ReadWord();   //  The type of chunk
@@ -315,7 +319,7 @@ public static class AsepriteFileReader
                         lastGroupLayer = gLayer;
                     }
 
-                    lastUserData = layer;
+                    lastWithUserdata = layer;
                     doc.Add(layer);
 
                 }
@@ -405,7 +409,7 @@ public static class AsepriteFileReader
                     }
 
                     lastCel = cel;
-                    lastUserData = cel;
+                    lastWithUserdata = cel;
                     cels.Add(cel);
                 }
                 else if (ctype == ASE_CHUNK_CEL_EXTRA)
@@ -453,7 +457,7 @@ public static class AsepriteFileReader
                         string name = reader.ReadString();  //  Tag name
 
                         LoopDirection loopDirection = (LoopDirection)direction;
-                        Color tagColor = Color.FromRGBA(r, g, b, 255);
+                        Color tagColor = Color.FromArgb(255, r, g, b);
 
                         Tag tag = new(from, to, loopDirection, tagColor, name);
 
@@ -461,7 +465,7 @@ public static class AsepriteFileReader
                     }
 
                     tagIterator = 0;
-                    lastUserData = doc.Tags.FirstOrDefault();
+                    lastWithUserdata = doc.Tags.FirstOrDefault();
                 }
                 else if (ctype == ASE_CHUNK_PALETTE)
                 {
@@ -487,7 +491,7 @@ public static class AsepriteFileReader
                         {
                             _ = reader.ReadString();    //  Color name (ignored)
                         }
-                        doc.Palette[(int)i] = Color.FromRGBA(r, g, b, a);
+                        doc.Palette[(int)i] = Color.FromArgb(a, r, g, b);
                     }
                 }
                 else if (ctype == ASE_CHUNK_USER_DATA)
@@ -508,17 +512,17 @@ public static class AsepriteFileReader
                         byte b = reader.ReadByte();     //  Color Blue (0 - 255)
                         byte a = reader.ReadByte();     //  Color Alpha (0 - 255)
 
-                        color = Color.FromRGBA(r, g, b, a);
+                        color = Color.FromArgb(a, r, g, b);
                     }
 
-                    Debug.Assert(lastUserData is not null);
+                    Debug.Assert(lastWithUserdata is not null);
 
-                    if (lastUserData is not null)
+                    if (lastWithUserdata is not null)
                     {
-                        lastUserData.UserData.Text = text;
-                        lastUserData.UserData.Color = color;
+                        lastWithUserdata.UserData.Text = text;
+                        lastWithUserdata.UserData.Color = color;
 
-                        if (lastUserData is Tag)
+                        if (lastWithUserdata is Tag)
                         {
 
                             //  Tags are a special case, user data for tags 
@@ -538,11 +542,11 @@ public static class AsepriteFileReader
 
                             if (tagIterator < doc.Tags.Count)
                             {
-                                lastUserData = doc.Tags[tagIterator];
+                                lastWithUserdata = doc.Tags[tagIterator];
                             }
                             else
                             {
-                                lastUserData = null;
+                                lastWithUserdata = null;
                             }
                         }
 
@@ -570,8 +574,8 @@ public static class AsepriteFileReader
                         uint h = reader.ReadDword();        //  Slice Height (can be 0 if slice is hidden)
 
                         Rectangle bounds = new Rectangle(x, y, (int)w, (int)h);
-                        Rectangle center = bounds;
-                        Point pivot = new Point(0, 0);
+                        Rectangle? center = default;
+                        Point? pivot = default;
 
                         if (slice.IsNinePatch)
                         {
@@ -595,7 +599,7 @@ public static class AsepriteFileReader
                     }
 
                     doc.Add(slice);
-                    lastUserData = slice;
+                    lastWithUserdata = slice;
                 }
                 else if (ctype == ASE_CHUNK_TILESET)
                 {
@@ -704,7 +708,7 @@ public static class AsepriteFileReader
             byte green = pixels[b + 1];
             byte blue = pixels[b + 2];
             byte alpha = pixels[b + 3];
-            results[i] = Color.FromRGBA(red, green, blue, alpha);
+            results[i] = Color.FromArgb(alpha, red, green, blue);
         }
 
         return results;
@@ -721,7 +725,7 @@ public static class AsepriteFileReader
             byte green = pixels[b];
             byte blue = pixels[b];
             byte alpha = pixels[b + 1];
-            results[i] = Color.FromRGBA(red, green, blue, alpha);
+            results[i] = Color.FromArgb(alpha, red, green, blue);
         }
 
         return results;
@@ -738,7 +742,7 @@ public static class AsepriteFileReader
 
             if (index == palette.TransparentIndex)
             {
-                results[i] = Color.FromRGBA(0, 0, 0, 0);
+                results[i] = Color.FromArgb(0, 0, 0, 0);
             }
             else
             {

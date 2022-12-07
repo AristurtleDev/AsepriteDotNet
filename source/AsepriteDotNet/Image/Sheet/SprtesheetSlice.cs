@@ -21,15 +21,45 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using AsepriteDotNet.Common;
+using System.Drawing;
 
 namespace AsepriteDotNet.Image.Sheet;
 
+/// <summary>
+///     Represents a rectangular boundry within a
+///     <see cref="SpritesheetFrame"/>.
+/// </summary>
 public sealed class SpritesheetSlice
 {
-    public Rectangle Bounds { get; set; }
-    public Rectangle CenterBounds { get; set; }
-    public Point Pivot { get; set; }
-    public Point Origin { get; set; }
-    public string Name { get; set; } = string.Empty;
+    /// <summary>
+    ///     Gets the bounds of this <see cref="SpritesheetSlice"/>, relative to 
+    ///     the bounds of the <see cref="SpritesheetFrame"/> it is in.
+    /// </summary>
+    public Rectangle Bounds { get; }
+
+    /// <summary>
+    ///     Gets the bounds for the center rectangle of this 
+    ///     <see cref="SpritesheetSlice"/> if it is a 9-patches slice; 
+    ///     otherwise, <see langword="null"/>.
+    /// </summary>
+    public Rectangle? CenterBounds { get; }
+
+    /// <summary>
+    ///     Gets the pivot point for this slice if it has a pivot point;
+    ///     otherwise, <see langword="null"/>.
+    /// </summary>
+    public Point? Pivot { get; }
+
+    /// <summary>
+    ///     Gets the name of this <see cref="SpritesheetSlice"/>.
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
+    ///     Gets the color of this <see cref="SpritesheetSlice"/>.
+    /// </summary>
+    public Color Color { get; }
+
+    internal SpritesheetSlice(Rectangle bounds, Rectangle? centerBounds, Point? pivot, string name, Color color) =>
+        (Bounds, CenterBounds, Pivot, Name, Color) = (bounds, centerBounds, pivot, name, color);
 }

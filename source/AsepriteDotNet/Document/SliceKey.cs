@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using AsepriteDotNet.Common;
+using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
@@ -52,19 +52,19 @@ public class SliceKey
     ///     Gets the bounds of the 9-patch center rectangle if it is part of
     ///     a 9-patch <see cref="Slice"/>, <see langword="null"/> if not.
     /// </summary>
-    public Rectangle CenterBounds { get; }
+    public Rectangle? CenterBounds { get; }
 
     /// <summary>
     ///     Gets the xy-coordinate pivot point relative the origin of if the
     ///     <see cref="Slice"/> contains pivot information,
     ///     <see langword="null"/> if not.
     /// </summary>
-    public Point Pivot { get; }
+    public Point? Pivot { get; }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="SliceKey"/> class.
     /// </summary>
-    internal SliceKey(Slice slice, int frame, Rectangle bounds, Rectangle center, Point pivot)
+    internal SliceKey(Slice slice, int frame, Rectangle bounds, Rectangle? center, Point? pivot)
     {
         Slice = slice;
         slice.AddKey(this);

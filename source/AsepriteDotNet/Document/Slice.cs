@@ -50,6 +50,30 @@ public class Slice : IUserData, IEnumerable<SliceKey>
     public string Name { get; }
 
     /// <summary>
+    ///     Gets the <see cref="SliceKey"/> element from this
+    ///     <see cref="Slice"/> at the specified index.
+    /// </summary>
+    /// <param name="index">
+    ///     The index of the <see cref="SliceKey"/> in this slice.
+    /// </param>
+    /// <returns>
+    ///     The <see cref="SliceKey"/> at the specified index.
+    /// </returns>
+    public SliceKey this[int index]
+    {
+        get
+        {
+            return _keys[index];
+        }
+    }
+
+    /// <summary>
+    ///     Gets the total number of <see cref="SliceKey"/> elements in this
+    ///     <see cref="Slice"/>.
+    /// </summary>
+    public int Count => _keys.Count;
+
+    /// <summary>
     ///     Gets the <see cref="UserData"/> for this <see cref="Slice"/>.
     /// </summary>
     public UserData UserData { get; internal set; } = new();

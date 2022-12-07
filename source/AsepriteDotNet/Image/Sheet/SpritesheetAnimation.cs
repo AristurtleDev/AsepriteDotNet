@@ -21,13 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using AsepriteDotNet.Common;
+using System.Collections.ObjectModel;
 
 namespace AsepriteDotNet.Image.Sheet;
 
+/// <summary>
+///     Represents the definition for an animation in a spritesheet.
+/// </summary>
 public sealed class SpritesheetAnimation
 {
-    public List<SpritesheetFrame> Frames { get; set; } = new();
-    public string Name { get; set; } = "Animation";
-    public LoopDirection Direction { get; set; }
+    private List<SpritesheetFrame> _frames;
+
+    /// <summary>
+    ///     Gets a read-only collection of the <see cref="SpritesheetFrame"/>
+    ///     elements that make up this animation.  The order of the frames is
+    ///     from start to the end of the animation.
+    /// </summary>
+    public ReadOnlyCollection<SpritesheetFrame> Frames { get; }
+
+    /// <summary>
+    ///     Gets the name of this animation.
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
+    ///     Gets the <see cref="LoopDirection"/> used by this animation.
+    /// </summary>
+    public LoopDirection Direction { get; }
+
+    internal SpritesheetAnimation(List<SpritesheetFrame> frames, string name, LoopDirection direction)
+    {
+        _frames = frames;
+        Frames = frames.AsReadOnly();
+        Name = name;
+        Direction = direction;
+    }
 }

@@ -21,7 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using AsepriteDotNet.Common;
+using System.Drawing;
+
 using AsepriteDotNet.Document;
 using AsepriteDotNet.IO;
 
@@ -41,16 +42,16 @@ public sealed class AsepriteFileReaderTest
         AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
         //  Expected pallette colors
-        Color pal0 = Color.FromRGBA(223, 7, 114, 255);
-        Color pal1 = Color.FromRGBA(254, 84, 111, 255);
-        Color pal2 = Color.FromRGBA(255, 158, 125, 255);
-        Color pal3 = Color.FromRGBA(255, 208, 128, 255);
-        Color pal4 = Color.FromRGBA(255, 253, 255, 255);
-        Color pal5 = Color.FromRGBA(11, 255, 230, 255);
-        Color pal6 = Color.FromRGBA(1, 203, 207, 255);
-        Color pal7 = Color.FromRGBA(1, 136, 165, 255);
-        Color pal8 = Color.FromRGBA(62, 50, 100, 255);
-        Color pal9 = Color.FromRGBA(53, 42, 85, 255);
+        Color pal0 = Color.FromArgb(255, 223, 7, 114);
+        Color pal1 = Color.FromArgb(255, 254, 84, 111);
+        Color pal2 = Color.FromArgb(255, 255, 158, 125);
+        Color pal3 = Color.FromArgb(255, 255, 208, 128);
+        Color pal4 = Color.FromArgb(255, 255, 253, 255);
+        Color pal5 = Color.FromArgb(255, 11, 255, 230);
+        Color pal6 = Color.FromArgb(255, 1, 203, 207);
+        Color pal7 = Color.FromArgb(255, 1, 136, 165);
+        Color pal8 = Color.FromArgb(255, 62, 50, 100);
+        Color pal9 = Color.FromArgb(255, 53, 42, 85);
 
         //  Validate palette
         Assert.True(doc.Palette.Count == 10);
@@ -75,7 +76,7 @@ public sealed class AsepriteFileReaderTest
         Assert.False(doc.Layers[1].IsVisible);
         Assert.Equal("user-data", doc.Layers[2].Name);
         Assert.Equal("user-data text", doc.Layers[2].UserData.Text);
-        Assert.Equal(Color.FromRGBA(223, 7, 114, 255), doc.Layers[2].UserData.Color);
+        Assert.Equal(Color.FromArgb(255, 223, 7, 114), doc.Layers[2].UserData.Color);
         Assert.Equal("reference", doc.Layers[3].Name);
         Assert.True(doc.Layers[3].IsReferenceLayer);
         Assert.Equal("75-opacity", doc.Layers[4].Name);
@@ -93,13 +94,13 @@ public sealed class AsepriteFileReaderTest
         Assert.Equal("tag0to2forward", doc.Tags[0].Name);
         Assert.Equal(0, doc.Tags[0].From);
         Assert.Equal(2, doc.Tags[0].To);
-        Assert.Equal(Color.FromRGBA(0, 0, 0, 255), doc.Tags[0].Color);
+        Assert.Equal(Color.FromArgb(255, 0, 0, 0), doc.Tags[0].Color);
         Assert.Equal(LoopDirection.Forward, doc.Tags[0].LoopDirection);
         Assert.Equal("tag3pingpong", doc.Tags[1].Name);
         Assert.Equal(LoopDirection.PingPong, doc.Tags[1].LoopDirection);
         Assert.Equal("tag4userdata", doc.Tags[2].Name);
-        Assert.Equal(Color.FromRGBA(11, 255, 230, 255), doc.Tags[2].Color);
-        Assert.Equal(Color.FromRGBA(11, 255, 230, 255), doc.Tags[2].UserData.Color);
+        Assert.Equal(Color.FromArgb(255, 11, 255, 230), doc.Tags[2].Color);
+        Assert.Equal(Color.FromArgb(255, 11, 255, 230), doc.Tags[2].UserData.Color);
         Assert.Equal("tag-4-user-data", doc.Tags[2].UserData.Text);
 
         //  Validate Frames
@@ -125,7 +126,7 @@ public sealed class AsepriteFileReaderTest
 
         Assert.Equal(10, doc.Palette.Count);
 
-        Color tran = Color.FromRGBA(0, 0, 0, 0);
+        Color tran = Color.FromArgb(0, 0, 0, 0);
         Color pal0 = doc.Palette[0];
         Color pal1 = doc.Palette[1];
         Color pal2 = doc.Palette[2];
@@ -169,7 +170,7 @@ public sealed class AsepriteFileReaderTest
 
         Assert.Equal(11, doc.Palette.Count);
 
-        Color pal0 = Color.FromRGBA(0, 0, 0, 0);
+        Color pal0 = Color.FromArgb(0, 0, 0, 0);
         Color pal1 = doc.Palette[1];
         Color pal2 = doc.Palette[2];
         Color pal3 = doc.Palette[3];
@@ -213,7 +214,7 @@ public sealed class AsepriteFileReaderTest
 
         Assert.Equal(8, doc.Palette.Count);
 
-        Color tran = Color.FromRGBA(0, 0, 0, 0);
+        Color tran = Color.FromArgb(0, 0, 0, 0);
         Color pal0 = doc.Palette[0];
         Color pal1 = doc.Palette[1];
         Color pal2 = doc.Palette[2];
@@ -253,7 +254,7 @@ public sealed class AsepriteFileReaderTest
         string path = GetPath("tilemap-test.aseprite");
         AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
-        Color tran = Color.FromRGBA(0, 0, 0, 0);
+        Color tran = Color.FromArgb(0, 0, 0, 0);
         Color pal0 = doc.Palette[0];
         Color pal1 = doc.Palette[1];
         Color pal2 = doc.Palette[2];

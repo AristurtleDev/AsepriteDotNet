@@ -20,12 +20,43 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Image.Sheet;
 
+/// <summary>
+///     Represents the options to adhere to when generating a new spritesheet.
+/// </summary>
 public class SpritesheetOptions
 {
+    /// <summary>
+    ///     Gets or Sets a value that indicates whether only visible layers
+    ///     should be processed when generating the spritesheet.
+    /// </summary>
     public bool OnlyVisibleLayers { get; set; } = true;
+
+    /// <summary>
+    ///     Gets or Sets a value that indicates whether duplicate frames 
+    ///     should be merged into a single frame.
+    /// </summary>
     public bool MergeDuplicates { get; set; } = true;
-    public SpritesheetType SpritesheetType { get; set; } = SpritesheetType.HorizontalStrip;
+
+    /// <summary>
+    ///     Gets or Sets the type of spritesheet to generate.
+    /// </summary>
+    public SpritesheetPackingMethod SpritesheetType { get; set; } = SpritesheetPackingMethod.HorizontalStrip;
+
+    /// <summary>
+    ///     Gets or Sets the amount of transparent pixels to add between each
+    ///     frame and the edge of the spritesheet.
+    /// </summary>
     public int BorderPadding { get; set; } = 0;
+
+    /// <summary>
+    ///     Gets or Sets the amount of transparent pixels to add between each
+    ///     frame.
+    /// </summary>
     public int Spacing { get; set; } = 0;
+
+    /// <summary>
+    ///     Gets or Sets the amount of transparent pixels to add to the inside
+    ///    of each frames edge. 
+    /// </summary>
     public int InnerPadding { get; set; } = 0;
 }

@@ -22,16 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.Buffers.Binary;
+using System.Drawing;
 using System.IO.Compression;
 using System.Text;
 
-using AsepriteDotNet.Common;
 using AsepriteDotNet.Compression;
 
-namespace AsepriteDotNet.Image;
+namespace AsepriteDotNet.IO.Image;
 
 //  Reference: https://www.w3.org/TR/png-3
-public static class Png
+internal static class PngWriter
 {
     //  Common IDAT chunk sizes are between 8 and 32 Kib.  Opting to use
     //  8Kib for this project.

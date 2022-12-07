@@ -20,9 +20,25 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Image.Sheet;
 
-public enum SpritesheetType
+public enum SpritesheetPackingMethod
 {
+    /// <summary>
+    ///     Defines that the spritesheet should use a horizontal packing method
+    ///     where there is only 1 row and each frame is contained on a unique
+    ///     column.
+    /// </summary>
     HorizontalStrip = 0,
+
+    /// <summary>
+    ///     Defines that the spritesheet should use a vertical strip packing
+    ///     method where there is only 1 column and each frame is contained on
+    ///     a unique row.
+    /// </summary>
     VerticalStrip = 1,
+
+    /// <summary>
+    ///     Defines that the spritesheet should use a square packing method 
+    ///     where where an equal number of columns and rows is created.
+    /// </summary>
     SquarePacked = 2
 }

@@ -21,13 +21,95 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using AsepriteDotNet.Common;
+using System.Drawing;
+using System.Linq;
 
 namespace AsepriteDotNet.Image.Sheet;
 
+/// <summary>
+///     Represents a single frame within a spritesheet.
+/// </summary>
 public sealed class SpritesheetFrame
 {
-    public Rectangle SourceRectangle { get; set; }
-    public List<SpritesheetSlice> Slices { get; set; } = new();
-    public int Duration { get; set; }
+    private Dictionary<string, List<SpritesheetSlice>> _sliceLookup = new();
+
+    /// <summary>
+    ///     Gets the bounds of this <see cref="SpritesheetFrame"/> relative to
+    ///     the overall spritesheet.
+    /// </summary>
+    public Rectangle SourceRectangle { get; }
+
+    /// <summary>
+    ///     Gets the duration of this <see cref="SpritesheetFrame"/> when used
+    ///     in an animation.
+    /// </summary>
+    public int Duration { get; }
+
+    internal SpritesheetFrame(Rectangle source, int duration)
+    {
+        SourceRectangle = source;
+        Duration = duration;
+    }
+
+    /// <summary>
+    ///     Retreives a collection of all <see cref="SpritesheetSlice"/>
+    ///     elements in this <see cref="SpritesheetFrame"/>
+    /// </summary>
+    /// <returns>
+    ///     A collection of all <see cref="SpritesheetSlice"/> elements in this
+    ///     <see cref="SpritesheetFrame"/>.
+    /// </returns>
+    public List<SpritesheetSlice> GetSlices()
+    {
+        List<SpritesheetSlice> slices = new();
+
+        foreach (var slice in _sliceLookup)
+        {
+            slices.AddRange(slice.Value);
+        }
+
+        return slices;
+    }
+
+    /// <summary>
+    ///     Retrieves a collection of <see cref="SpritesheetSlice"/> elements
+    ///     in this <see cref="SpritesheetFrame"/>> that have the specified 
+    ///     <paramref name="name"/>.
+    /// </summary>
+    /// <param name="name">
+    ///     The name of the <see cref="SpritesheetSlice"/> elements to get.
+    /// </param>
+    /// <returns>
+    ///     A new collection containing all <see cref="SpritesheetSlice"/>
+    ///     elements with the given name.
+    /// </returns>
+    public List<SpritesheetSlice> GetSlices(string name)
+    {
+        List<SpritesheetSlice> slices = new();
+
+        if (!string.IsNullOrEmpty(name) && _sliceLookup.ContainsKey(name))
+        {
+            slices.AddRange(_sliceLookup[name]);
+        }
+
+        return slices;
+    }
+
+    internal void AddSlice(SpritesheetSlice slice)
+    {
+        if (_sliceLookup.ContainsKey(slice.Name))
+        {
+            _sliceLookup[slice.Name].Add(slice);
+        }
+        else
+        {
+            _sliceLookup.Add(slice.Name, new List<SpritesheetSlice>() { slice });
+        }
+    }
+
+    internal SpritesheetFrame CreateCopy()
+    {
+        SpritesheetFrame frame = new(SourceRectangle, Duration);
+        return frame;
+    }
 }

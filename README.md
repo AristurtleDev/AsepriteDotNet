@@ -33,6 +33,7 @@ Built against [.NET7](https://dotnet.microsoft.com/en-us/)
     * Provides method to save generated packed spritesheet as a PNG (.png) file.
 
 # Usage
+
 ```csharp
 //  Import namespace
 using AsepriteDotNet;
@@ -40,10 +41,14 @@ using AsepriteDotNet;
 
 ```csharp
 //  Import file using the AsepriteFileReader class
-AsepriteFile file = AsepriteFileReader.Read("/path/to/aseprite/file");
+AsepriteFile file = AsepriteFileReader.Read("/path/to/aseprite/file.aseprite");
+
+//  Create an Asepritesheet (aka spritesheet) from the file
+Asepritesheet sheet = file.ToAsepritesheet();
+
+//  Save the Asepritesheet as a .png file
+sheet.SaveAspng("/path/to/output/file.png");
 ```
-
-
 
 ## License
 **AsepriteDotNet** is licensed under the **MIT License**.  Please refer to the [LICENSE](LICENSE) file for full license text.

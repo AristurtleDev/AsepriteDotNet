@@ -22,7 +22,7 @@ using System.Collections.ObjectModel;
 
 using System.Drawing;
 
-using AsepriteDotNet.Image.Sheet;
+using AsepriteDotNet.Image;
 
 namespace AsepriteDotNet.Document;
 
@@ -123,7 +123,7 @@ public sealed class AsepriteFile
     /// <returns>
     ///     The <see cref="AsepriteSheet"/> that is created by this method.
     /// </returns>
-    public AsepriteSheet ToSpriteSheet(SpritesheetOptions options)
+    public AsepriteSheet ToAsepritesheet(SpritesheetOptions options)
     {
         List<SpritesheetFrame> sheetFrames = new();
         List<SpritesheetAnimation> sheetAnimations = new();
@@ -163,12 +163,12 @@ public sealed class AsepriteFile
             totalFrames -= frameDuplicateMap.Count;
         }
 
-        if (options.SpritesheetType == SpritesheetPackingMethod.HorizontalStrip)
+        if (options.PackingMethod == SpritesheetPackingMethod.HorizontalStrip)
         {
             columns = totalFrames;
             rows = 1;
         }
-        else if (options.SpritesheetType == SpritesheetPackingMethod.VerticalStrip)
+        else if (options.PackingMethod == SpritesheetPackingMethod.VerticalStrip)
         {
             columns = 1;
             rows = totalFrames;
@@ -390,6 +390,33 @@ public sealed class AsepriteFile
     }
 
     /// <summary>
+    ///     Flattens the <see cref="Frame"/> at the specified 
+    ///     <paramref name="frameIndex"/> by blending each <see cref="Cel"/>
+    ///     in the <see cref="Frame"/>, starting with the top most cel and
+    ///     blending down.  The result is an <see cref="Array"/> of
+    ///     <see cref="Color"/> elements representing the final flattened image
+    ///     of the <see cref="Frame"/>.
+    /// </summary>
+    /// <param name="frameIndex">
+    ///     The index of the <see cref="Frame"/> to flatten.
+    /// </param>
+    /// <param name="onlyVisibleLayers">
+    ///     Whether only the <see cref="Cel"/> elements that are on a 
+    ///     <see cref="Layer"/> that is visible should be included.
+    /// </param>
+    /// <returns>
+    ///     A new <see cref="Array"/> of <see cref="Color"/> elements that
+    ///     represent the image of the <see cref="Frame"/> once it has been
+    ///     flattened.
+    /// </returns>
+    public Color[] FlattenFrame(int frameIndex, bool onlyVisibleLayers)
+    {
+        Frame frame = Frames[frameIndex];
+        return FlattenFrame(frame, onlyVisibleLayers);
+
+    }
+
+    /// <summary>
     ///     Flattens the specified <see cref="Frame"/> by blending each
     ///     <see cref="Cel"/> in the <see cref="Frame"/>, starting with the top
     ///     most cel and blending down.  The result is an array of
@@ -403,7 +430,7 @@ public sealed class AsepriteFile
     /// <param name="frame">
     ///     The <see cref="Frame"/> to flatten
     /// </param>
-    /// <param name="onlyVisible">
+    /// <param name="onlyVisibleLayers">
     ///     Whether only the <see cref="Cel"/> elements that are on a 
     ///     <see cref="Layer"/> that is visible should be included.
     /// </param>
@@ -412,7 +439,7 @@ public sealed class AsepriteFile
     ///     represent the image of the <see cref="Frame"/> once it has been
     ///     flattened.
     /// </returns>
-    public Color[] FlattenFrame(Frame frame, bool onlyVisible)
+    public Color[] FlattenFrame(Frame frame, bool onlyVisibleLayers)
     {
         Color[] flattened = new Color[Size.Width * Size.Height];
 
@@ -425,7 +452,7 @@ public sealed class AsepriteFile
 
             //  If only visible and layer cel is on is not visible,
             //  skip processing
-            if (!onlyVisible || (onlyVisible && cel.Layer.IsVisible))
+            if (!onlyVisibleLayers || (onlyVisibleLayers && cel.Layer.IsVisible))
             {
                 if (cel is ImageCel imageCel)
                 {

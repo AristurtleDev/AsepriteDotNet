@@ -24,7 +24,7 @@ SOFTWARE.
 using System.Drawing;
 using System.Linq;
 
-namespace AsepriteDotNet.Image.Sheet;
+namespace AsepriteDotNet.Image;
 
 /// <summary>
 ///     Represents a single frame within a spritesheet.

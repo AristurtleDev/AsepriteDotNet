@@ -21,45 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Drawing;
+using System.Collections.ObjectModel;
 
-namespace AsepriteDotNet.Image.Sheet;
+namespace AsepriteDotNet.Image;
 
 /// <summary>
-///     Represents a rectangular boundry within a
-///     <see cref="SpritesheetFrame"/>.
+///     Represents the definition for an animation in a spritesheet.
 /// </summary>
-public sealed class SpritesheetSlice
+public sealed class SpritesheetAnimation
 {
-    /// <summary>
-    ///     Gets the bounds of this <see cref="SpritesheetSlice"/>, relative to 
-    ///     the bounds of the <see cref="SpritesheetFrame"/> it is in.
-    /// </summary>
-    public Rectangle Bounds { get; }
+    private List<SpritesheetFrame> _frames;
 
     /// <summary>
-    ///     Gets the bounds for the center rectangle of this 
-    ///     <see cref="SpritesheetSlice"/> if it is a 9-patches slice; 
-    ///     otherwise, <see langword="null"/>.
+    ///     Gets a read-only collection of the <see cref="SpritesheetFrame"/>
+    ///     elements that make up this animation.  The order of the frames is
+    ///     from start to the end of the animation.
     /// </summary>
-    public Rectangle? CenterBounds { get; }
+    public ReadOnlyCollection<SpritesheetFrame> Frames { get; }
 
     /// <summary>
-    ///     Gets the pivot point for this slice if it has a pivot point;
-    ///     otherwise, <see langword="null"/>.
-    /// </summary>
-    public Point? Pivot { get; }
-
-    /// <summary>
-    ///     Gets the name of this <see cref="SpritesheetSlice"/>.
+    ///     Gets the name of this animation.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    ///     Gets the color of this <see cref="SpritesheetSlice"/>.
+    ///     Gets the <see cref="LoopDirection"/> used by this animation.
     /// </summary>
-    public Color Color { get; }
+    public LoopDirection Direction { get; }
 
-    internal SpritesheetSlice(Rectangle bounds, Rectangle? centerBounds, Point? pivot, string name, Color color) =>
-        (Bounds, CenterBounds, Pivot, Name, Color) = (bounds, centerBounds, pivot, name, color);
+    internal SpritesheetAnimation(List<SpritesheetFrame> frames, string name, LoopDirection direction)
+    {
+        _frames = frames;
+        Frames = frames.AsReadOnly();
+        Name = name;
+        Direction = direction;
+    }
 }

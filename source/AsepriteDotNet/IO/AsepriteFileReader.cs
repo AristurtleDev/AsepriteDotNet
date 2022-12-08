@@ -212,10 +212,6 @@ public static class AsepriteFileReader
         {
             List<Cel> cels = new();
 
-            //  Reference to the last cel that was read so we can apply a 
-            //  Cel Extra chunk to it if one is read after.
-            Cel? lastCel = default;
-
             //  Reference to the last chunk that can have user data so we can
             //  apply a User Data chunk to it when one is read.
             IUserData? lastWithUserdata = default;
@@ -248,7 +244,7 @@ public static class AsepriteFileReader
             //  Read chunk-by-chunk until all chunks in this frame are read.
             for (int cnum = 0; cnum < nchunks; cnum++)
             {
-                if(cnum == 53)
+                if (cnum == 53)
                 {
                     ;
                 }
@@ -408,28 +404,8 @@ public static class AsepriteFileReader
                         throw new InvalidOperationException($"Unknown cel type '{type}'");
                     }
 
-                    lastCel = cel;
                     lastWithUserdata = cel;
                     cels.Add(cel);
-                }
-                else if (ctype == ASE_CHUNK_CEL_EXTRA)
-                {
-                    uint flags = reader.ReadDword();    //  Flags
-                    float x = reader.ReadFixed();       //  Precise X position
-                    float y = reader.ReadFixed();       //  Precise Y position
-                    float w = reader.ReadFixed();       //  Width of the cel in sprite (scaled in realtime)
-                    float h = reader.ReadFixed();       //  Height of the cel in sprite (scaled in realtime)
-                    _ = reader.ReadBytes(16);           //  For future (set to zero)
-
-                    bool boundsset = HasFlag(flags, ASE_CEL_EXTRA_FLAG_PRECISE_BOUNDS_SET);
-
-                    CelExtra extra = new(boundsset, x, y, w, h);
-
-                    if (lastCel is not null)
-                    {
-                        lastCel.WithExtraData(extra);
-                        lastCel = null;
-                    }
                 }
                 else if (ctype == ASE_CHUNK_TAGS)
                 {
@@ -646,6 +622,11 @@ public static class AsepriteFileReader
                 else if (ctype == ASE_CHUNK_OLD_PALETTE2)
                 {
                     doc.AddWarning($"Old Palette Chunk (0x{ctype:X4}) ignored");
+                    reader.Seek(cend);
+                }
+                else if (ctype == ASE_CHUNK_CEL_EXTRA)
+                {
+                    doc.AddWarning($"Cel Extra Chunk (0x{ctype:x4}) ignored");
                     reader.Seek(cend);
                 }
                 else if (ctype == ASE_CHUNK_COLOR_PROFILE)

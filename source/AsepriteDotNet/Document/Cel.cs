@@ -48,25 +48,10 @@ public abstract class Cel : IUserData
     public int Opacity { get; }
 
     /// <summary>
-    ///     Gets whether this <see cref="Cel"/> has extra data.
-    /// </summary>
-    [MemberNotNullWhen(true, nameof(ExtraData))]
-    public bool HasExtraData => ExtraData is not null;
-
-    /// <summary>
-    ///     Gets the <see cref="CelExtra"/> instance that contains the extra
-    ///     data for this <see cref="Cel"/>; or <see langword="null"/> if there
-    ///     is no extra data provided.
-    /// </summary>
-    public CelExtra? ExtraData { get; private set; } = default;
-
-    /// <summary>
     ///     Gets the <see cref="UserData"/> set for this <see cref="Cel"/>.
     /// </summary>
     public UserData UserData { get; set; } = new();
 
     internal Cel(Layer layer, Point position, int opacity) =>
         (Layer, Position, Opacity) = (layer, position, opacity);
-
-    internal void WithExtraData(CelExtra data) => ExtraData = data;
 }

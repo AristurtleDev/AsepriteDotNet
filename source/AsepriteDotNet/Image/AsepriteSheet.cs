@@ -24,10 +24,9 @@ SOFTWARE.
 using System.Collections.ObjectModel;
 using System.Drawing;
 
-using AsepriteDotNet.Document;
 using AsepriteDotNet.IO.Image;
 
-namespace AsepriteDotNet.Image.Sheet;
+namespace AsepriteDotNet.Image;
 
 /// <summary>
 ///     Represents a spritesheet generated form an Aseprite file.

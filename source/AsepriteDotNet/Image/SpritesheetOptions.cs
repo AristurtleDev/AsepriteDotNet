@@ -18,7 +18,7 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
-namespace AsepriteDotNet.Image.Sheet;
+namespace AsepriteDotNet.Image;
 
 /// <summary>
 ///     Represents the options to adhere to when generating a new spritesheet.
@@ -40,7 +40,7 @@ public class SpritesheetOptions
     /// <summary>
     ///     Gets or Sets the type of spritesheet to generate.
     /// </summary>
-    public SpritesheetPackingMethod SpritesheetType { get; set; } = SpritesheetPackingMethod.HorizontalStrip;
+    public SpritesheetPackingMethod PackingMethod { get; set; } = SpritesheetPackingMethod.HorizontalStrip;
 
     /// <summary>
     ///     Gets or Sets the amount of transparent pixels to add between each

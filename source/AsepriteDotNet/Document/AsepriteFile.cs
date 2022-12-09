@@ -23,6 +23,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 
 using AsepriteDotNet.Image;
+using AsepriteDotNet.IO;
 
 namespace AsepriteDotNet.Document;
 
@@ -111,6 +112,35 @@ public sealed class AsepriteFile
     internal void Add(Slice slice) => _slices.Add(slice);
     internal void Add(Tileset tileset) => _tilesets.Add(tileset);
     internal void AddWarning(string message) => _warnings.Add(message);
+
+    /// <summary>
+    ///     Loads the Aseprite file at the specified
+    ///     <paramref name="filePath"/>.  The result is a new 
+    ///     <see cref="AsepriteFile"/> class instance initialized with the 
+    ///     data read from the Aseprite file.
+    /// </summary>
+    /// <param name="filePath">
+    ///     The absolute file path to the Asperite file.
+    /// </param>
+    /// <returns>
+    ///     A new instance of the <see cref="AsepriteFile"/> class initialized
+    ///     with the data read from the Aseprite file.
+    /// </returns>
+    /// <exception cref="AsepriteFileLoadException">
+    ///     Thrown if an exception occurs during the loading of the Aseprite
+    ///     file. Refer to the inner exception for the exact error.
+    /// </exception>
+    public static AsepriteFile Load(string filePath)
+    {
+        try
+        {
+            return AsepriteFileReader.ReadFile(filePath);
+        }
+        catch (Exception ex)
+        {
+            throw new AsepriteFileLoadException($"An error occured while loading the Aseprite file. Please see inner excpetion for exact error.", ex);
+        }
+    }
 
     /// <summary>
     ///     Creates a new <see cref="AsepriteSheet"/> class instance from the

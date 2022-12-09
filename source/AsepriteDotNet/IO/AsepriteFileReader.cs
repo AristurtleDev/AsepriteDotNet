@@ -134,7 +134,7 @@ public static class AsepriteFileReader
     /// <exception cref="IOException">
     ///     Thrown if an I/O error occurs while attempting to open the file.
     /// </exception>
-    public static AsepriteFile ReadFile(string path)
+    internal static AsepriteFile ReadFile(string path)
     {
         using AsepriteBinaryReader reader = new(File.OpenRead(path));
         return ReadFile(reader);

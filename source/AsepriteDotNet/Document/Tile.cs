@@ -33,12 +33,21 @@ public sealed class Tile
     /// </summary>
     public uint TileID { get; }
 
+    /// <summary>
+    ///     Gets the X Flip Bitmask for this <see cref="Tile"/>.
+    /// </summary>
     [Obsolete("Tile X-Flip is not implemented in Aseprite yet and this will always be 0", false)]
     public uint XFlip { get; }
 
+    /// <summary>
+    ///     Gets the Y Flip Bitmask for this <see cref="Tile"/>.
+    /// </summary>
     [Obsolete("Tile Y-Flip is not implemented in Aseprite yet and this will always be 0", false)]
     public uint YFlip { get; }
 
+    /// <summary>
+    ///     Gets the 90CW Rotation Bitmask for this <see cref="Tile"/>.
+    /// </summary>
     [Obsolete("Tile Rotation is not implemented in Aseprite yet and this will always be 0", false)]
     public uint Rotate90 { get; }
 

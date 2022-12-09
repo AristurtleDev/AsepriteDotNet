@@ -125,7 +125,7 @@ public enum BlendMode
     ///     each pixel in the top layer with the RGB component value of each
     ///     coorespoding pixel in the bottom layer, then subtracts the
     ///     doubled product of top and bottom layer
-    ///     <code>f(a,b) = a+b-2ab</cod>
+    ///     <code>f(a,b) = a+b-2ab</code>
     /// </summary>
     Exclusion = 11,
 
@@ -133,7 +133,7 @@ public enum BlendMode
     ///     Hue blend mode preserves the luma and chroma of each pixel in the
     ///     bottom layer and adopts the hue of the corresponding pixel in the
     ///     top layer
-    ///     <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Hb, Sa, La)
+    ///     <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Hb, Sa, La)</code>
     /// </summary>
     Hue = 12,
 
@@ -141,7 +141,7 @@ public enum BlendMode
     ///     Saturation blend mode preserves the luma and hue of each pixel in
     ///     the bottom layer and adopts the chroma of the corresponding pixel in
     ///     the top layer
-    ///     <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Ha, Sb, La)
+    ///     <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Ha, Sb, La)</code>
     /// </summary>
     Saturation = 13,
 
@@ -149,7 +149,7 @@ public enum BlendMode
     ///     The color blend mode preserves the luma of each pixel in the bottom
     ///     layer and adopts the hue and chorma of cooresponding pixel in the
     ///     top layer.
-    ///     <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Hb, Sb, La)
+    ///     <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Hb, Sb, La)</code>
     /// </summary>
     Color = 14,
 
@@ -157,7 +157,7 @@ public enum BlendMode
     ///     Luminosity blend mode preserves the hue and chroma of each pixel in
     ///     the bottom layer and adopst the luma of the corresponding pixel in
     ///     then top layer
-    ///     <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Ha, Sa, Lb)
+    ///     <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Ha, Sa, Lb)</code>
     /// </summary>
     Luminosity = 15,
 
@@ -181,7 +181,7 @@ public enum BlendMode
     ///     Divide blend mode divides the RGB component values of each pixel
     ///     from the bottom layer by the RGB component values of each
     ///     cooresponding pixel from the top layer.
-    ///   <code>f(a,b) = a/b 
+    ///   <code>f(a,b) = a/b</code>
     /// </summary>
     Divide = 18
 }

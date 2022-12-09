@@ -291,10 +291,6 @@ internal sealed class AsepriteBinaryReader : IDisposable
     ///     Thrown if the end of stream is reach while attempting to read the
     ///     data type.
     /// </exception>
-    /// <exception cref="EncodingException">
-    ///     Thrown if an exception occurs while attempting to encode the data
-    ///     as a string.  See inner exception for details.
-    /// </exception>
     public string ReadString()
     {
         int sLen = ReadWord();

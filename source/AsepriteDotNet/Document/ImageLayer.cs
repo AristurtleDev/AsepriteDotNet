@@ -23,6 +23,10 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a <see cref="Layer"/> in an Aseprite file where the 
+///     cel contains are <see cref="ImageCel"/>.
+/// </summary>
 public sealed class ImageLayer : Layer
 {
     internal ImageLayer(bool isVisible, bool isBackground, bool isReference, int childLevel, BlendMode blend, int opacity, string name)

@@ -40,7 +40,7 @@ public class SpritesheetOptions
     /// <summary>
     ///     Gets or Sets the type of spritesheet to generate.
     /// </summary>
-    public SpritesheetPackingMethod PackingMethod { get; set; } = SpritesheetPackingMethod.HorizontalStrip;
+    public PackingMethod PackingMethod { get; set; } = PackingMethod.HorizontalStrip;
 
     /// <summary>
     ///     Gets or Sets the amount of transparent pixels to add between each

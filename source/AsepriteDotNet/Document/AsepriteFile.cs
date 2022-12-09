@@ -193,12 +193,12 @@ public sealed class AsepriteFile
             totalFrames -= frameDuplicateMap.Count;
         }
 
-        if (options.PackingMethod == SpritesheetPackingMethod.HorizontalStrip)
+        if (options.PackingMethod == PackingMethod.HorizontalStrip)
         {
             columns = totalFrames;
             rows = 1;
         }
-        else if (options.PackingMethod == SpritesheetPackingMethod.VerticalStrip)
+        else if (options.PackingMethod == PackingMethod.VerticalStrip)
         {
             columns = 1;
             rows = totalFrames;

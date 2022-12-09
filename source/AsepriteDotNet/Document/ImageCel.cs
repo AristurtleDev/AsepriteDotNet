@@ -25,6 +25,10 @@ using System.Drawing;
 
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     Represents a <see cref="Cel"/> that contains image data in an Asperite
+///     file.
+/// </summary>
 public sealed class ImageCel : Cel
 {
     /// <summary>

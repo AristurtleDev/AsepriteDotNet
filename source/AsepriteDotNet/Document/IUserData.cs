@@ -20,6 +20,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 namespace AsepriteDotNet.Document;
 
+/// <summary>
+///     An interface that defines that the implementing object has a 
+///     <see cref="UserData"/> property.
+/// </summary>
 public interface IUserData
 {
     /// <summary>

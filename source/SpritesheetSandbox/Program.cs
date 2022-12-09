@@ -1,7 +1,5 @@
 ﻿using AsepriteDotNet.Image;
-using AsepriteDotNet.IO;
 using AsepriteDotNet.Document;
-using System.Drawing;
 
 string path1 = Path.Combine(Environment.CurrentDirectory, "adventurer.aseprite");
 string path2 = Path.Combine(Environment.CurrentDirectory, "output.png");
@@ -14,20 +12,14 @@ Console.WriteLine($"Canvas Size: {aseFile.Size}");
 
 //  Output frame data
 Console.WriteLine($"Frame Count: {aseFile.Frames.Count}");
-for (int i = 0; i < aseFile.Frames.Count; i++)
+for (int i = 0; i < aseFile.Frames.Count - 100; i++)
 {
     Frame frame = aseFile.Frames[i];
-
-    Console.WriteLine($"    - Frame {i}");
-    Console.WriteLine($"        - Type: {frame.GetType()}");
-    Console.WriteLine($"        - Duration: {frame.Duration}");
-    Console.WriteLine($"        - Cel Count: {frame.Cels.Count}");
 
     Console.WriteLine
     (
         $"""
             - Frame {i}:
-                - Type: {frame.GetType()}
                 - Duration: {frame.Duration}
                 - Cel Count: {frame.Cels.Count}
         """
@@ -35,6 +27,7 @@ for (int i = 0; i < aseFile.Frames.Count; i++)
 }
 
 //  Output layer data
+Console.WriteLine($"Layer Count: {aseFile.Layers.Count}");
 for (int i = 0; i < aseFile.Layers.Count; i++)
 {
     Layer layer = aseFile.Layers[i];
@@ -53,6 +46,7 @@ for (int i = 0; i < aseFile.Layers.Count; i++)
 }
 
 //  Output tag data
+Console.WriteLine($"Tag Count: {aseFile.Tags.Count}");
 for (int i = 0; i < aseFile.Tags.Count; i++)
 {
     Tag tag = aseFile.Tags[i];
@@ -70,6 +64,7 @@ for (int i = 0; i < aseFile.Tags.Count; i++)
 }
 
 //  Output slice data
+Console.WriteLine($"Slice Count: {aseFile.Slices.Count}");
 for (int i = 0; i < aseFile.Slices.Count; i++)
 {
     Slice slice = aseFile.Slices[i];
@@ -81,7 +76,25 @@ for (int i = 0; i < aseFile.Slices.Count; i++)
                 - Name: {slice.Name}
                 - 9-Patch: {slice.IsNinePatch}
                 - Has Pivot: {slice.HasPivot}
-                - Total Keys: {slice.Count}
+                - Total Keys: {slice.Keys.Count}
+        """
+    );
+}
+
+//  Output tileset data
+Console.WriteLine($"Tileset Count: {aseFile.Tilesets.Count}");
+for (int i = 0; i < aseFile.Tilesets.Count; i++)
+{
+    Tileset tileset = aseFile.Tilesets[i];
+
+    Console.WriteLine
+    (
+        $"""
+            - Tileset {i}:
+                - ID: {tileset.ID}
+                - Name: {tileset.Name}
+                - Tile Size: {tileset.TileSize}
+                - Tile Count: {tileset.TileCount}
         """
     );
 }
@@ -90,23 +103,23 @@ for (int i = 0; i < aseFile.Slices.Count; i++)
 
 
 
-//  Define the SpritesheetOptions to use when creating the Asepritesheet
-SpritesheetOptions options = new()
-{
-    OnlyVisibleLayers = true,
-    MergeDuplicates = true,
-    PackingMethod = SpritesheetPackingMethod.SquarePacked
-};
+// //  Define the SpritesheetOptions to use when creating the Asepritesheet
+// SpritesheetOptions options = new()
+// {
+//     OnlyVisibleLayers = true,
+//     MergeDuplicates = true,
+//     PackingMethod = SpritesheetPackingMethod.SquarePacked
+// };
 
-//  Create the Asepritesheet instance
-AsepriteSheet aseSheet = aseFile.ToAsepritesheet(options);
+// //  Create the Asepritesheet instance
+// AsepriteSheet aseSheet = aseFile.ToAsepritesheet(options);
 
-Console.WriteLine
-(
-    $"""
-    Spritesheet Size: {aseSheet.Size}
-    Frame Count:      {aseSheet.Frames.Count}
-    Animation Count:  {aseSheet.Animations.Count}
-    Pixel Count:      {aseSheet.Pixels.Count}
-    """
-);
+// Console.WriteLine
+// (
+//     $"""
+//     Spritesheet Size: {aseSheet.Size}
+//     Frame Count:      {aseSheet.Frames.Count}
+//     Animation Count:  {aseSheet.Animations.Count}
+//     Pixel Count:      {aseSheet.Pixels.Count}
+//     """
+// );

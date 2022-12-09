@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace AsepriteDotNet.Document;
 
@@ -30,7 +31,7 @@ namespace AsepriteDotNet.Document;
 /// </summary>
 public class Slice : IUserData, IEnumerable<SliceKey>
 {
-    private List<SliceKey> _keys = new();
+    private List<SliceKey> _keys;
 
     /// <summary>
     ///     Gets whether the <see cref="SliceKey"/> elements of this
@@ -48,6 +49,12 @@ public class Slice : IUserData, IEnumerable<SliceKey>
     ///     Gets the name of this <see cref="Slice"/>.
     /// </summary>
     public string Name { get; }
+
+    /// <summary>
+    ///     Gets a read-only collectio of all <see cref="SliceKey"/> elements
+    ///     in this <see cref="Slice"/>.
+    /// </summary>
+    public ReadOnlyCollection<SliceKey> Keys { get; }
 
     /// <summary>
     ///     Gets the <see cref="SliceKey"/> element from this
@@ -78,8 +85,16 @@ public class Slice : IUserData, IEnumerable<SliceKey>
     /// </summary>
     public UserData UserData { get; internal set; } = new();
 
-    internal Slice(bool isNinePatch, bool hasPivot, string name) =>
-        (IsNinePatch, HasPivot, Name) = (isNinePatch, hasPivot, name);
+    internal Slice(bool isNinePatch, bool hasPivot, string name)
+    {
+        IsNinePatch = isNinePatch;
+        HasPivot = hasPivot;
+        Name = name;
+
+        _keys = new();
+        Keys = _keys.AsReadOnly();
+
+    }
 
     internal void AddKey(SliceKey key) => _keys.Add(key);
 

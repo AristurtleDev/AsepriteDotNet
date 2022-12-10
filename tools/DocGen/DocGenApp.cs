@@ -10,7 +10,6 @@ args = new string[]
     "--obsolete",
     "--skip-unbrowsable",
     "--clean",
-    "--permalink", "pretty",
     "--namespace-pages",
     "--newline", "auto"
 };

@@ -23,7 +23,7 @@ using System.Drawing;
 namespace AsepriteDotNet.Document;
 
 /// <summary>
-///     Represents an animation Tag in an Asperite image.
+///     Represents an animation Tag in an Aseprite image.
 /// </summary>
 public sealed class Tag : IUserData
 {

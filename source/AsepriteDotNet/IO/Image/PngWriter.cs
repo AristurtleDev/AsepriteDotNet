@@ -64,7 +64,7 @@ internal static class PngWriter
         }
         catch(Exception ex)
         {
-            throw new PngException("An exception occured while saving the data as a PNG file. Refer to the inner exception for exact details", ex);
+            throw new PngException("An exception occurred while saving the data as a PNG file. Refer to the inner exception for exact details", ex);
         }
     }
 
@@ -73,7 +73,7 @@ internal static class PngWriter
     //  The first eight bytes of a PNG always contains the following (decimal)
     //  values: 137, 80, 78, 71, 13, 10, 26, 10
     //
-    //  Which are (in hexidecimal): 89, 50, 4E, r7, 0D, 0A, 1A, 0A
+    //  Which are (in hexadecimal): 89, 50, 4E, r7, 0D, 0A, 1A, 0A
     //
     //  Reference: https://www.w3.org/TR/png-3/#5PNG-file-signature
     private static void WriteSignature(BinaryWriter writer)
@@ -188,10 +188,10 @@ internal static class PngWriter
     //  filter used on that scanline.
     //
     //  The IDAT can be split over multiple chunks.  If so, they must appear
-    //  consecutivly with no other intervening chunks.
+    //  consecutively with no other intervening chunks.
     //
     //  If the IDAT is split over multiple chunks, the compression stream is
-    //  the concatenation of the contents of the data fileds of all IDAT chunks.
+    //  the concatenation of the contents of the data fields of all IDAT chunks.
     //
     //  Reference: https://www.w3.org/TR/png-3/#11IDAT
     //             https://www.w3.org/TR/png-3/#10Compression
@@ -343,7 +343,7 @@ internal static class PngWriter
         //  Write the type and data
         writer.Write(typeAndData);
 
-        //  Calcluate the CRC of the type and data
+        //  Calculate the CRC of the type and data
         int crc = (int)CRC.Calculate(typeAndData);
 
         //  Write the crc
@@ -356,7 +356,7 @@ internal static class PngWriter
     //      "All integers that require more than one byte shall be in network 
     //      byte order"
     //
-    //  Basically, we have to ensure that all interger type values are in 
+    //  Basically, we have to ensure that all integer type values are in 
     //  BigEndian.  
     //
     //  This method will check for endianess and convert to BigEndian if needed.

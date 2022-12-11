@@ -228,7 +228,7 @@ public class AsepriteBinaryReaderTests
         //  Reset the position within the stream
         stream.Position = 0;
 
-        //  Trunicate the last byte
+        //  Truncate the last byte
         stream.SetLength(stream.Length - 1);
 
         using AsepriteBinaryReader reader = new(stream);
@@ -236,7 +236,7 @@ public class AsepriteBinaryReaderTests
         //  First one should always succeed.
         readAction(reader);
 
-        //  Second one should fail since we trunicated the last byte
+        //  Second one should fail since we truncated the last byte
         Assert.Throws<EndOfStreamException>(() => readAction(reader));
     }
 }

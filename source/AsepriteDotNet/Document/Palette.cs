@@ -78,7 +78,7 @@ public sealed class Palette : IEnumerable<Color>
     ///     <see cref="Palette"/> that represents a transparent pixel.
     /// </summary>
     /// <remarks>
-    ///     This value is only valid when the Asprite image used a color depth
+    ///     This value is only valid when the Aseprite image used a color depth
     ///     mode of <see cref="ColorDepth.Indexed"/>.
     /// </remarks>
     public int TransparentIndex { get; }

@@ -39,7 +39,7 @@ internal class Adler32
     ///     Creates a new instance of the <see cref="Adler32"/> class.
     /// </summary>
     /// <remarks>
-    ///     This will intiialize the underlying checksum value to 1
+    ///     This will initialize the underlying checksum value to 1
     /// </remarks>
     public Adler32() => _value = 1U;
 
@@ -47,7 +47,7 @@ internal class Adler32
     ///     Initializes a new instance of the <see cref="Adler32"/> class.
     /// </summary>
     /// <param name="initial">
-    ///     The initiale checksum value to start with.
+    ///     The initial checksum value to start with.
     /// </param>
     public Adler32(uint initial) => _value = initial;
 
@@ -56,7 +56,7 @@ internal class Adler32
     /// </summary>
     /// <param name="initial">
     ///     A <see cref="ReadOnlySpan{T}"/> of <see cref="byte"/> elements that
-    ///     that the initial checksum value will be calcualted from
+    ///     that the initial checksum value will be calculated from
     /// </param>
     public Adler32(ReadOnlySpan<byte> initial) : this() => _ = Update(initial);
 

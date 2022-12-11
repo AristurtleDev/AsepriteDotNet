@@ -24,7 +24,7 @@ SOFTWARE.
 namespace AsepriteDotNet.Document;
 
 /// <summary>
-///     Represents a tilemap layer in an Aseprite iamge.
+///     Represents a tilemap layer in an Aseprite image.
 /// </summary>
 public class TilemapLayer : Layer
 {

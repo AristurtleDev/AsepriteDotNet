@@ -33,6 +33,9 @@ public sealed class Frame : IEnumerable<Cel>
 {
     private readonly List<Cel> _cels;
 
+    /// <summary>
+    ///     Gets the width and height of this <see cref="Frame"/>.
+    /// </summary>
     public Size Size { get; }
 
     /// <summary>
@@ -93,6 +96,20 @@ public sealed class Frame : IEnumerable<Cel>
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => _cels.GetEnumerator();
 
+    /// <summary>
+    ///     Flattens this <see cref="Frame"/> by blending each <see cref="Cel"/>
+    ///     staring with the top most <see cref="Cel"/> and blending down.  Te
+    ///     result is an <see cref="Array"/> of <see cref="Color"/> elements
+    ///     representing the final flattened image of this <see cref="Frame"/>.
+    /// </summary>
+    /// <param name="onlyVisibleLayers">
+    ///     Whether only the <see cref="Cel"/> elements that are on a
+    ///     <see cref="Layer"/> that is visible should be included.
+    /// </param>
+    /// <returns>
+    ///     A new <see cref="Array"/> of <see cref="Color"/> elements that
+    ///     represent the flattened image of this <see cref="Frame"/>.
+    /// </returns>
     public Color[] FlattenFrame(bool onlyVisibleLayers = true)
     {
         Color[] result = new Color[Size.Width * Size.Height];

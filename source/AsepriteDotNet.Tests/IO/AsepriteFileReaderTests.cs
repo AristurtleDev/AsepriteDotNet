@@ -402,7 +402,7 @@ public sealed class AsepriteFileReaderTest
 
         Assert.Equal(ids, tilesCel.Tiles.Select(tile => tile.TileID).ToArray());
 
-        //  Can't test Tile.XFlip, Tile.YFlip, and Tile.Rotate90 becuase these
-        //  aren't actually implemented in Aserpite yet.
+        //  Can't test Tile.XFlip, Tile.YFlip, and Tile.Rotate90 because these
+        //  aren't actually implemented in Aseprite yet.
     }
 }

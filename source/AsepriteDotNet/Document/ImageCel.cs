@@ -28,7 +28,7 @@ using AsepriteDotNet.IO.Image;
 namespace AsepriteDotNet.Document;
 
 /// <summary>
-///     Represents a <see cref="Cel"/> that contains image data in an Asperite
+///     Represents a <see cref="Cel"/> that contains image data in an Aseprite
 ///     file.
 /// </summary>
 public sealed class ImageCel : Cel

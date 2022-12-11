@@ -55,21 +55,21 @@ public sealed class GroupLayer : Layer, IEnumerable<Layer>
     }
 
     /// <summary>
-    ///     Returns an enumerator that itereates through the child
+    ///     Returns an enumerator that iterates through the child
     ///     <see cref="Layer"/> elements in this <see cref="GroupLayer"/>.
     /// </summary>
     /// <returns>
-    ///     An enumerator that itereates through the child <see cref="Layer"/>
+    ///     An enumerator that iterates through the child <see cref="Layer"/>
     ///     elements in this <see cref="GroupLayer"/>.
     /// </returns>
     public IEnumerator<Layer> GetEnumerator() => _children.GetEnumerator();
 
     /// <summary>
-    ///     Returns an enumerator that itereates through the child
+    ///     Returns an enumerator that iterates through the child
     ///     <see cref="Layer"/> elements in this <see cref="GroupLayer"/>.
     /// </summary>
     /// <returns>
-    ///     An enumerator that itereates through the child <see cref="Layer"/>
+    ///     An enumerator that iterates through the child <see cref="Layer"/>
     ///     elements in this <see cref="GroupLayer"/>.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => _children.GetEnumerator();

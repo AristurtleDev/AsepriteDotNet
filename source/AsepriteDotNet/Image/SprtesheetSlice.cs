@@ -26,7 +26,7 @@ using System.Drawing;
 namespace AsepriteDotNet.Image;
 
 /// <summary>
-///     Represents a rectangular boundry within a
+///     Represents a rectangular boundary within a
 ///     <see cref="SpritesheetFrame"/>.
 /// </summary>
 public sealed class SpritesheetSlice

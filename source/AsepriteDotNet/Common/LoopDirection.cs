@@ -26,7 +26,7 @@ namespace AsepriteDotNet;
 public enum LoopDirection
 {
     /// <summary>
-    ///     Describes that the animtion loops in a forward direction staring on
+    ///     Describes that the animation loops in a forward direction staring on
     ///     the first frame and ending on the last frame.
     /// </summary>
     Forward = 0,

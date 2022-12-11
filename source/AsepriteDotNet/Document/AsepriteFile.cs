@@ -28,7 +28,7 @@ using AsepriteDotNet.IO;
 namespace AsepriteDotNet.Document;
 
 /// <summary>
-///     Represents the contents of an aserpite file.
+///     Represents the contents of an Aseprite file.
 /// </summary>
 public sealed class AsepriteFile
 {
@@ -82,7 +82,7 @@ public sealed class AsepriteFile
     public ReadOnlyCollection<Tileset> Tilesets { get; }
 
     /// <summary>
-    ///     Gets a read-only collection of all warnings that were procduced
+    ///     Gets a read-only collection of all warnings that were produced
     ///     while importing this <see cref="AsepriteFile"/>.
     /// </summary>
     public ReadOnlyCollection<string> Warnings { get; }
@@ -120,7 +120,7 @@ public sealed class AsepriteFile
     ///     data read from the Aseprite file.
     /// </summary>
     /// <param name="filePath">
-    ///     The absolute file path to the Asperite file.
+    ///     The absolute file path to the Aseprite file.
     /// </param>
     /// <returns>
     ///     A new instance of the <see cref="AsepriteFile"/> class initialized
@@ -138,7 +138,7 @@ public sealed class AsepriteFile
         }
         catch (Exception ex)
         {
-            throw new AsepriteFileLoadException($"An error occured while loading the Aseprite file. Please see inner excpetion for exact error.", ex);
+            throw new AsepriteFileLoadException($"An error occurred while loading the Aseprite file. Please see inner exception for exact error.", ex);
         }
     }
 
@@ -244,7 +244,7 @@ public sealed class AsepriteFile
             if (!options.MergeDuplicates || !frameDuplicateMap.ContainsKey(frameNum))
             {
                 //  Calculate the x and y position of the frame's top-left
-                //  ixel relative to the top-left of the final spritesheet
+                //  pixel relative to the top-left of the final spritesheet
                 int frameCol = (frameNum - fOffset) % columns;
                 int frameRow = (frameNum - fOffset) / columns;
 
@@ -334,7 +334,7 @@ public sealed class AsepriteFile
             }
             else
             {
-                //  We are merging dupicates and it was detected that the
+                //  We are merging duplicates and it was detected that the
                 //  current frame to process is a duplicate.  So we still
                 //  need to add the spritesheet frame, but we need to make
                 //  user the data is the same as the frame it's a duplicate
@@ -357,7 +357,7 @@ public sealed class AsepriteFile
         }
 
 
-        //  Process Sices
+        //  Process Slices
 
         //  Slice keys in Aseprite are defined with a frame value that
         //  indicates what frame the key starts on, but doesn't give
@@ -419,123 +419,4 @@ public sealed class AsepriteFile
 
         return new AsepriteSheet(sheetSize, sheetFrames, sheetAnimations, sheetPixels);
     }
-
-    // /// <summary>
-    // ///     Flattens the <see cref="Frame"/> at the specified 
-    // ///     <paramref name="frameIndex"/> by blending each <see cref="Cel"/>
-    // ///     in the <see cref="Frame"/>, starting with the top most cel and
-    // ///     blending down.  The result is an <see cref="Array"/> of
-    // ///     <see cref="Color"/> elements representing the final flattened image
-    // ///     of the <see cref="Frame"/>.
-    // /// </summary>
-    // /// <param name="frameIndex">
-    // ///     The index of the <see cref="Frame"/> to flatten.
-    // /// </param>
-    // /// <param name="onlyVisibleLayers">
-    // ///     Whether only the <see cref="Cel"/> elements that are on a 
-    // ///     <see cref="Layer"/> that is visible should be included.
-    // /// </param>
-    // /// <returns>
-    // ///     A new <see cref="Array"/> of <see cref="Color"/> elements that
-    // ///     represent the image of the <see cref="Frame"/> once it has been
-    // ///     flattened.
-    // /// </returns>
-    // public Color[] FlattenFrame(int frameIndex, bool onlyVisibleLayers)
-    // {
-    //     Frame frame = Frames[frameIndex];
-    //     return FlattenFrame(frame, onlyVisibleLayers);
-
-    // }
-
-    // /// <summary>
-    // ///     Flattens the specified <see cref="Frame"/> by blending each
-    // ///     <see cref="Cel"/> in the <see cref="Frame"/>, starting with the top
-    // ///     most cel and blending down.  The result is an array of
-    // ///     <see cref="Color"/> elements representing the final flattened image
-    // ///     of the frame.
-    // /// </summary>
-    // /// <remarks>
-    // ///     Any instance of a <see cref="TilemapCel"/> within the 
-    // ///     <see cref="Frame"/> is ignored.
-    // /// </remarks>
-    // /// <param name="frame">
-    // ///     The <see cref="Frame"/> to flatten
-    // /// </param>
-    // /// <param name="onlyVisibleLayers">
-    // ///     Whether only the <see cref="Cel"/> elements that are on a 
-    // ///     <see cref="Layer"/> that is visible should be included.
-    // /// </param>
-    // /// <returns>
-    // ///     A new <see cref="Array"/> of <see cref="Color"/> elements that
-    // ///     represent the image of the <see cref="Frame"/> once it has been
-    // ///     flattened.
-    // /// </returns>
-    // public Color[] FlattenFrame(Frame frame, bool onlyVisibleLayers)
-    // {
-    //     Color[] flattened = new Color[Size.Width * Size.Height];
-
-    //     for (int celNum = 0; celNum < frame.Cels.Count; celNum++)
-    //     {
-    //         Color[] pixels = Array.Empty<Color>();
-    //         Size celSize = Size.Empty;
-    //         Point celPos = Point.Empty;
-    //         Cel cel = frame[celNum];
-
-    //         //  If only visible and layer cel is on is not visible,
-    //         //  skip processing
-    //         if (!onlyVisibleLayers || (onlyVisibleLayers && cel.Layer.IsVisible))
-    //         {
-    //             if (cel is ImageCel imageCel)
-    //             {
-    //                 pixels = imageCel.Pixels;
-    //                 celSize = imageCel.Size;
-    //                 celPos = imageCel.Position;
-    //             }
-    //             else if (cel is LinkedCel linkedCel)
-    //             {
-    //                 if (linkedCel.Cel is ImageCel otherImageCel)
-    //                 {
-    //                     pixels = otherImageCel.Pixels;
-    //                     celSize = otherImageCel.Size;
-    //                     celPos = otherImageCel.Position;
-    //                 }
-    //                 else if (linkedCel.Cel is TilemapCel otherTileMapCel)
-    //                 {
-    //                     continue;   //  Tilemap cels not supported
-    //                 }
-    //             }
-    //             else if (cel is TilemapCel tilemapCel)
-    //             {
-    //                 continue;   //  Tilemap cels not supported
-    //             }
-
-    //             if (pixels.Length > 0)
-    //             {
-    //                 byte opacity = BlendFunctions.MUL_UN8(cel.Opacity, cel.Layer.Opacity);
-
-    //                 for (int p = 0; p < pixels.Length; p++)
-    //                 {
-    //                     int x = (p % celSize.Width) + celPos.X;
-    //                     int y = (p / celSize.Width) + celPos.Y;
-    //                     int index = y * Size.Width + x;
-
-    //                     //  Sometimes a cell can have a negative x and/or y 
-    //                     //  value. This is caused by selecting an area within 
-    //                     //  aseprite and then moving a portion of the selected
-    //                     //  pixels outside the canvas.  We don't care about 
-    //                     //  these pixels so if the index is outside the range of
-    //                     //  the array to store them in then we'll just ignore 
-    //                     //  them.
-    //                     if (index < 0 || index >= flattened.Length) { continue; }
-
-    //                     Color backdrop = flattened[index];
-    //                     Color source = pixels[p];
-    //                     flattened[index] = BlendFunctions.Blend(cel.Layer.BlendMode, backdrop, source, opacity);
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return flattened;
-    // }
 }

@@ -51,7 +51,7 @@ public class Slice : IUserData, IEnumerable<SliceKey>
     public string Name { get; }
 
     /// <summary>
-    ///     Gets a read-only collectio of all <see cref="SliceKey"/> elements
+    ///     Gets a read-only collection of all <see cref="SliceKey"/> elements
     ///     in this <see cref="Slice"/>.
     /// </summary>
     public ReadOnlyCollection<SliceKey> Keys { get; }
@@ -99,21 +99,21 @@ public class Slice : IUserData, IEnumerable<SliceKey>
     internal void AddKey(SliceKey key) => _keys.Add(key);
 
     /// <summary>
-    ///     Returns an enumerator that itereates through each
+    ///     Returns an enumerator that iterates through each
     ///     <see cref="SliceKey"/> element in this <see cref="Slice"/>.
     /// </summary>
     /// <returns>
-    ///     An enumerator that itereates through each <see cref="SliceKey"/>
+    ///     An enumerator that iterates through each <see cref="SliceKey"/>
     ///     element in this <see cref="Slice"/>.
     /// </returns>
     public IEnumerator<SliceKey> GetEnumerator() => _keys.GetEnumerator();
 
     /// <summary>
-    ///     Returns an enumerator that itereates through each
+    ///     Returns an enumerator that iterates through each
     ///     <see cref="SliceKey"/> element in this <see cref="Slice"/>.
     /// </summary>
     /// <returns>
-    ///     An enumerator that itereates through each <see cref="SliceKey"/>
+    ///     An enumerator that iterates through each <see cref="SliceKey"/>
     ///     element in this <see cref="Slice"/>.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => _keys.GetEnumerator();

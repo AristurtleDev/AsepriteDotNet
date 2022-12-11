@@ -99,7 +99,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     ///     Reads the specified number of bytes from the underlying stream and
     ///     advances the stream by that number of bytes.
     /// </summary>
-    /// <param name="nbytes">
+    /// <param name="nBytes">
     ///     The number of bytes to read from the underlying stream.
     /// </param>
     /// <returns>
@@ -118,23 +118,23 @@ internal sealed class AsepriteBinaryReader : IDisposable
     ///     Thrown if the the end of stream is reached before reading the
     ///     specified number of bytes.
     /// </exception>
-    public byte[] ReadBytes(int nbytes)
+    public byte[] ReadBytes(int nBytes)
     {
-        if (nbytes < 0)
+        if (nBytes < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(nbytes), "{nameof(count)} must be greater then 0");
+            throw new ArgumentOutOfRangeException(nameof(nBytes), "{nameof(count)} must be greater then 0");
         }
 
         ThrowIfDisposed();
 
-        if (nbytes == 0)
+        if (nBytes == 0)
         {
             return Array.Empty<byte>();
         }
 
-        byte[] result = new byte[nbytes];
+        byte[] result = new byte[nBytes];
 
-        _stream.ReadExactly(result, 0, nbytes);
+        _stream.ReadExactly(result, 0, nBytes);
 
         return result;
     }
@@ -302,7 +302,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
         }
         catch (Exception ex)
         {
-            throw new Exception("An exception occured while encoding the data as a string. Please see inner exception for details", ex);
+            throw new Exception("An exception occurred while encoding the data as a string. Please see inner exception for details", ex);
         }
     }
 
@@ -310,7 +310,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     ///     Skips the specified number of bytes by advancing the underlying
     ///     stream by that number of bytes.
     /// </summary>
-    /// <param name="nbytes">
+    /// <param name="nBytes">
     ///     The total number of bytes to skip.
     /// </param>
     /// <exception cref="ArgumentOutOfRangeException">
@@ -321,15 +321,15 @@ internal sealed class AsepriteBinaryReader : IDisposable
     ///     class, or the underlying stream, has been disposed of prior to 
     ///     calling this method.
     /// </exception>
-    public void Skip(int nbytes)
+    public void Skip(int nBytes)
     {
-        if (nbytes < 0)
+        if (nBytes < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(nbytes), $"{nameof(nbytes)} must be a non-negative number");
+            throw new ArgumentOutOfRangeException(nameof(nBytes), $"{nameof(nBytes)} must be a non-negative number");
         }
 
         ThrowIfDisposed();
-        _stream.Seek(_stream.Position + nbytes, SeekOrigin.Begin);
+        _stream.Seek(_stream.Position + nBytes, SeekOrigin.Begin);
     }
 
     /// <summary>

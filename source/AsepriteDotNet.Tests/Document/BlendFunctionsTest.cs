@@ -60,7 +60,7 @@ public sealed class BlendFunctionsTests
         pink,  pink,  red,    red,
         pink,  pink,  red,    red,
 
-        The top layers consists fo the following pixles, in order from 
+        The top layers consists fo the following pixels, in order from 
         top-to-bottom, read left-to-right
 
         [Layer 2]
@@ -80,7 +80,7 @@ public sealed class BlendFunctionsTests
         ported code blends colors the same way that Aseprite does to match it 1:1.
     */
     [Fact]
-    public void Color_NormalBlendTeset()
+    public void Color_NormalBlendTest()
     {
         BlendMode mode = BlendMode.Normal;
 

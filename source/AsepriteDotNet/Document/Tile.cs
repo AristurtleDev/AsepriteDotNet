@@ -24,7 +24,7 @@ SOFTWARE.
 namespace AsepriteDotNet.Document;
 
 /// <summary>
-///     Represents a tile reference in a tilemap cel in an Asperite image.
+///     Represents a tile reference in a tilemap cel in an Aseprite image.
 /// </summary>
 public sealed class Tile
 {
@@ -51,8 +51,8 @@ public sealed class Tile
     [Obsolete("Tile Rotation is not implemented in Aseprite yet and this will always be 0", false)]
     public uint Rotate90 { get; }
 
-    internal Tile(uint id, uint xflip, uint yflip, uint rotate) =>
+    internal Tile(uint id, uint xFlip, uint yFlip, uint rotate) =>
 #pragma warning disable 0618
-        (TileID, XFlip, YFlip, Rotate90) = (id, xflip, yflip, rotate);
+        (TileID, XFlip, YFlip, Rotate90) = (id, xFlip, yFlip, rotate);
 #pragma warning restore 0618
 }

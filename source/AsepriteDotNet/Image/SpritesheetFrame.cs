@@ -52,7 +52,7 @@ public sealed class SpritesheetFrame
     }
 
     /// <summary>
-    ///     Retreives a collection of all <see cref="SpritesheetSlice"/>
+    ///     Retrieves a collection of all <see cref="SpritesheetSlice"/>
     ///     elements in this <see cref="SpritesheetFrame"/>
     /// </summary>
     /// <returns>

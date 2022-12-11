@@ -21,44 +21,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Drawing;
-
-namespace AsepriteDotNet.Document;
+namespace AsepriteDotNet.IO.Image;
 
 /// <summary>
-///     Represents a tileset in an Aseprite image.
+///     Represents an exception that is thrown when saving data as a PNG file.
 /// </summary>
-public class Tileset
+/// <remarks>
+///     This acts as a top-level exception wrapper around the different
+///     exceptions that can be thrown when saving data as a PNG file.  Refer to
+///     the inner exception for details on the cause of the error.
+/// </remarks>
+public class PngException : Exception
 {
-    /// <summary>
-    ///     Gets the ID of this <see cref="Tileset"/>.
-    /// </summary>
-    public int ID { get; }
-
-    /// <summary>
-    ///     Gets the total number of tiles in this ,<see cref="Tileset"/>.
-    /// </summary>
-    public int TileCount { get; }
-
-    /// <summary>
-    ///     Gets the width and height, in pixels of each tile in this
-    ///     <see cref="Tileset"/>.
-    /// </summary>
-    public Size TileSize { get; }
-
-    /// <summary>
-    ///     Gets the name of this <see cref="Tileset"/>.
-    /// </summary>
-    public string Name { get; }
-
-    /// <summary>
-    ///     Gets or Sets an <see cref="Array"/> of <see cref="Color"/> elements 
-    ///     that represents the raw pixel data for this <see cref="Tileset"/>.
-    /// </summary>
-    public Color[] Pixels { get; }
-
-    internal Tileset(int id, int count, Size tileSize, string name, Color[] pixels) =>
-        (ID, TileCount, TileSize, Name, Pixels) = (id, count, tileSize, name, pixels);
-
-    
+    internal PngException(string message, Exception innerException)
+        : base(message, innerException) { }
 }

@@ -23,6 +23,8 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.Drawing;
 
+using AsepriteDotNet.IO.Image;
+
 namespace AsepriteDotNet.Document;
 
 /// <summary>
@@ -49,4 +51,13 @@ public sealed class ImageCel : Cel
 
     internal ImageCel(Size size, Color[] pixels, Layer layer, Point position, int opacity)
         : base(layer, position, opacity) => (Size, Pixels) = (size, pixels);
+
+    /// <summary>
+    ///     Writes the pixel data for this <see cref="ImageCel"/> to disk as a 
+    ///     .png file.
+    /// </summary>
+    /// <param name="path">
+    ///     The absolute file path to save the generated .png file to.
+    /// </param>
+    public void ToPng(string path) => PngWriter.SaveTo(path, Size, Pixels);
 }

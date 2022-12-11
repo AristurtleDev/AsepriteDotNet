@@ -37,17 +37,15 @@ Built against [.NET7](https://dotnet.microsoft.com/en-us/)
 ```csharp
 //  Import namespace
 using AsepriteDotNet;
-```
 
-```csharp
 //  Import file using the AsepriteFileReader class
-AsepriteFile file = AsepriteFileReader.Read("/path/to/aseprite/file.aseprite");
+AsepriteFile file = AsepriteFile.Load("file.aseprite");
 
 //  Create an Asepritesheet (aka spritesheet) from the file
 Asepritesheet sheet = file.ToAsepritesheet();
 
 //  Save the Asepritesheet as a .png file
-sheet.SaveAspng("/path/to/output/file.png");
+sheet.SaveAspng("file.png");
 ```
 
 ## License

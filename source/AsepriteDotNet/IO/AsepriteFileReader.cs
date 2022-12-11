@@ -653,7 +653,7 @@ public static class AsepriteFileReader
                 Debug.Assert(reader.Position == cend);
             }
 
-            Frame frame = new(duration, cels);
+            Frame frame = new(duration, cels, doc.Size);
             doc.Add(frame);
         }
 

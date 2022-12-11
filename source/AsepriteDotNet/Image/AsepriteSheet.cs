@@ -76,12 +76,12 @@ public sealed class AsepriteSheet
 
     /// <summary>
     ///     Writes the pixel data for this <see cref="AsepriteSheet"/> to disk
-    ///     as a PNG file.
+    ///     as a .png file.
     /// </summary>
     /// <param name="path">
-    ///     The absolute path location to save the generated PNG file to.
+    ///     The absolute file path to save the generated .png file to.
     /// </param>
-    public void SaveAsPng(string path)
+    public void ToPng(string path)
     {
         PngWriter.SaveTo(path, Size, _pixels);
     }

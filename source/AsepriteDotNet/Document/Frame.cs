@@ -20,6 +20,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Drawing;
+
+using AsepriteDotNet.IO.Image;
 
 namespace AsepriteDotNet.Document;
 
@@ -29,6 +32,8 @@ namespace AsepriteDotNet.Document;
 public sealed class Frame : IEnumerable<Cel>
 {
     private readonly List<Cel> _cels;
+
+    public Size Size { get; }
 
     /// <summary>
     ///     Gets the duration, in milliseconds, of this <see cref="Frame"/> when
@@ -57,11 +62,12 @@ public sealed class Frame : IEnumerable<Cel>
     /// </summary>
     public ReadOnlyCollection<Cel> Cels { get; }
 
-    internal Frame(int duration, List<Cel> cels)
+    internal Frame(int duration, List<Cel> cels, Size size)
     {
         Duration = duration;
         _cels = cels;
         Cels = _cels.AsReadOnly();
+        Size = size;
     }
 
     internal void AddCel(Cel cel) => _cels.Add(cel);
@@ -86,4 +92,74 @@ public sealed class Frame : IEnumerable<Cel>
     ///     in this <see cref="Frame"/>.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => _cels.GetEnumerator();
+
+    public Color[] FlattenFrame(bool onlyVisibleLayers = true)
+    {
+        Color[] result = new Color[Size.Width * Size.Height];
+
+        for (int celNum = 0; celNum < Cels.Count; celNum++)
+        {
+            Cel cel = Cels[celNum];
+
+            if (onlyVisibleLayers && !cel.Layer.IsVisible)
+            {
+                continue;
+            }
+
+            ImageCel imageCel;
+
+            if (cel is ImageCel)
+            {
+                imageCel = (ImageCel)cel;
+            }
+            else if (cel is LinkedCel linkedCel && linkedCel.Cel is ImageCel)
+            {
+                imageCel = (ImageCel)linkedCel.Cel;
+            }
+            else
+            {
+                continue;
+            }
+
+            byte opacity = BlendFunctions.MUL_UN8(imageCel.Opacity, imageCel.Layer.Opacity);
+
+            for (int pixelNum = 0; pixelNum < imageCel.Pixels.Length; pixelNum++)
+            {
+                int x = (pixelNum % imageCel.Size.Width) + imageCel.Position.X;
+                int y = (pixelNum / imageCel.Size.Width) + imageCel.Position.Y;
+                int index = y * Size.Width + x;
+
+                //  Sometimes a cell can have a negative x and/or y value. This
+                //  is caused by selecting an area within aseprite and then 
+                //  moving a portion of the selected pixels outside the canvas. 
+                //  We don't care about these pixels so if the index is outside
+                //  the range of the array to store them in then we'll just
+                //  ignore them.
+                if (index < 0 || index >= result.Length) { continue; }
+
+                Color backdrop = result[index];
+                Color source = imageCel.Pixels[pixelNum];
+                result[index] = BlendFunctions.Blend(imageCel.Layer.BlendMode, backdrop, source, opacity);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    ///     Writes the pixel data for this <see cref="Frame"/> to disk as a .png
+    ///     file.
+    /// </summary>
+    /// <param name="path">
+    ///     The absolute file path to save the generated .png file to.
+    /// </param>
+    /// <param name="onlyVisibleLayers">
+    ///     Whether only the <see cref="Cel"/> elements that are on a 
+    ///     <see cref="Layer"/> that is visible should be included.
+    /// </param>
+    public void ToPng(string path, bool onlyVisibleLayers = true)
+    {
+        Color[] frame = FlattenFrame(onlyVisibleLayers);
+        PngWriter.SaveTo(path, Size, frame);
+    }
 }

@@ -53,12 +53,19 @@ internal static class PngWriter
     /// </param>
     public static void SaveTo(string path, Size size, Color[] data)
     {
-        using FileStream fs = File.OpenWrite(path);
-        using BinaryWriter writer = new(fs, Encoding.UTF8);
-        WriteSignature(writer);
-        WriteIHDR(writer, size);
-        WriteIDAT(writer, size, data);
-        WriteIEND(writer);
+        try
+        {
+            using FileStream fs = File.OpenWrite(path);
+            using BinaryWriter writer = new(fs, Encoding.UTF8);
+            WriteSignature(writer);
+            WriteIHDR(writer, size);
+            WriteIDAT(writer, size, data);
+            WriteIEND(writer);
+        }
+        catch(Exception ex)
+        {
+            throw new PngException("An exception occured while saving the data as a PNG file. Refer to the inner exception for exact details", ex);
+        }
     }
 
     //  PNG Signature

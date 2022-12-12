@@ -86,7 +86,7 @@ public struct Point : IEquatable<Point>
     ///     equal to this <see cref="Point"/>; otherwise, 
     ///     <see langword="false"/>.
     /// </returns>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Point other && Equals(other);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Point other && Equals(other);
 
     /// <summary>
     ///     Returns a value that indicates whether the specified 
@@ -96,7 +96,7 @@ public struct Point : IEquatable<Point>
     ///     The other <see cref="Point"/> to check for equality
     /// </param>
     /// <returns></returns>
-    public bool Equals(Point other) => this == other;
+    public readonly bool Equals(Point other) => this == other;
 
     /// <summary>   
     ///     Returns the hash code for this <see cref="Point"/> value.

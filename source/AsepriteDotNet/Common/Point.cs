@@ -32,7 +32,7 @@ public struct Point : IEquatable<Point>
     ///     Represents a <see cref="Point"/> value who's x- and y-coordinate
     ///     elements are initialized to zero.
     /// </summary>
-    public static readonly Point Empty;
+    public static readonly Point Empty = new Point(0, 0);
 
     private int _x;
     private int _y;
@@ -54,6 +54,13 @@ public struct Point : IEquatable<Point>
         readonly get => _y;
         set => _y = value;
     }
+
+    /// <summary>
+    ///     Gets a value that indicates whether this <see cref="Point"/> is
+    ///     empty, meaning that its x- and y-coordinate elements are set to
+    ///     zero.
+    /// </summary>
+    public readonly bool IsEmpty => _x == 0 && _y == 0;
 
     /// <summary>
     ///     Initializes a new <see cref="Point"/> value.

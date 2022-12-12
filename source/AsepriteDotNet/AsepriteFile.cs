@@ -22,10 +22,11 @@ using System.Collections.ObjectModel;
 
 using System.Drawing;
 
+using AsepriteDotNet.Document;
 using AsepriteDotNet.Image;
 using AsepriteDotNet.IO;
 
-namespace AsepriteDotNet.Document;
+namespace AsepriteDotNet;
 
 /// <summary>
 ///     Represents the contents of an Aseprite file.

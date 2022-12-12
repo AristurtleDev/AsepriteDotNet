@@ -24,29 +24,164 @@ Built against [.NET7](https://dotnet.microsoft.com/en-us/)
     * Tileset pixels are converted to `System.Drawing.Color` values
     * Tile data found in cels is converted to a `Tile` object
         * Tile X-Flip, Y-Flip, and Rotation values are not fully implemented in Aseprite 1.3-beta (https://github.com/aseprite/aseprite/issues/3603). The values are still read but until they are fully implemented in Aseprite, they will always be `0`.
-* Aseprite File can be converted to a packed Spritesheet (`Asepritesheet`).
-    * Supports Horizontal, Vertical, and Square packing methods
-    * Contains `SpritesheetFrame` elements that correspond to each frame in the packed spritesheet
-    * Contains all tag animation data as `SpritesheetAnimation`
-    * Contains all slices interpolated per frame as `SpritesheetSlice`
-    * Contains a collection of `System.Drawing.Color` values that represent the packed spritesheet image
-    * Provides method to save generated packed spritesheet as a PNG (.png) file.
+* Aseprite File can be converted to a packed `Asepritesheet` which contains a `Spritesheet` and a collection of `Tilesheet` for each tileset
+* Individual Aseprite components such as `Frame`, `Cel`, and `Tileset` components, as well as generated `Spritesheet`, `Tilesheet` and `Asepritesheet` can be saved to disk as a .png file.
 
 # Usage
+## Load Aseprite file
+The following example demonstrates how to load an Aseprite file from disk.
 
 ```csharp
 //  Import namespace
 using AsepriteDotNet;
 
-//  Import file using the AsepriteFileReader class
+//  Load the Aseprite file from disk.
 AsepriteFile file = AsepriteFile.Load("file.aseprite");
-
-//  Create an Asepritesheet (aka spritesheet) from the file
-Asepritesheet sheet = file.ToAsepritesheet();
-
-//  Save the Asepritesheet as a .png file
-sheet.ToPng("file.png");
 ```
 
-## License
+## Get Frame Color Data
+Each `Frame` in Aseprite is a collection of `Cel` elements, with each `Cel` on a different `Layer`.  To get the full image of a single `Frame`, the `Frame` needs to be flattened.  Flattening a `Frame` blends all `Cel` elements, starting with the top most `Layer` and blending down until a single image is produced.
+
+Doing this in `AsepriteDotNet` will produce a `Color[]` containing the pixel data from flattening the `Frame`.  You can specify if only `Cel` elements that are on a `Layer` that is visible should be included.
+
+```csharp
+using System.Drawing;
+using AsepriteDotNet;
+
+AsepriteFile file = AsepriteFile.Load("file.aseprite");
+
+Color[] framePixels = file.Frame[0].FlattenFrame(onlyVisibleLayers: true);
+```
+
+## Save Components To PNG
+Individual components can be saved as a PNG file, including `Frame`, `ImageCel` and `Tileset` components
+
+```csharp
+using AsepriteDotNet;
+
+AsepriteFile file = AsepriteFile.Load("file.aseprite");
+
+//  Save a frame as png
+file.Frames[0].ToPng("frame.png");
+
+//  Save an individual ImageCel as png
+if(file.frames[0].Cels[0] is ImageCel imageCel)
+{
+    imageCel.ToPng("cel.png");
+}
+
+//  Save a tileset as png
+file.Tilesets[0].ToPng("tileset.png");
+```
+
+## Create `Spritesheet`
+A `Spritesheet` can be created from the `AsepriteFile` instance that contains:
+*   `Color[]` image data generated from all `Frame` data
+*   `SpritesheetFrame` elements for each frame in the image data which includes the source rectangle and duration
+    *   Each `SpritesheetFrame` also includes `Slice` data for that `Frame` if there was a `Slice` on that `Frame`.
+*   `SpritesheetAnimation` elements for all `Tag` data that includes the information about the animation such as frames and loop direction.
+
+`Spritesheet` can also be saved as a .png file
+
+```csharp
+using AsepriteDotNet;
+using AsepriteDotNet.Image;
+
+AsepriteFile file = AsepriteFile.Load("file.aseprite");
+
+//  Options to adhere to when generating a spritesheet
+SpritesheetOptions options = new
+{
+    //  Should only visible layers be included?
+    OnlyVisibleLayers = true,
+
+    //  Should duplicate frames be merged into one frame?
+    MergeDuplicate = true,  
+
+    //  Can be Horizontal, Vertical, or Square.        
+    PackingMethod = SquarePacked,   
+
+    //  Padding added between each frame and edge of spritesheet.
+    BorderPadding = 0,  
+
+    //  Amount of transparent pixels to added between each frame.
+    Spacing = 0,
+
+    //  Amount of transparent pixels to add to the inside of each frame's edge.
+    InnerPadding = 0    
+}
+
+//  Create the spritesheet using the options from the file.
+Spritesheet sheet = file.ToSpritesheet(options);
+
+//  Save the spritesheet as a .png
+sheet.ToPng("sheet.png");
+```
+
+## Create `Tilesheet`
+Each `Tileset` in the `AsepriteFile` can be converted into a `Tilesheet` that
+contains:
+*   The `Name` of the `Tileset
+*   `Color[]` image data of the `Tileset`
+*   A collection of `TilesheetTile` elements that indicate the source rectangle in the image data for each tile.
+
+`Tilesheet` can also be saved as a .png file
+
+```csharp
+using AsepriteDotNet;
+using AsepriteDotNet.Image;
+
+AsepriteFile file = AsepriteFile.Load("file.aseprite");
+
+//  Options to adhere to when generating a tilesheet
+SpritesheetOptions options = new
+{
+    //  Should duplicate tiles be merged into one tile?
+    MergeDuplicate = true,  
+
+    //  Can be Horizontal, Vertical, or Square.        
+    PackingMethod = SquarePacked,   
+
+    //  Padding added between each tile and edge of tilesheet.
+    BorderPadding = 0,  
+
+    //  Amount of transparent pixels to added between each tile.
+    Spacing = 0,
+
+    //  Amount of transparent pixels to add to the inside of each tile's edge.
+    InnerPadding = 0    
+}
+
+//  Create the tilesheet form a tile using the options.
+Tilesheet sheet = file.Tileset[0].ToTilesheet(options);
+
+//  Save the tilesheet as a .png
+sheet.ToPng("tilesheet.png");
+```
+
+## Create `Asepritesheet`
+An `Asepritesheet` combines both the `Spritesheet` and `Tilesheet` data into a single class instance.  
+
+```csharp
+using AsepriteDotNet;
+using AsepriteDotNet.Image;
+
+AsepriteFile file = AsepriteFile.Load("file.aseprite");
+
+//  Create options for spritesheet generation.  Default constructor will create
+//  default options using only visible layer, merge duplicates, square packed,
+//  and 0 for padding and spacing
+SpritesheetOptions spriteSheetOptions = new();
+
+//  Create options for tilesheet generation.  Default constructor will create
+//  default options using merge duplicates, square packed, and 0 for padding and
+//  spacing
+TilesheetOptions tilesheetOptions = new();
+
+//  Create the Asepritesheet from the file using the options
+Asepritesheet sheet = file.ToAsepritesheet(spritesheetOptions, tilesheetOptions);
+```
+
+
+# License
 **AsepriteDotNet** is licensed under the **MIT License**.  Please refer to the [LICENSE](LICENSE) file for full license text.

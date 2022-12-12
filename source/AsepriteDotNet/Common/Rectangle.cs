@@ -186,7 +186,11 @@ public struct Rectangle : IEquatable<Rectangle>
     /// <param name="other">
     ///     The other <see cref="Rectangle"/> to check for equality
     /// </param>
-    /// <returns></returns>
+    /// <returns>
+    ///     <see langword="true"/> if the specified <see cref="Rectangle"/>
+    ///     value is equal to this <see cref="Rectangle"/> value; otherwise,
+    ///     <see langword="false"/>.
+    /// </returns>
     public readonly bool Equals(Rectangle other) => this == other;
 
     /// <summary>   

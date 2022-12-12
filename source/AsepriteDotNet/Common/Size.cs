@@ -93,7 +93,11 @@ public struct Size : IEquatable<Size>
     /// <param name="other">
     ///     The other <see cref="Size"/> to check for equality
     /// </param>
-    /// <returns></returns>
+    /// <returns>
+    ///     <see langword="true"/> if the specified <see cref="Size"/> value
+    ///     is equal to this <see cref="Size"/> value; otherwise,
+    ///     <see langword="false"/>.
+    /// </returns>
     public readonly bool Equals(Size other) => this == other;
 
     /// <summary>   

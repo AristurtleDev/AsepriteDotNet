@@ -9,30 +9,32 @@
 
   <PropertyGroup>
     <PackageId>AsepriteDotNet</PackageId>
-    <Version>1.0.0</Version>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>0.1.0</FileVersion>
     <Authors>Christopher Whitley</Authors>
     <Company>Aristurtle</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2022 Christoipher Whitley</Copyright>
     <PackageProjectUrl>https://github.com/AristurtleDev/AsepriteDotNet</PackageProjectUrl>
-    <!-- <PackageIcon>icon</PackageIcon> -->
-    <!-- <PackageReadmeFile>README.md</PackageReadmeFile> -->
+    <PackageIcon>aseprite-dotnet-nuget-icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/AristurtleDev/AsepriteDotNet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>main</RepositoryBranch>
-    <PackageTags>Aseprite, reader, pixel art</PackageTags>
+    <PackageTags>Aseprite;reader;pixel art;png;spritesheet;tilesheet</PackageTags>
     <Description>
-      A .NET library for importing Aseprite (.aseprite/.ase) with supporting classes easily navigate the data. 
+      AsepriteDotNet is a cross-platform C# library for reading Aseprite 
+      (.aseprite/.ase) files.  Once file has been read, the library presents an 
+      easy to navigate AsepriteFile class containing the data read from the file. 
     </Description>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
-  <!-- <ItemGroup>
-    <None Include="..\path\to\icon" Pack="true" PackagePath="" />
-    <None Include="..\path\to\readme" Pack="true" PackagePath="" />
-  </ItemGroup> -->
+  <ItemGroup>
+    <None Include="..\..\.nuget\aseprite-dotnet-nuget-icon.png" Pack="true" PackagePath="" />
+    <None Include="..\..\.\nuget\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

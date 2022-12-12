@@ -84,7 +84,7 @@ public struct Size : IEquatable<Size>
     ///     equal to this <see cref="Size"/>; otherwise, 
     ///     <see langword="false"/>.
     /// </returns>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Size other && Equals(other);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Size other && Equals(other);
 
     /// <summary>
     ///     Returns a value that indicates whether the specified 
@@ -94,7 +94,7 @@ public struct Size : IEquatable<Size>
     ///     The other <see cref="Size"/> to check for equality
     /// </param>
     /// <returns></returns>
-    public bool Equals(Size other) => this == other;
+    public readonly bool Equals(Size other) => this == other;
 
     /// <summary>   
     ///     Returns the hash code for this <see cref="Size"/> value.

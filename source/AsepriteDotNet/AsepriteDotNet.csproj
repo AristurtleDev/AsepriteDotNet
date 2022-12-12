@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <None Include="..\..\.nuget\aseprite-dotnet-nuget-icon.png" Pack="true" PackagePath="" />
-    <None Include="..\..\.\nuget\README.md" Pack="true" PackagePath="" />
+    <None Include="..\..\.\.nuget\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>

@@ -174,41 +174,53 @@ public struct Point : IEquatable<Point>
     public static bool operator !=(Point left, Point right) => !(left == right);
 
     /// <summary>
-    ///     Adds the x- and y-coordinate elements of two <see cref="Point"/>
-    ///     values.
+    ///     Adds the x- and y-coordinate elements of <paramref name="point2"/>
+    ///     to the x- and y-coordinate elements of <paramref name="point1"/>.
+    ///     The result is a new <see cref="Point"/> value where the x- and
+    ///     y-coordinate elements are the result of the addition.
+    ///     (point1 + point2)
     /// </summary>
-    /// <param name="left">
-    ///     The <see cref="Point"/> value on the left side of the addition
-    ///     operator.
+    /// <param name="point1">
+    ///     The <see cref="Point"/> value that will have the x- and y-coordinate
+    ///     elements of <paramref name="point2"/> added to its x- and
+    ///     y-coordinate elements.
     /// </param>
-    /// <param name="right">
-    ///     The <see cref="Point"/> value on the right side fo the addition
-    ///     operator.
+    /// <param name="point2">
+    ///     The <see cref="Point"/> value who's x- and y-coordinate elements 
+    ///     will be added to the x- and y-coordinate elements of 
+    ///     <paramref name="point1"/>.
     /// </param>
     /// <returns>
     ///     A new <see cref="Point"/> value who's x- and y-coordinate elements
-    ///     are the sum of the two <see cref="Point"/> values given.
+    ///     are  the result of adding the x- and y-coordinate elements of
+    ///     <paramref name="point2"/> to the x- and y-coordinate elements of
+    ///     <paramref name="point1"/>.
     /// </returns>
-    public static Point Add(Point left, Point right) => new Point(unchecked(left._x + right._x), unchecked(left._y + right._y));
+    public static Point Add(Point point1, Point point2) => new Point(unchecked(point1._x + point2._x), unchecked(point1._y + point2._y));
 
     /// <summary>
-    ///     Subtracts the x- and y-coordinate elements of one
-    ///     <see cref="Point"/> value from another.
+    ///     Subtracts the x- and y-coordinate elements of 
+    ///     <paramref name="point2"/> from the x- and y-coordinate elements of
+    ///     <paramref name="point1"/>.  The result is a new <see cref="Point"/>
+    ///     value where the x- and y-coordinate elements are the result of the
+    ///     subtraction.
+    ///     (point1 - point2)
     /// </summary>
-    /// <param name="left">
-    ///     The <see cref="Point"/> value on the left side of the subtraction
-    ///     operator.
+    /// <param name="point1">
+    ///     The <see cref="Point"/> value that will have the x- and y-coordinate
+    ///     elements of <paramref name="point2"/> subtracted from it's
+    ///     x- and y-coordinate elements.
     /// </param>
-    /// <param name="right">
-    ///     The <see cref="Point"/> value on the right side fo the subtraction
-    ///     operator.
+    /// <param name="point2">
+    ///     The <see cref="Point"/> value who's x- and y-coordinate elements
+    ///     will be subtracted from the x- and y-coordinate elements of
+    ///     <paramref name="point1"/>.
     /// </param>
     /// <returns>
     ///     A new <see cref="Point"/> value who's x- and y-coordinate elements
-    ///     are the result of subtracting the x- and y-coordinate elements of the
-    ///     <paramref name="right"/> <see cref="Point"/> from the x- and
-    ///     y-coordinate elements of the <paramref name="left"/> 
-    ///     <see cref="Point"/>.
+    ///     are  the result of subtracting the x- and y-coordinate elements of
+    ///     <paramref name="point2"/> from the x- and y-coordinate elements of 
+    ///     <paramref name="point1"/>.
     /// </returns>
-    public static Point Subtract(Point left, Point right) => new Point(unchecked(left._x - right._x), unchecked(left._y - right._y));
+    public static Point Subtract(Point point1, Point point2) => new Point(unchecked(point1._x - point2._x), unchecked(point1._y - point2._y));
 }

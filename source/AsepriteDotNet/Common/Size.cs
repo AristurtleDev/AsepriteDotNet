@@ -176,6 +176,7 @@ public struct Size : IEquatable<Size>
     ///     the width and height elements of <paramref name="size1"/>. The
     ///     result is a new <see cref="Size"/> value where the width and height
     ///     elements are the result of the addition.
+    ///     (size1 + size2)
     /// </summary>
     /// <param name="size1">
     ///     The <see cref="Size"/> value that will have the width and height
@@ -197,12 +198,15 @@ public struct Size : IEquatable<Size>
 
     /// <summary>
     ///     Subtracts the width and height elements of <paramref name="size2"/>
-    ///     from the width and height elements of <paramref name="size1"/>
+    ///     from the width and height elements of <paramref name="size1"/>.  The
+    ///     result is a new <see cref="Size"/> value where the width and height
+    ///     elements are the result of the subtraction.
     ///     (size1 - size2)
     /// </summary>
     /// <param name="size1">
     ///     The <see cref="Size"/> value that will have the width and height
-    ///     elements subtracted from.
+    ///     elements of <paramref name="size2"/> subtracted from it's width and
+    ///     height elements.
     /// </param>
     /// <param name="size2">
     ///     The <see cref="Size"/> value who's width and height elements will
@@ -211,8 +215,8 @@ public struct Size : IEquatable<Size>
     /// </param>
     /// <returns>
     ///     A new <see cref="Size"/> value who's width and height elements are 
-    ///     the result of subtracting the width and height elements of the
-    ///     <paramref name="size2"/> from the width and height elements of the 
+    ///     the result of subtracting the width and height elements of
+    ///     <paramref name="size2"/> from the width and height elements of 
     ///     <paramref name="size1"/>.
     /// </returns>
     public static Size Subtract(Size size1, Size size2) => new Size(unchecked(size1._w - size2._w), unchecked(size1._h - size2._h));

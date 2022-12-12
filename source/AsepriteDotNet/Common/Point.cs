@@ -95,7 +95,11 @@ public struct Point : IEquatable<Point>
     /// <param name="other">
     ///     The other <see cref="Point"/> to check for equality
     /// </param>
-    /// <returns></returns>
+    /// <returns>
+    ///     <see langword="true"/> if the specified <see cref="Point"/> value
+    ///     is equal to this <see cref="Point"/> value; otherwise,
+    ///     <see langword="false"/>.
+    /// </returns>
     public readonly bool Equals(Point other) => this == other;
 
     /// <summary>   

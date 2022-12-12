@@ -226,4 +226,12 @@ public struct Size : IEquatable<Size>
     ///     <paramref name="size1"/>.
     /// </returns>
     public static Size Subtract(Size size1, Size size2) => new Size(unchecked(size1._w - size2._w), unchecked(size1._h - size2._h));
+
+    /// <summary>
+    ///     Returns a string representation of this <see cref="Size"/>.
+    /// </summary>
+    /// <returns>
+    ///     A new string representation of this <see cref="Size"/>.
+    /// </returns>
+    public override readonly string ToString() => $"{{Width={Width}, Height={Height}}}";
 }

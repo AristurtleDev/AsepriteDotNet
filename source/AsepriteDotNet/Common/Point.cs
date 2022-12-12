@@ -230,4 +230,12 @@ public struct Point : IEquatable<Point>
     ///     <paramref name="point1"/>.
     /// </returns>
     public static Point Subtract(Point point1, Point point2) => new Point(unchecked(point1._x - point2._x), unchecked(point1._y - point2._y));
+
+    /// <summary>
+    ///     Returns a string representation of this <see cref="Point"/>.
+    /// </summary>
+    /// <returns>
+    ///     A new string representation of this <see cref="Point"/>.
+    /// </returns>
+    public override readonly string ToString() => $"{{X={X}, Y={Y}}}";
 }

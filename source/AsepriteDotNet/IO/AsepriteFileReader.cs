@@ -384,11 +384,11 @@ public static class AsepriteFileReader
                             byte[] dword = tileData[b..(b + bytesPerTile)];
                             uint value = BitConverter.ToUInt32(dword);
                             uint tileId = (value & TILE_ID_MASK) >> TILE_ID_SHIFT;
-                            uint xFlip1 = (value & TILE_FLIP_X_MASK);
-                            uint yFlip1 = (value & TILE_FLIP_Y_MASK);
+                            uint xFlip = (value & TILE_FLIP_X_MASK);
+                            uint yFlip = (value & TILE_FLIP_Y_MASK);
                             uint rotate = (value & TILE_90CW_ROTATION_MASK);
 
-                            Tile tile = new(tileId, xFlip1, yFlip1, rotate);
+                            Tile tile = new(tileId, xFlip, yFlip, rotate);
                             tiles[i] = tile;
                         }
 

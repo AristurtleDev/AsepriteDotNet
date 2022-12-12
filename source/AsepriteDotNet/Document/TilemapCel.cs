@@ -30,10 +30,9 @@ namespace AsepriteDotNet.Document;
 /// </summary>
 public sealed class TilemapCel : Cel
 {
-
     /// <summary>
     ///     Gets the width and height components of this 
-    ///     <see cref="TilemapCel"/>.
+    ///     <see cref="TilemapCel"/> in number of tiles.
     /// </summary> 
     public Size Size { get; }
 

@@ -21,35 +21,40 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-
-using AsepriteDotNet.IO.Image;
-
 namespace AsepriteDotNet.Image;
 
 /// <summary>
-///     Represents a spritesheet generated form an Aseprite file.
+///     Represents the options to adhere to when generating a new tilesheet.
 /// </summary>
-public sealed class AsepriteSheet
+public sealed class TilesheetOptions
 {
-    private List<Tilesheet> _tilesheets;
+    /// <summary>
+    ///     Gets or Sets a value that indicates whether duplicate tiles should
+    ///     be merged into a single tile.
+    /// </summary>
+    public bool MergeDuplicates { get; set; } = true;
 
     /// <summary>
-    ///     Gets the <see cref="Spritesheet"/> that was generated from the
-    ///     Aseprite file.
+    ///     Gets or Sets the <see cref="AsepriteDotNet.Image.PackingMethod"/> 
+    ///     to use when generating the tilesheets.
     /// </summary>
-    public Spritesheet Spritesheet { get; }
+    public PackingMethod PackingMethod { get; set; } = PackingMethod.SquarePacked;
 
     /// <summary>
+    ///     Gets or Sets the amount of transparent pixels to add between each
+    ///     tile and the edge of the tilesheet.
     /// </summary>
-    public ReadOnlyCollection<Tilesheet> Tilesheets { get; }
+    public int BorderPadding { get; set; } = 0;
 
-    internal AsepriteSheet(Spritesheet spritesheet, List<Tilesheet> tilesheets)
-    {
-        Spritesheet = spritesheet;
-        _tilesheets = tilesheets;
-        Tilesheets = _tilesheets.AsReadOnly();
-    }
+    /// <summary>
+    ///     Gets or Sets the amount of transparent pixels to add between each
+    ///     tile.
+    /// </summary>
+    public int Spacing { get; set; } = 0;
+
+    /// <summary>
+    ///     Gets or Sets the amount of transparent pixels to add to the inside
+    ///     of each tiles edge. 
+    /// </summary>
+    public int InnerPadding { get; set; } = 0;
 }

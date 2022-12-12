@@ -143,17 +143,46 @@ public sealed class AsepriteFile
     }
 
     /// <summary>
-    ///     Creates a new <see cref="AsepriteSheet"/> class instance from the
+    ///     Generates a new <see cref="AsepriteSheet"/> class instance from the
     ///     data within this <see cref="AsepriteFile"/>.
     /// </summary>
-    /// <param name="options">
-    ///     The options to adhere to when creating the
-    ///     <see cref="AsepriteSheet"/>.
+    /// <param name="spritesheetOptions">
+    ///     The options to adhere to when generating the spritesheet from this
+    ///     <see cref="AsepriteFile"/>.
+    /// </param>
+    /// <param name="tilesheetOptions">
+    ///     The options to adhere to when generating the tilesheets from this
+    ///     <see cref="AsepriteFile"/>.
     /// </param>
     /// <returns>
     ///     The <see cref="AsepriteSheet"/> that is created by this method.
     /// </returns>
-    public AsepriteSheet ToAsepritesheet(SpritesheetOptions options)
+    public AsepriteSheet ToAsepriteSheet(SpritesheetOptions spritesheetOptions, TilesheetOptions tilesheetOptions)
+    {
+        Spritesheet spritesheet = ToSpritesheet(spritesheetOptions);
+        List<Tilesheet> tilesheets = new();
+
+        for (int i = 0; i < Tilesets.Count; i++)
+        {
+            Tilesheet tilesheet = Tilesets[i].ToTilesheet(tilesheetOptions);
+            tilesheets.Add(tilesheet);
+        }
+
+        return new AsepriteSheet(spritesheet, tilesheets);
+    }
+
+    /// <summary>
+    ///     Generates a new <see cref="Spritesheet"/> class instance from the
+    ///     frame, slice, and tag data within this <see cref="AsepriteFile"/>.
+    /// </summary>
+    /// <param name="options">
+    ///     The options to adhere to when generating the spritesheet for the
+    ///     <see cref="AsepriteSheet"/>.
+    /// </param>
+    /// <returns>
+    ///     The <see cref="Spritesheet"/> that is created by this method.
+    /// </returns>
+    public Spritesheet ToSpritesheet(SpritesheetOptions options)
     {
         List<SpritesheetFrame> sheetFrames = new();
         List<SpritesheetAnimation> sheetAnimations = new();
@@ -166,8 +195,6 @@ public sealed class AsepriteFile
         for (int frameNum = 0; frameNum < Frames.Count; frameNum++)
         {
             frameColorLookup.Add(frameNum, Frames[frameNum].FlattenFrame(options.OnlyVisibleLayers));
-            // Frame frame = Frames[frameNum];
-            // frameColorLookup.Add(frameNum, FlattenFrame(frame, options.OnlyVisibleLayers));
         }
 
         int columns, rows;
@@ -417,6 +444,6 @@ public sealed class AsepriteFile
             }
         }
 
-        return new AsepriteSheet(sheetSize, sheetFrames, sheetAnimations, sheetPixels);
+        return new Spritesheet(sheetSize, sheetFrames, sheetAnimations, sheetPixels);
     }
 }

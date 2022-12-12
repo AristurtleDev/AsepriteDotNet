@@ -86,14 +86,6 @@ public sealed class Frame : IEnumerable<Cel>
     /// </returns>
     public IEnumerator<Cel> GetEnumerator() => _cels.GetEnumerator();
 
-    /// <summary>
-    ///     Returns an enumerator that iterates through the <see cref="Cel"/>
-    ///     elements in this <see cref="Frame"/>.
-    /// </summary>
-    /// <returns>
-    ///     An enumerator that iterates through the <see cref="Cel"/> elements
-    ///     in this <see cref="Frame"/>.
-    /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => _cels.GetEnumerator();
 
     /// <summary>
@@ -135,6 +127,7 @@ public sealed class Frame : IEnumerable<Cel>
             }
             else
             {
+                
                 continue;
             }
 

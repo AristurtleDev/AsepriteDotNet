@@ -38,9 +38,10 @@ public class SpritesheetOptions
     public bool MergeDuplicates { get; set; } = true;
 
     /// <summary>
-    ///     Gets or Sets the type of spritesheet to generate.
+    ///     Gets or Sets the <see cref="AsepriteDotNet.Image.PackingMethod"/> to 
+    ///     use when generating the spritesheet.
     /// </summary>
-    public PackingMethod PackingMethod { get; set; } = PackingMethod.HorizontalStrip;
+    public PackingMethod PackingMethod { get; set; } = PackingMethod.SquarePacked;
 
     /// <summary>
     ///     Gets or Sets the amount of transparent pixels to add between each
@@ -56,7 +57,7 @@ public class SpritesheetOptions
 
     /// <summary>
     ///     Gets or Sets the amount of transparent pixels to add to the inside
-    ///    of each frames edge. 
+    ///     of each frames edge. 
     /// </summary>
     public int InnerPadding { get; set; } = 0;
 }

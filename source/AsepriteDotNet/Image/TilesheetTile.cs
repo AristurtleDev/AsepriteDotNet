@@ -21,35 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-
-using AsepriteDotNet.IO.Image;
 
 namespace AsepriteDotNet.Image;
 
 /// <summary>
-///     Represents a spritesheet generated form an Aseprite file.
+///     Represents a single tile within a tilesheet.
 /// </summary>
-public sealed class AsepriteSheet
+public sealed class TilesheetTile
 {
-    private List<Tilesheet> _tilesheets;
-
     /// <summary>
-    ///     Gets the <see cref="Spritesheet"/> that was generated from the
-    ///     Aseprite file.
+    ///     Gets the bounds of this <see cref="TilesheetTile"/> relative to the
+    ///     overall tilesheet.
     /// </summary>
-    public Spritesheet Spritesheet { get; }
+    public Rectangle SourceRectangle { get; }
 
-    /// <summary>
-    /// </summary>
-    public ReadOnlyCollection<Tilesheet> Tilesheets { get; }
-
-    internal AsepriteSheet(Spritesheet spritesheet, List<Tilesheet> tilesheets)
-    {
-        Spritesheet = spritesheet;
-        _tilesheets = tilesheets;
-        Tilesheets = _tilesheets.AsReadOnly();
-    }
+    internal TilesheetTile(Rectangle source) => SourceRectangle = source;
 }

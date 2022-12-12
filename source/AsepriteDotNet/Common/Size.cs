@@ -31,7 +31,7 @@ public struct Size : IEquatable<Size>
     ///     Represents a <see cref="Size"/> value who's width and height
     ///     elements are initialized to zero.
     /// </summary>
-    public static readonly Point Empty;
+    public static readonly Size Empty = new Size(0, 0);
 
     private int _w;
     private int _h;
@@ -53,6 +53,12 @@ public struct Size : IEquatable<Size>
         readonly get => _h;
         set => _h = value;
     }
+
+    /// <summary>
+    ///     Gets a value that indicates whether this <see cref="Size"/> is
+    ///     empty, meaning that its width and height elements are set to zero.
+    /// </summary>
+    public readonly bool IsEmpty => _w == 0 && _h == 0;
 
     /// <summary>
     ///     Initializes a new <see cref="Size"/> value.

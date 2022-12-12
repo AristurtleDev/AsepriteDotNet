@@ -187,7 +187,7 @@ public struct Rectangle : IEquatable<Rectangle>
     ///     The other <see cref="Rectangle"/> to check for equality
     /// </param>
     /// <returns></returns>
-    public bool Equals(Rectangle other) => this == other;
+    public readonly bool Equals(Rectangle other) => this == other;
 
     /// <summary>   
     ///     Returns the hash code for this <see cref="Rectangle"/> value.

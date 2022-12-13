@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.Diagnostics;
-using System.Drawing;
 
 using AsepriteDotNet.Compression;
 using AsepriteDotNet.Document;
@@ -429,7 +428,7 @@ public static class AsepriteFileReader
                         string name = reader.ReadString();  //  Tag name
 
                         LoopDirection loopDirection = (LoopDirection)direction;
-                        Color tagColor = Color.FromArgb(255, r, g, b);
+                        Color tagColor = Color.FromRGBA(r, g, b, 255);
 
                         Tag tag = new(from, to, loopDirection, tagColor, name);
 
@@ -463,7 +462,7 @@ public static class AsepriteFileReader
                         {
                             _ = reader.ReadString();    //  Color name (ignored)
                         }
-                        doc.Palette[(int)i] = Color.FromArgb(a, r, g, b);
+                        doc.Palette[(int)i] = Color.FromRGBA(r, g, b, a);
                     }
                 }
                 else if (chunkType == ASE_CHUNK_USER_DATA)
@@ -484,7 +483,7 @@ public static class AsepriteFileReader
                         byte b = reader.ReadByte();     //  Color Blue (0 - 255)
                         byte a = reader.ReadByte();     //  Color Alpha (0 - 255)
 
-                        color = Color.FromArgb(a, r, g, b);
+                        color = Color.FromRGBA(r, g, b, a);
                     }
 
                     Debug.Assert(lastWithUserData is not null);
@@ -685,7 +684,7 @@ public static class AsepriteFileReader
             byte green = pixels[b + 1];
             byte blue = pixels[b + 2];
             byte alpha = pixels[b + 3];
-            results[i] = Color.FromArgb(alpha, red, green, blue);
+            results[i] = Color.FromRGBA(red, green, blue, alpha);
         }
 
         return results;
@@ -702,7 +701,7 @@ public static class AsepriteFileReader
             byte green = pixels[b];
             byte blue = pixels[b];
             byte alpha = pixels[b + 1];
-            results[i] = Color.FromArgb(alpha, red, green, blue);
+            results[i] = Color.FromRGBA(red, green, blue, alpha);
         }
 
         return results;
@@ -719,7 +718,7 @@ public static class AsepriteFileReader
 
             if (index == palette.TransparentIndex)
             {
-                results[i] = Color.FromArgb(0, 0, 0, 0);
+                results[i] = Color.Transparent;
             }
             else
             {

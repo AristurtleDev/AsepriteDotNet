@@ -21,18 +21,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-namespace AsepriteDotNet.Image;
+namespace AsepriteDotNet.Tests;
 
-/// <summary>
-///     Represents a single tile within a tilesheet.
-/// </summary>
-public sealed class TilesheetTile
+public sealed class RectangleTests
 {
-    /// <summary>
-    ///     Gets the bounds of this <see cref="TilesheetTile"/> relative to the
-    ///     overall tilesheet.
-    /// </summary>
-    public Rectangle SourceRectangle { get; }
+    [Fact]
+    public void Rectangle_EqualTest()
+    {
+        Rectangle a = new Rectangle(1, 2, 3, 4);
+        Rectangle b = new Rectangle(1, 2, 3, 4);
 
-    internal TilesheetTile(Rectangle source) => SourceRectangle = source;
+        Assert.True(a == b);
+        Assert.True(a.Equals(b));
+        Assert.True(a.Equals((object)b));
+        Assert.False(a == Rectangle.Empty);
+        Assert.False(a.Equals(Rectangle.Empty));
+        Assert.False(a.Equals((object)Rectangle.Empty));
+    }
+
+    [Fact]
+    public void Point_NotEqualTest()
+    {
+        Assert.True(Rectangle.Empty != new Rectangle(1, 2, 3, 4));
+        Assert.False(Rectangle.Empty != new Rectangle(0, 0, 0, 0));
+    }
 }

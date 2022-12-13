@@ -2,23 +2,25 @@
 
 A Cross Platform C# Library for Reading Aseprite Files
 
-[![build and test](https://github.com/AristurtleDev/AsepriteDotNet/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/AristurtleDev/AsepriteDotNet/actions/workflows/build-and-test.yml) [![License: MIT](https://img.shields.io/badge/📃%20license-MIT-blue?style=flat)](LICENSE) [![Twitter](https://img.shields.io/badge/%20-Share%20On%20Twitter-555?style=flat&logo=twitter)](https://twitter.com/intent/tweet?text=AsepriteDotNet%20by%20%40aristurtledev%0A%0AA%20new%20cross-platform%20library%20in%20C%23%20for%20reading%20Aseprite%20.ase%2F.aseprite%20files.%20https%3A%2F%2Fgithub.com%2FAristurtleDev%2FAsepriteDotNet%0A%0A%23aseprite%20%23dotnet%20%23csharp%20%23oss%0A)
+[![build and test](https://github.com/AristurtleDev/AsepriteDotNet/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/AristurtleDev/AsepriteDotNet/actions/workflows/build-and-test.yml) [![License: MIT](https://img.shields.io/badge/📃%20license-MIT-blue?style=flat)](https://github.com/AristurtleDev/AsepriteDotNet/blob/main/LICENSE) [![Twitter](https://img.shields.io/badge/%20-Share%20On%20Twitter-555?style=flat&logo=twitter)](https://twitter.com/intent/tweet?text=AsepriteDotNet%20by%20%40aristurtledev%0A%0AA%20new%20cross-platform%20library%20in%20C%23%20for%20reading%20Aseprite%20.ase%2F.aseprite%20files.%20https%3A%2F%2Fgithub.com%2FAristurtleDev%2FAsepriteDotNet%0A%0A%23aseprite%20%23dotnet%20%23csharp%20%23oss%0A)
 
 
 **AsepriteDotNet** is a cross-platform C# library for reading Aseprite (.aseprite/.ase) files.  Once file has been read, the library presents an easy to navigate `AsepriteFile` class containing the data read from the file.
 
 Built against [.NET7](https://dotnet.microsoft.com/en-us/)
 
+# Installation
+Install via NuGet
+```
+dotnet add package AsepriteDotNet --version 0.2.0
+```
+
 # Features
 * Simple one line import method (see [Usage](#usage) section below)
 * Aseprite editor UI only data is excluded so you only have to navigate through the sprite/image data
 * Internal Aseprite flags are converted to easily consumed `bool` properties.
 * Supports Aseprite files using **RGBA**, **Grayscale** and **Indexed** color modes.
-* Uses native and common C# value types
-    * When palette is imported, all palette colors are converted to `System.Drawing.Color` values
-    * When pixel data is imported, all pixel data is converted to `System.Drawing.Color` values
 * Supports Aseprite 1.3-beta Tileset, Tilemap Layer and Tilemap Cel.
-    * Tileset pixels are converted to `System.Drawing.Color` values
     * Tile data found in cels is converted to a `Tile` object
         * Tile X-Flip, Y-Flip, and Rotation values are not fully implemented in Aseprite 1.3-beta (https://github.com/aseprite/aseprite/issues/3603). The values are still read but until they are fully implemented in Aseprite, they will always be `0`.
 * Aseprite File can be converted to a packed `Asepritesheet` which contains a `Spritesheet` and a collection of `Tilesheet` for each tileset
@@ -42,7 +44,6 @@ Each `Frame` in Aseprite is a collection of `Cel` elements, with each `Cel` on a
 Doing this in `AsepriteDotNet` will produce a `Color[]` containing the pixel data from flattening the `Frame`.  You can specify if only `Cel` elements that are on a `Layer` that is visible should be included.
 
 ```csharp
-using System.Drawing;
 using AsepriteDotNet;
 
 AsepriteFile file = AsepriteFile.Load("file.aseprite");
@@ -181,4 +182,4 @@ Asepritesheet sheet = file.ToAsepritesheet(spritesheetOptions, tilesheetOptions)
 
 
 # License
-**AsepriteDotNet** is licensed under the **MIT License**.  Please refer to the [LICENSE](LICENSE) file for full license text.
+**AsepriteDotNet** is licensed under the **MIT License**.  Please refer to the [LICENSE](https://github.com/AristurtleDev/AsepriteDotNet/blob/main/LICENSE) file for full license text.

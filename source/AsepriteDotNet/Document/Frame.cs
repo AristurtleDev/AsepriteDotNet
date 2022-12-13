@@ -20,7 +20,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Drawing;
 
 using AsepriteDotNet.IO.Image;
 
@@ -131,7 +130,7 @@ public sealed class Frame : IEnumerable<Cel>
                 continue;
             }
 
-            byte opacity = BlendFunctions.MUL_UN8(imageCel.Opacity, imageCel.Layer.Opacity);
+            byte opacity = Color.MUL_UN8(imageCel.Opacity, imageCel.Layer.Opacity);
 
             for (int pixelNum = 0; pixelNum < imageCel.Pixels.Length; pixelNum++)
             {
@@ -149,7 +148,7 @@ public sealed class Frame : IEnumerable<Cel>
 
                 Color backdrop = result[index];
                 Color source = imageCel.Pixels[pixelNum];
-                result[index] = BlendFunctions.Blend(imageCel.Layer.BlendMode, backdrop, source, opacity);
+                result[index] = Color.Blend(imageCel.Layer.BlendMode, backdrop, source, opacity);
             }
         }
 

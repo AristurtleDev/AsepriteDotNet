@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="https://raw.githubusercontent.com/AristurtleDev/AsepriteDotNet/main/.github/aseprite-dotnet-banner.png" alt="AsepriteDotNet Logo">
+<img src="https://raw.githubusercontent.com/AristurtleDev/AsepriteDotNet/main/.github/images/aseprite-dotnet-banner.png" alt="AsepriteDotNet Logo">
 <br/>
 How To Contribute To AsepriteDotNet
 </h1>

@@ -21,18 +21,52 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------- */
-namespace AsepriteDotNet.Image;
+namespace AsepriteDotNet.Tests;
 
-/// <summary>
-///     Represents a single tile within a tilesheet.
-/// </summary>
-public sealed class TilesheetTile
+public sealed class PointTests
 {
-    /// <summary>
-    ///     Gets the bounds of this <see cref="TilesheetTile"/> relative to the
-    ///     overall tilesheet.
-    /// </summary>
-    public Rectangle SourceRectangle { get; }
+    [Fact]
+    public void Point_AddTest()
+    {
+        Point left = new Point(1, 2);
+        Point right = new Point(3, 4);
 
-    internal TilesheetTile(Rectangle source) => SourceRectangle = source;
+        Point expected = new Point(4, 6);
+
+        Assert.Equal(expected, Point.Add(left, right));
+        Assert.Equal(expected, left + right);
+    }
+
+    [Fact]
+    public void Point_SubtractTest()
+    {
+        Point left = new Point(1, 2);
+        Point right = new Point(3, 4);
+
+        Point expected = new Point(-2, -2);
+
+        Assert.Equal(expected, Point.Subtract(left, right));
+        Assert.Equal(expected, left - right);
+    }
+
+    [Fact]
+    public void Point_EqualTest()
+    {
+        Point a = new Point(1, 2);
+        Point b = new Point(1, 2);
+
+        Assert.True(a == b);
+        Assert.True(a.Equals(b));
+        Assert.True(a.Equals((object)b));
+        Assert.False(a == Point.Empty);
+        Assert.False(a.Equals(Point.Empty));
+        Assert.False(a.Equals((object)Point.Empty));
+    }
+
+    [Fact]
+    public void Point_NotEqualTest()
+    {
+        Assert.True(Point.Empty != new Point(1, 2));
+        Assert.False(Point.Empty != new Point(0, 0));
+    }
 }

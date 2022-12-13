@@ -23,8 +23,6 @@ SOFTWARE.
 ---------------------------------------------------------------------------- */
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Drawing;
-
 using AsepriteDotNet.IO.Image;
 
 namespace AsepriteDotNet.Image;

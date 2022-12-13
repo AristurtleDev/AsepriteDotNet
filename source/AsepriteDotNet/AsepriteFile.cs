@@ -20,8 +20,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Collections.ObjectModel;
 
-using System.Drawing;
-
 using AsepriteDotNet.Document;
 using AsepriteDotNet.Image;
 using AsepriteDotNet.IO;
@@ -402,7 +400,7 @@ public sealed class AsepriteFile
                 SliceKey key = slice[keyNum];
 
                 string name = slice.Name;
-                Color color = slice.UserData.Color ?? Color.FromArgb(255, 0, 0, 255);
+                Color color = slice.UserData.Color ?? Color.FromRGBA(0, 0, 255, 255);
                 Rectangle bounds = key.Bounds;
                 Rectangle? center = key.CenterBounds;
                 Point? pivot = key.Pivot;
@@ -413,7 +411,7 @@ public sealed class AsepriteFile
                     for (int offset = 1; offset < key.Frame - lastKey.Frame; offset++)
                     {
                         string interpolatedName = slice.Name;
-                        Color interpolatedColor = slice.UserData.Color ?? Color.FromArgb(255, 0, 0, 255);
+                        Color interpolatedColor = slice.UserData.Color ?? Color.FromRGBA(0, 0, 255, 255);
                         Rectangle interpolatedBounds = lastKey.Bounds;
                         Rectangle? interpolatedCenter = lastKey.CenterBounds;
                         Point? interpolatedPivot = lastKey.Pivot;
@@ -433,7 +431,7 @@ public sealed class AsepriteFile
                 for (int offset = 1; offset < sheetFrames.Count - lastKey.Frame; offset++)
                 {
                     string interpolatedName = slice.Name;
-                    Color interpolatedColor = slice.UserData.Color ?? Color.FromArgb(255, 0, 0, 255);
+                    Color interpolatedColor = slice.UserData.Color ?? Color.FromRGBA(0, 0, 255, 255);
                     Rectangle interpolatedBounds = lastKey.Bounds;
                     Rectangle? interpolatedCenter = lastKey.CenterBounds;
                     Point? interpolatedPivot = lastKey.Pivot;

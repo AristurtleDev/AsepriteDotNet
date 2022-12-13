@@ -44,7 +44,6 @@ Each `Frame` in Aseprite is a collection of `Cel` elements, with each `Cel` on a
 Doing this in `AsepriteDotNet` will produce a `Color[]` containing the pixel data from flattening the `Frame`.  You can specify if only `Cel` elements that are on a `Layer` that is visible should be included.
 
 ```csharp
-using System.Drawing;
 using AsepriteDotNet;
 
 AsepriteFile file = AsepriteFile.Load("file.aseprite");

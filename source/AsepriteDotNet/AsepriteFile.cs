@@ -20,8 +20,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Collections.ObjectModel;
 
-using System.Drawing;
-
 using AsepriteDotNet.Document;
 using AsepriteDotNet.Image;
 using AsepriteDotNet.IO;

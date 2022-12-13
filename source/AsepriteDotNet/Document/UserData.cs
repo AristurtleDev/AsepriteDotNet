@@ -20,8 +20,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Diagnostics.CodeAnalysis;
 
-using System.Drawing;
-
 namespace AsepriteDotNet.Document;
 
 /// <summary>

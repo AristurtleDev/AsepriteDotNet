@@ -20,7 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Diagnostics.CodeAnalysis;
 
-namespace AsepriteDotNet;
+namespace AsepriteDotNet.Common;
 
 /// <summary>
 ///     Represents a rectangular area with with width, height, x-coordinate, and

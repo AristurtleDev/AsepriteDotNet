@@ -20,7 +20,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Diagnostics.CodeAnalysis;
 
-namespace AsepriteDotNet;
+namespace AsepriteDotNet.Common;
 
 /// <summary>
 ///     Represents an x- and y-coordinate point in a two dimensional plane.

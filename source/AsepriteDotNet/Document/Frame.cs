@@ -20,8 +20,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Collections;
 using System.Collections.ObjectModel;
-
 using AsepriteDotNet.IO.Image;
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Document;
 
@@ -126,7 +126,7 @@ public sealed class Frame : IEnumerable<Cel>
             }
             else
             {
-                
+
                 continue;
             }
 

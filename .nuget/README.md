@@ -12,7 +12,7 @@ Built against [.NET7](https://dotnet.microsoft.com/en-us/)
 # Installation
 Install via NuGet
 ```
-dotnet add package AsepriteDotNet --version 0.2.0
+dotnet add package AsepriteDotNet --version 0.2.1
 ```
 
 # Features
@@ -45,6 +45,7 @@ Doing this in `AsepriteDotNet` will produce a `Color[]` containing the pixel dat
 
 ```csharp
 using AsepriteDotNet;
+using AsepriteDotNet.Common;
 
 AsepriteFile file = AsepriteFile.Load("file.aseprite");
 

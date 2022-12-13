@@ -45,6 +45,7 @@ Doing this in `AsepriteDotNet` will produce a `Color[]` containing the pixel dat
 
 ```csharp
 using AsepriteDotNet;
+using AsepriteDotNet.Common;
 
 AsepriteFile file = AsepriteFile.Load("file.aseprite");
 

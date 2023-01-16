@@ -23,6 +23,7 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>main</RepositoryBranch>
     <PackageTags>Aseprite;reader;pixel art;png;spritesheet;tilesheet</PackageTags>
+    <PackageReleaseNotes>Multitarget for net6 and net7</PackageReleaseNotes>
     <Description>
       AsepriteDotNet is a cross-platform C# library for reading Aseprite 
       (.aseprite/.ase) files.  Once file has been read, the library presents an 

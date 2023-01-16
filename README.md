@@ -11,7 +11,7 @@ A Cross Platform C# Library for Reading Aseprite Files
 
 **AsepriteDotNet** is a cross-platform C# library for reading Aseprite (.aseprite/.ase) files.  Once file has been read, the library presents an easy to navigate `AsepriteFile` class containing the data read from the file.
 
-Built against [.NET7](https://dotnet.microsoft.com/en-us/)
+Built against [.NET6 and .NET7](https://dotnet.microsoft.com/en-us/)
 
 # Installation
 Install via NuGet

@@ -134,7 +134,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
 
         byte[] result = new byte[nBytes];
 
-        _stream.ReadExactly(result, 0, nBytes);
+        _stream.ReadExactly(result);
 
         return result;
     }

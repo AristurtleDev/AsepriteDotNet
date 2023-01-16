@@ -66,7 +66,7 @@ public sealed class Tilesheet : IEnumerable<TilesheetTile>
         _tiles = tiles;
         Tiles = _tiles.AsReadOnly();
         _pixels = pixels;
-        Pixels = _pixels.AsReadOnly();
+        Pixels = Array.AsReadOnly<Color>(_pixels);
     }
 
     /// <summary>

@@ -70,7 +70,7 @@ public sealed class Spritesheet
         _animations = animations;
         Animations = _animations.AsReadOnly();
         _pixels = pixels;
-        Pixels = _pixels.AsReadOnly();
+        Pixels = Array.AsReadOnly<Color>(_pixels);
     }
 
     /// <summary>

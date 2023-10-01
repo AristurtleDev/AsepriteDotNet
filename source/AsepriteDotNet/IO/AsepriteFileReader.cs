@@ -145,6 +145,11 @@ public static class AsepriteFileReader
         //  child layers can be added to it.
         GroupLayer? lastGroupLayer = default;
 
+        //  Flag to determine if palette has been read. This is used to flag
+        //  that user data chunk is for sprite due to changes in Aseprite
+        //  version 1.3
+        bool paletteRead = false;
+
         //  Read the Aseprite file header
         _ = reader.ReadDword();             //  File size (ignored, don't need)
         ushort hMagic = reader.ReadWord();  //  Header magic number
@@ -464,6 +469,8 @@ public static class AsepriteFileReader
                         }
                         doc.Palette[(int)i] = Color.FromRGBA(r, g, b, a);
                     }
+
+                    paletteRead = true;
                 }
                 else if (chunkType == ASE_CHUNK_USER_DATA)
                 {
@@ -486,9 +493,14 @@ public static class AsepriteFileReader
                         color = Color.FromRGBA(r, g, b, a);
                     }
 
-                    Debug.Assert(lastWithUserData is not null);
+                    Debug.Assert(lastWithUserData is not null || paletteRead);
 
-                    if (lastWithUserData is not null)
+                    if(lastWithUserData is null && paletteRead)
+                    {
+                        doc.UserData.Text = text;
+                        doc.UserData.Color = color;
+                    }
+                    else if (lastWithUserData is not null)
                     {
                         lastWithUserData.UserData.Text = text;
                         lastWithUserData.UserData.Color = color;
@@ -612,11 +624,13 @@ public static class AsepriteFileReader
                 else if (chunkType == ASE_CHUNK_OLD_PALETTE1)
                 {
                     doc.AddWarning($"Old Palette Chunk (0x{chunkType:X4}) ignored");
+                    paletteRead = true;
                     reader.Seek(chunkEnd);
                 }
                 else if (chunkType == ASE_CHUNK_OLD_PALETTE2)
                 {
                     doc.AddWarning($"Old Palette Chunk (0x{chunkType:X4}) ignored");
+                    paletteRead = true;
                     reader.Seek(chunkEnd);
                 }
                 else if (chunkType == ASE_CHUNK_CEL_EXTRA)

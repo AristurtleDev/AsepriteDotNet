@@ -92,6 +92,11 @@ public sealed class AsepriteFile
     /// </summary>
     public Palette Palette { get; }
 
+    /// <summary>
+    ///     Gets the <see cref="UserData"/> set for Sprite in Aspeirte.
+    /// </summary>
+    public UserData UserData { get; internal set; } = new();
+
     internal AsepriteFile(Palette palette, Size size, ColorDepth colorDepth)
     {
         Size = size;
@@ -131,14 +136,14 @@ public sealed class AsepriteFile
     /// </exception>
     public static AsepriteFile Load(string filePath)
     {
-        try
-        {
+        // try
+        // {
             return AsepriteFileReader.ReadFile(filePath);
-        }
-        catch (Exception ex)
-        {
-            throw new AsepriteFileLoadException($"An error occurred while loading the Aseprite file. Please see inner exception for exact error.", ex);
-        }
+        // }
+        // catch (Exception ex)
+        // {
+        //     throw new AsepriteFileLoadException($"An error occurred while loading the Aseprite file. Please see inner exception for exact error.", ex);
+        // }
     }
 
     /// <summary>

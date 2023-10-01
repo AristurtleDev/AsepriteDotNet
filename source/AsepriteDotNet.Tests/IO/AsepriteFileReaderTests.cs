@@ -404,4 +404,13 @@ public sealed class AsepriteFileReaderTest
         //  Can't test Tile.XFlip, Tile.YFlip, and Tile.Rotate90 because these
         //  aren't actually implemented in Aseprite yet.
     }
+
+    [Fact]
+    public void AsepriteFileReader_SpriteUserDataTest()
+    {
+        string path = GetPath("sprite-userdata-test.aseprite");
+        AsepriteFile doc = AsepriteFileReader.ReadFile(path);
+        Assert.Equal("Test Sprite UserData", doc.UserData.Text);
+        Assert.Equal(Color.FromRGBA(1, 2, 3, 4), doc.UserData.Color);
+    }
 }

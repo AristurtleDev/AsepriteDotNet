@@ -346,7 +346,10 @@ public static class AsepriteFileReader
                     {
                         ushort frameIndex = reader.ReadWord();  //  Frame position to link with
 
-                        Cel otherCel = doc.Frames[frameIndex].Cels[cels.Count];
+                        //  Base off of layer index not cel index
+                        //  ensure that it doesn't go below zero
+                        int celIndex = index > 0 ? index - 1 : 0;
+                        Cel otherCel = doc.Frames[frameIndex].Cels[celIndex];
                         cel = new LinkedCel(otherCel, celLayer, position, opacity);
                     }
                     else if (type == ASE_CEL_TYPE_COMPRESSED_IMAGE)

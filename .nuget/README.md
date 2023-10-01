@@ -12,7 +12,7 @@ Built against [.NET7](https://dotnet.microsoft.com/en-us/)
 # Installation
 Install via NuGet
 ```
-dotnet add package AsepriteDotNet --version 0.2.2
+dotnet add package AsepriteDotNet --version 0.2.3
 ```
 
 # Features

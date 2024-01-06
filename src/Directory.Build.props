@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+    <!-- Set the project category used by the root Directory.Build.props -->
+    <PropertyGroup>
+        <ProjectCategory>src</ProjectCategory>
+    </PropertyGroup>
+
+    <!-- We're a library, always generate a documentation file -->
+    <!-- (suck it prime) -->
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <!-- Common Nuget Package Settings -->
+    <PropertyGroup>
+        <Copyright>Copyright © Christopher Whitley</Copyright>
+        <Authors>Christopher Whitley and contributors</Authors>
+        <Company>Aristurtle</Company>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <!-- Import the root prop last -->
+    <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
+</Project>

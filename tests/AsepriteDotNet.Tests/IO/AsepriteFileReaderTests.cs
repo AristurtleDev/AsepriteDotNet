@@ -41,16 +41,16 @@ public sealed class AsepriteFileReaderTest
         AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
         //  Expected pallette colors
-        Color pal0 = Color.FromRGBA(223, 7, 114, 255);
-        Color pal1 = Color.FromRGBA(254, 84, 111, 255);
-        Color pal2 = Color.FromRGBA(255, 158, 125, 255);
-        Color pal3 = Color.FromRGBA(255, 208, 128, 255);
-        Color pal4 = Color.FromRGBA(255, 253, 255, 255);
-        Color pal5 = Color.FromRGBA(11, 255, 230, 255);
-        Color pal6 = Color.FromRGBA(1, 203, 207, 255);
-        Color pal7 = Color.FromRGBA(1, 136, 165, 255);
-        Color pal8 = Color.FromRGBA(62, 50, 100, 255);
-        Color pal9 = Color.FromRGBA(53, 42, 85, 255);
+        Rgba32 pal0 = Rgba32.FromRGBA(223, 7, 114, 255);
+        Rgba32 pal1 = Rgba32.FromRGBA(254, 84, 111, 255);
+        Rgba32 pal2 = Rgba32.FromRGBA(255, 158, 125, 255);
+        Rgba32 pal3 = Rgba32.FromRGBA(255, 208, 128, 255);
+        Rgba32 pal4 = Rgba32.FromRGBA(255, 253, 255, 255);
+        Rgba32 pal5 = Rgba32.FromRGBA(11, 255, 230, 255);
+        Rgba32 pal6 = Rgba32.FromRGBA(1, 203, 207, 255);
+        Rgba32 pal7 = Rgba32.FromRGBA(1, 136, 165, 255);
+        Rgba32 pal8 = Rgba32.FromRGBA(62, 50, 100, 255);
+        Rgba32 pal9 = Rgba32.FromRGBA(53, 42, 85, 255);
 
         //  Validate palette
         Assert.True(doc.Palette.Count == 10);
@@ -75,7 +75,7 @@ public sealed class AsepriteFileReaderTest
         Assert.False(doc.Layers[1].IsVisible);
         Assert.Equal("user-data", doc.Layers[2].Name);
         Assert.Equal("user-data text", doc.Layers[2].UserData.Text);
-        Assert.Equal(Color.FromRGBA(223, 7, 114, 255), doc.Layers[2].UserData.Color);
+        Assert.Equal(Rgba32.FromRGBA(223, 7, 114, 255), doc.Layers[2].UserData.Color);
         Assert.Equal("reference", doc.Layers[3].Name);
         Assert.True(doc.Layers[3].IsReferenceLayer);
         Assert.Equal("75-opacity", doc.Layers[4].Name);
@@ -93,13 +93,13 @@ public sealed class AsepriteFileReaderTest
         Assert.Equal("tag0to2forward", doc.Tags[0].Name);
         Assert.Equal(0, doc.Tags[0].From);
         Assert.Equal(2, doc.Tags[0].To);
-        Assert.Equal(Color.FromRGBA(0, 0, 0, 255), doc.Tags[0].Color);
+        Assert.Equal(Rgba32.FromRGBA(0, 0, 0, 255), doc.Tags[0].Color);
         Assert.Equal(LoopDirection.Forward, doc.Tags[0].LoopDirection);
         Assert.Equal("tag3pingpong", doc.Tags[1].Name);
         Assert.Equal(LoopDirection.PingPong, doc.Tags[1].LoopDirection);
         Assert.Equal("tag4userdata", doc.Tags[2].Name);
-        Assert.Equal(Color.FromRGBA(11, 255, 230, 255), doc.Tags[2].Color);
-        Assert.Equal(Color.FromRGBA(11, 255, 230, 255), doc.Tags[2].UserData.Color);
+        Assert.Equal(Rgba32.FromRGBA(11, 255, 230, 255), doc.Tags[2].Color);
+        Assert.Equal(Rgba32.FromRGBA(11, 255, 230, 255), doc.Tags[2].UserData.Color);
         Assert.Equal("tag-4-user-data", doc.Tags[2].UserData.Text);
 
         //  Validate Frames
@@ -125,19 +125,19 @@ public sealed class AsepriteFileReaderTest
 
         Assert.Equal(10, doc.Palette.Count);
 
-        Color tran = Color.Transparent;
-        Color pal0 = doc.Palette[0];
-        Color pal1 = doc.Palette[1];
-        Color pal2 = doc.Palette[2];
-        Color pal3 = doc.Palette[3];
-        Color pal4 = doc.Palette[4];
-        Color pal5 = doc.Palette[5];
-        Color pal6 = doc.Palette[6];
-        Color pal7 = doc.Palette[7];
-        Color pal8 = doc.Palette[8];
-        Color pal9 = doc.Palette[9];
+        Rgba32 tran = Rgba32.Transparent;
+        Rgba32 pal0 = doc.Palette[0];
+        Rgba32 pal1 = doc.Palette[1];
+        Rgba32 pal2 = doc.Palette[2];
+        Rgba32 pal3 = doc.Palette[3];
+        Rgba32 pal4 = doc.Palette[4];
+        Rgba32 pal5 = doc.Palette[5];
+        Rgba32 pal6 = doc.Palette[6];
+        Rgba32 pal7 = doc.Palette[7];
+        Rgba32 pal8 = doc.Palette[8];
+        Rgba32 pal9 = doc.Palette[9];
 
-        Color[] expected = new Color[]
+        Rgba32[] expected = new Rgba32[]
         {
             pal0, pal1, pal2, pal3, pal4, pal5, pal6, pal7, pal8, pal9, pal0, pal1, pal2, pal3, pal4, pal5,
             pal6, pal7, pal8, pal9, pal0, pal1, pal2, pal3, pal4, pal5, pal6, pal7, pal8, pal9, pal0, pal1,
@@ -169,19 +169,19 @@ public sealed class AsepriteFileReaderTest
 
         Assert.Equal(11, doc.Palette.Count);
 
-        Color pal0 = Color.Transparent;
-        Color pal1 = doc.Palette[1];
-        Color pal2 = doc.Palette[2];
-        Color pal3 = doc.Palette[3];
-        Color pal4 = doc.Palette[4];
-        Color pal5 = doc.Palette[5];
-        Color pal6 = doc.Palette[6];
-        Color pal7 = doc.Palette[7];
-        Color pal8 = doc.Palette[8];
-        Color pal9 = doc.Palette[9];
-        Color pal10 = doc.Palette[10];
+        Rgba32 pal0 = Rgba32.Transparent;
+        Rgba32 pal1 = doc.Palette[1];
+        Rgba32 pal2 = doc.Palette[2];
+        Rgba32 pal3 = doc.Palette[3];
+        Rgba32 pal4 = doc.Palette[4];
+        Rgba32 pal5 = doc.Palette[5];
+        Rgba32 pal6 = doc.Palette[6];
+        Rgba32 pal7 = doc.Palette[7];
+        Rgba32 pal8 = doc.Palette[8];
+        Rgba32 pal9 = doc.Palette[9];
+        Rgba32 pal10 = doc.Palette[10];
 
-        Color[] expected = new Color[]
+        Rgba32[] expected = new Rgba32[]
         {
             pal1, pal2, pal3, pal4, pal5, pal6, pal7, pal8, pal9, pal10, pal1, pal2, pal3, pal4, pal5, pal6,
             pal7, pal8, pal9, pal10, pal1, pal2, pal3, pal4, pal5, pal6, pal7, pal8, pal9, pal10, pal1, pal2,
@@ -213,17 +213,17 @@ public sealed class AsepriteFileReaderTest
 
         Assert.Equal(8, doc.Palette.Count);
 
-        Color tran = Color.Transparent;
-        Color pal0 = doc.Palette[0];
-        Color pal1 = doc.Palette[1];
-        Color pal2 = doc.Palette[2];
-        Color pal3 = doc.Palette[3];
-        Color pal4 = doc.Palette[4];
-        Color pal5 = doc.Palette[5];
-        Color pal6 = doc.Palette[6];
-        Color pal7 = doc.Palette[7];
+        Rgba32 tran = Rgba32.Transparent;
+        Rgba32 pal0 = doc.Palette[0];
+        Rgba32 pal1 = doc.Palette[1];
+        Rgba32 pal2 = doc.Palette[2];
+        Rgba32 pal3 = doc.Palette[3];
+        Rgba32 pal4 = doc.Palette[4];
+        Rgba32 pal5 = doc.Palette[5];
+        Rgba32 pal6 = doc.Palette[6];
+        Rgba32 pal7 = doc.Palette[7];
 
-        Color[] expected = new Color[]
+        Rgba32[] expected = new Rgba32[]
         {
             pal0, pal1, pal2, pal3, pal4, pal5, pal6, pal7, pal0, pal1, pal2, pal3, pal4, pal5, pal6, pal7,
             pal7, pal6, pal5, pal4, pal3, pal2, pal1, pal0, pal7, pal6, pal5, pal4, pal3, pal2, pal1, pal0,
@@ -253,17 +253,17 @@ public sealed class AsepriteFileReaderTest
         string path = GetPath("tilemap-test.aseprite");
         AsepriteFile doc = AsepriteFileReader.ReadFile(path);
 
-        Color tran = Color.Transparent;
-        Color pal0 = doc.Palette[0];
-        Color pal1 = doc.Palette[1];
-        Color pal2 = doc.Palette[2];
-        Color pal3 = doc.Palette[3];
-        Color pal4 = doc.Palette[4];
-        Color pal5 = doc.Palette[5];
-        Color pal6 = doc.Palette[6];
-        Color pal7 = doc.Palette[7];
-        Color pal8 = doc.Palette[8];
-        Color pal9 = doc.Palette[9];
+        Rgba32 tran = Rgba32.Transparent;
+        Rgba32 pal0 = doc.Palette[0];
+        Rgba32 pal1 = doc.Palette[1];
+        Rgba32 pal2 = doc.Palette[2];
+        Rgba32 pal3 = doc.Palette[3];
+        Rgba32 pal4 = doc.Palette[4];
+        Rgba32 pal5 = doc.Palette[5];
+        Rgba32 pal6 = doc.Palette[6];
+        Rgba32 pal7 = doc.Palette[7];
+        Rgba32 pal8 = doc.Palette[8];
+        Rgba32 pal9 = doc.Palette[9];
 
         Assert.Single(doc.Tilesets);
         Tileset tileset = doc.Tilesets[0];
@@ -273,7 +273,7 @@ public sealed class AsepriteFileReaderTest
         Assert.Equal(11, tileset.TileCount);
         Assert.Equal(new Size(8, 8), tileset.TileSize);
 
-        Color[] expectedTilesetPixels = new Color[]
+        Rgba32[] expectedTilesetPixels = new Rgba32[]
         {
             tran, tran, tran, tran, tran, tran, tran, tran,
             tran, tran, tran, tran, tran, tran, tran, tran,
@@ -411,6 +411,6 @@ public sealed class AsepriteFileReaderTest
         string path = GetPath("sprite-userdata-test.aseprite");
         AsepriteFile doc = AsepriteFileReader.ReadFile(path);
         Assert.Equal("Test Sprite UserData", doc.UserData.Text);
-        Assert.Equal(Color.FromRGBA(1, 2, 3, 4), doc.UserData.Color);
+        Assert.Equal(Rgba32.FromRGBA(1, 2, 3, 4), doc.UserData.Color);
     }
 }

@@ -50,7 +50,7 @@ internal static class PngWriter
     /// <param name="data">
     ///     The pixel data of the image.
     /// </param>
-    public static void SaveTo(string path, Size size, Color[] data)
+    public static void SaveTo(string path, Size size, Rgba32[] data)
     {
         try
         {
@@ -114,7 +114,7 @@ internal static class PngWriter
     //  Bit Depth:
     //      1-byte integer that indicates the number of bits per sample. Valid
     //      values depend on the color type used
-    //      
+    //
     //       -----------------------------------------------
     //      | Color Type            |   Allowed bit depths  |
     //       -----------------------------------------------
@@ -150,8 +150,8 @@ internal static class PngWriter
     //
     //  Interlace Method:
     //      1-byte integer that indicates the transmission order of the image
-    //      data.  
-    //  
+    //      data.
+    //
     //       ---------------------------------------
     //      | Interlace Method          |   Value   |
     //       ---------------------------------------
@@ -181,7 +181,7 @@ internal static class PngWriter
     //  the compression stream.
     //
     //  The compression stream is a deflate stream including the Adler-32
-    //  trailer.  
+    //  trailer.
     //
     //  Each scanline of the image begins with a single byte that defines the
     //  filter used on that scanline.
@@ -196,7 +196,7 @@ internal static class PngWriter
     //             https://www.w3.org/TR/png-3/#10Compression
     //             https://www.w3.org/TR/png-3/#7Scanline
     //             https://www.w3.org/TR/png-3/#7Filtering
-    private static void WriteIDAT(BinaryWriter writer, Size size, Color[] data)
+    private static void WriteIDAT(BinaryWriter writer, Size size, Rgba32[] data)
     {
         void Flush(MemoryStream stream)
         {
@@ -251,7 +251,7 @@ internal static class PngWriter
                 deflate.Write(filter);
                 adler.Update(filter);
 
-                Color[] scanline = data[(i)..(i + size.Width)];
+                Rgba32[] scanline = data[(i)..(i + size.Width)];
                 for (int c = 0; c < scanline.Length; c++)
                 {
                     ReadOnlySpan<byte> pixel = new byte[4]
@@ -300,7 +300,7 @@ internal static class PngWriter
     //
     //  If there is no data (Length = 0), then the data chunk is not written
     //
-    //  Length: 
+    //  Length:
     //      A 4-byte unsigned integer giving the number of bytes in the chunk's
     //      data field. Only the data field. Do not include the length field
     //      itself, the chunk type field, or the crc field
@@ -351,12 +351,12 @@ internal static class PngWriter
 
 
     //  Per https://www.w3.org/TR/png-3/#7Integers-and-byte-order
-    //      
-    //      "All integers that require more than one byte shall be in network 
+    //
+    //      "All integers that require more than one byte shall be in network
     //      byte order"
     //
-    //  Basically, we have to ensure that all integer type values are in 
-    //  BigEndian.  
+    //  Basically, we have to ensure that all integer type values are in
+    //  BigEndian.
     //
     //  This method will check for endianess and convert to BigEndian if needed.
     private static int ToBigEndian(int value)

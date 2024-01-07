@@ -20,12 +20,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------------- */
 using System.Diagnostics.CodeAnalysis;
 
-namespace AsepriteDotNet.Common;
+namespace AsepriteDotNet;
 
 /// <summary>
 ///     Represents an RGBA (red, green, blue, alpha) color value.
 /// </summary>
-public struct Color : IEquatable<Color>
+public struct Rgba32 : IEquatable<Rgba32>
 {
     private const byte RGBA_R_SHIFT = 0;
     private const byte RGBA_G_SHIFT = 8;
@@ -38,37 +38,37 @@ public struct Color : IEquatable<Color>
     private const uint RGBA_A_MASK = 0xff000000;
 
     /// <summary>
-    ///     Represents a <see cref="Color"/> value who's red, green, blue, and
+    ///     Represents a <see cref="Rgba32"/> value who's red, green, blue, and
     ///     alpha components are all set to zero.
     /// </summary>
-    public static readonly Color Transparent = Color.FromRGBA(0, 0, 0, 0);
+    public static readonly Rgba32 Transparent = Rgba32.FromRGBA(0, 0, 0, 0);
 
     private uint _value;
 
     /// <summary>
-    ///     Gets the red component value of this <see cref="Color"/>.
+    ///     Gets the red component value of this <see cref="Rgba32"/>.
     /// </summary>
     public readonly byte R => unchecked((byte)((_value >> RGBA_R_SHIFT) & 0xFF));
 
     /// <summary>
-    ///     Gets the green component value of this <see cref="Color"/>.
+    ///     Gets the green component value of this <see cref="Rgba32"/>.
     /// </summary>
     public readonly byte G => unchecked((byte)((_value >> RGBA_G_SHIFT) & 0xFF));
 
     /// <summary>
-    ///     Gets the blue component value of this <see cref="Color"/>.
+    ///     Gets the blue component value of this <see cref="Rgba32"/>.
     /// </summary>
     public readonly byte B => unchecked((byte)((_value >> RGBA_B_SHIFT) & 0xFF));
 
     /// <summary>
-    ///     Gets the alpha component value fo this <see cref="Color"/>.
+    ///     Gets the alpha component value fo this <see cref="Rgba32"/>.
     /// </summary>
     public readonly byte A => unchecked((byte)((_value >> RGBA_A_SHIFT) & 0xFF));
 
-    private Color(uint value) => _value = value;
+    private Rgba32(uint value) => _value = value;
 
     /// <summary>
-    ///     Creates a new <see cref="Color"/> value from the specified 8-bit
+    ///     Creates a new <see cref="Rgba32"/> value from the specified 8-bit
     ///     <paramref name="red"/>, <paramref name="green"/>,
     ///     <paramref name="blue"/>, and <paramref name="alpha"/> component
     ///     values.
@@ -78,32 +78,32 @@ public struct Color : IEquatable<Color>
     ///     value, but the value of each component is limited to 8-bits.
     /// </remarks>
     /// <param name="red">
-    ///     The red component value for the new <see cref="Color"/>.  Valid
+    ///     The red component value for the new <see cref="Rgba32"/>.  Valid
     ///     values are 0 through 255
     /// </param>
     /// <param name="green">
-    ///     The green component value for the new <see cref="Color"/>.  Valid
+    ///     The green component value for the new <see cref="Rgba32"/>.  Valid
     ///     values are 0 through 255
     /// </param>
     /// <param name="blue">
-    ///     The blue component value for the new <see cref="Color"/>.  Valid
+    ///     The blue component value for the new <see cref="Rgba32"/>.  Valid
     ///     values are 0 through 255
     /// </param>
     /// <param name="alpha">
-    ///     The alpha component value for the new <see cref="Color"/>.  Valid
+    ///     The alpha component value for the new <see cref="Rgba32"/>.  Valid
     ///     values are 0 through 255
     /// </param>
     /// <returns>
-    ///     The new <see cref="Color"/> value created by this method.
+    ///     The new <see cref="Rgba32"/> value created by this method.
     /// </returns>
-    public static Color FromRGBA(int red, int green, int blue, int alpha)
+    public static Rgba32 FromRGBA(int red, int green, int blue, int alpha)
     {
         CheckByte(red, nameof(red));
         CheckByte(green, nameof(green));
         CheckByte(blue, nameof(blue));
         CheckByte(alpha, nameof(alpha));
 
-        return new Color(RGBA(red, green, blue, alpha));
+        return new Rgba32(RGBA(red, green, blue, alpha));
     }
 
     private static void CheckByte(int value, string name)
@@ -119,117 +119,117 @@ public struct Color : IEquatable<Color>
                                                             (uint)b << RGBA_B_SHIFT |
                                                             (uint)a << RGBA_A_SHIFT;
     /// <summary>
-    ///     Returns a value that indicates whether the specified 
-    ///     <see cref="object"/> is equal to this <see cref="Color"/>.
+    ///     Returns a value that indicates whether the specified
+    ///     <see cref="object"/> is equal to this <see cref="Rgba32"/>.
     /// </summary>
     /// <param name="obj">
-    ///     The <see cref="object"/> to check for equality with this 
-    ///     <see cref="Color"/>.
+    ///     The <see cref="object"/> to check for equality with this
+    ///     <see cref="Rgba32"/>.
     /// </param>
     /// <returns>
     ///     <see langword="true"/> if the specified <see cref="object"/> is
-    ///     equal to this <see cref="Color"/>; otherwise, 
+    ///     equal to this <see cref="Rgba32"/>; otherwise,
     ///     <see langword="false"/>.
     /// </returns>
-    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Color color && Equals(color);
+    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Rgba32 color && Equals(color);
 
     /// <summary>
-    ///     Returns a value that indicates whether the specified 
-    ///     <see cref="Color"/> is equal to this <see cref="Color"/>.
+    ///     Returns a value that indicates whether the specified
+    ///     <see cref="Rgba32"/> is equal to this <see cref="Rgba32"/>.
     /// </summary>
     /// <param name="other">
-    ///     The other <see cref="Color"/> to check for equality
+    ///     The other <see cref="Rgba32"/> to check for equality
     /// </param>
     /// <returns>
-    ///     <see langword="true"/> if the specified <see cref="Color"/> value
-    ///     is equal to this <see cref="Color"/> value; otherwise,
+    ///     <see langword="true"/> if the specified <see cref="Rgba32"/> value
+    ///     is equal to this <see cref="Rgba32"/> value; otherwise,
     ///     <see langword="false"/>.
     /// </returns>
-    public readonly bool Equals(Color other) => this == other;
+    public readonly bool Equals(Rgba32 other) => this == other;
 
-    /// <summary>   
-    ///     Returns the hash code for this <see cref="Color"/> value.
+    /// <summary>
+    ///     Returns the hash code for this <see cref="Rgba32"/> value.
     /// </summary>
     /// <returns>
     ///     A 32-bit signed integer that is the hash code for this
-    ///     <see cref="Color"/> value.
+    ///     <see cref="Rgba32"/> value.
     /// </returns>
     public override readonly int GetHashCode() => _value.GetHashCode();
 
     /// <summary>
-    ///     Compares two <see cref="Color"/> values for equality.
+    ///     Compares two <see cref="Rgba32"/> values for equality.
     /// </summary>
     /// <param name="left">
-    ///     The <see cref="Color"/> value on the left side of the equality
+    ///     The <see cref="Rgba32"/> value on the left side of the equality
     ///     operator.
     /// </param>
     /// <param name="right">
-    ///     The <see cref="Color"/> value on the right side of the equality
+    ///     The <see cref="Rgba32"/> value on the right side of the equality
     ///     operator.
     /// </param>
     /// <returns>
-    ///     <see langword="true"/> if the two <see cref="Color"/> values are
+    ///     <see langword="true"/> if the two <see cref="Rgba32"/> values are
     ///     equal; otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool operator ==(Color left, Color right) => left._value == right._value;
+    public static bool operator ==(Rgba32 left, Rgba32 right) => left._value == right._value;
 
     /// <summary>
-    ///     Compares two <see cref="Color"/> values for inequality.
+    ///     Compares two <see cref="Rgba32"/> values for inequality.
     /// </summary>
     /// <param name="left">
-    ///     The <see cref="Color"/> value on the left side of the inequality
+    ///     The <see cref="Rgba32"/> value on the left side of the inequality
     ///     operator.
     /// </param>
     /// <param name="right">
-    ///     The <see cref="Color"/> value on the right side of the inequality
+    ///     The <see cref="Rgba32"/> value on the right side of the inequality
     ///     operator.
     /// </param>
     /// <returns>
-    ///     <see langword="true"/> if the two <see cref="Color"/> values are
+    ///     <see langword="true"/> if the two <see cref="Rgba32"/> values are
     ///     unequal; otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool operator !=(Color left, Color right) => !(left == right);
+    public static bool operator !=(Rgba32 left, Rgba32 right) => !(left == right);
 
     /// <summary>
-    ///     Returns a string representation of this <see cref="Color"/>.
+    ///     Returns a string representation of this <see cref="Rgba32"/>.
     /// </summary>
     /// <returns>
-    ///     A new string representation of this <see cref="Color"/>.
+    ///     A new string representation of this <see cref="Rgba32"/>.
     /// </returns>
     public override readonly string ToString() => $"{{Red={R}, Green={G}, Blue={B}, Alpha={A}}}";
 
     //  Blend Functions
 
     /// <summary>
-    ///     Blends two <see cref="Color"/> values using a specified
+    ///     Blends two <see cref="Rgba32"/> values using a specified
     ///     <see cref="BlendMode"/>.
     /// </summary>
     /// <param name="mode">
     ///     The <see cref="BlendMode"/> to use for blending the two colors.
     /// </param>
     /// <param name="backdrop">
-    ///     The <see cref="Color"/> value that is behind the 
-    ///     <paramref name="source"/>. 
+    ///     The <see cref="Rgba32"/> value that is behind the
+    ///     <paramref name="source"/>.
     /// </param>
     /// <param name="source">
-    ///     The <see cref="Color"/> value that is on top of the
+    ///     The <see cref="Rgba32"/> value that is on top of the
     ///     <paramref name="backdrop"/>.
     /// </param>
     /// <param name="opacity">
-    ///     The opacity of the container (e.g. layer) that the 
+    ///     The opacity of the container (e.g. layer) that the
     ///     <paramref name="source"/> exists on.
     /// </param>
     /// <returns>
-    ///     A new <see cref="Color"/> value that is the result of blending the
+    ///     A new <see cref="Rgba32"/> value that is the result of blending the
     ///     <paramref name="source"/> with the <paramref name="backdrop"/>
     ///     using the specified <see cref="BlendMode"/>.
     /// </returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static Color Blend(BlendMode mode, Color backdrop, Color source, int opacity)
+    public static Rgba32 Blend(BlendMode mode, Rgba32 backdrop, Rgba32 source, int opacity)
     {
         if (backdrop.A == 0 && source.A == 0)
         {
-            return Color.Transparent;
+            return Rgba32.Transparent;
         }
         else if (backdrop.A == 0)
         {
@@ -266,7 +266,7 @@ public struct Color : IEquatable<Color>
             #pragma warning restore format
         };
 
-        return new Color(blended);
+        return new Rgba32(blended);
     }
 
     private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(g, b)) - Math.Min(r, Math.Min(g, b));
@@ -338,7 +338,7 @@ public struct Color : IEquatable<Color>
         return (byte)(((ushort)a * 0xFF + (b / 2)) / b);
     }
 
-    private static uint Normal(Color backdrop, Color src, int opacity)
+    private static uint Normal(Rgba32 backdrop, Rgba32 src, int opacity)
     {
         if ((backdrop._value & RGBA_A_MASK) == 0)
         {
@@ -373,25 +373,25 @@ public struct Color : IEquatable<Color>
         return RGBA(Rr, Rg, Rb, Ra);
     }
 
-    private static uint Multiply(Color backdrop, Color source, int opacity)
+    private static uint Multiply(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int r = MUL_UN8(backdrop.R, source.R);
         int g = MUL_UN8(backdrop.G, source.G);
         int b = MUL_UN8(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Screen(Color backdrop, Color source, int opacity)
+    private static uint Screen(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int r = backdrop.R + source.R - MUL_UN8(backdrop.R, source.R);
         int g = backdrop.G + source.G - MUL_UN8(backdrop.G, source.G);
         int b = backdrop.B + source.B - MUL_UN8(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Overlay(Color backdrop, Color source, int opacity)
+    private static uint Overlay(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int overlay(int b, int s)
         {
@@ -411,10 +411,10 @@ public struct Color : IEquatable<Color>
         int g = overlay(backdrop.G, source.G);
         int b = overlay(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Darken(Color backdrop, Color source, int opacity)
+    private static uint Darken(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int blend(int b, int s) => Math.Min(b, s);
 
@@ -422,10 +422,10 @@ public struct Color : IEquatable<Color>
         int g = blend(backdrop.G, source.G);
         int b = blend(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Lighten(Color backdrop, Color source, int opacity)
+    private static uint Lighten(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int lighten(int b, int s) => Math.Max(b, s);
 
@@ -433,10 +433,10 @@ public struct Color : IEquatable<Color>
         int g = lighten(backdrop.G, source.G);
         int b = lighten(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint ColorDodge(Color backdrop, Color source, int opacity)
+    private static uint ColorDodge(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int dodge(int b, int s)
         {
@@ -461,10 +461,10 @@ public struct Color : IEquatable<Color>
         int g = dodge(backdrop.G, source.G);
         int b = dodge(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint ColorBurn(Color backdrop, Color source, int opacity)
+    private static uint ColorBurn(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int burn(int b, int s)
         {
@@ -489,11 +489,11 @@ public struct Color : IEquatable<Color>
         int g = burn(backdrop.G, source.G);
         int b = burn(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
     //  Not working
-    private static uint HardLight(Color backdrop, Color source, int opacity)
+    private static uint HardLight(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int hardlight(int b, int s)
         {
@@ -513,10 +513,10 @@ public struct Color : IEquatable<Color>
         int g = hardlight(backdrop.G, source.G);
         int b = hardlight(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint SoftLight(Color backdrop, Color source, int opacity)
+    private static uint SoftLight(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int softlight(int _b, int _s)
         {
@@ -549,10 +549,10 @@ public struct Color : IEquatable<Color>
         int g = softlight(backdrop.G, source.G);
         int b = softlight(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Difference(Color backdrop, Color source, int opacity)
+    private static uint Difference(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int difference(int b, int s)
         {
@@ -563,10 +563,10 @@ public struct Color : IEquatable<Color>
         int g = difference(backdrop.G, source.G);
         int b = difference(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Exclusion(Color backdrop, Color source, int opacity)
+    private static uint Exclusion(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int exclusion(int b, int s)
         {
@@ -577,10 +577,10 @@ public struct Color : IEquatable<Color>
         int g = exclusion(backdrop.G, source.G);
         int b = exclusion(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint HslHue(Color backdrop, Color source, int opacity)
+    private static uint HslHue(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         double r = backdrop.R / 255.0;
         double g = backdrop.G / 255.0;
@@ -596,10 +596,10 @@ public struct Color : IEquatable<Color>
         SetLum(ref r, ref g, ref b, l);
 
         uint src = RGBA((int)(255.0 * r), (int)(255.0 * g), (int)(255.0 * b), 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint HslSaturation(Color backdrop, Color source, int opacity)
+    private static uint HslSaturation(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         double r = source.R / 255.0;
         double g = source.G / 255.0;
@@ -615,10 +615,10 @@ public struct Color : IEquatable<Color>
         SetLum(ref r, ref g, ref b, l);
 
         uint src = RGBA((int)(255.0 * r), (int)(255.0 * g), (int)(255.0 * b), 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint HslColor(Color backdrop, Color source, int opacity)
+    private static uint HslColor(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         double r = backdrop.R / 255.0;
         double g = backdrop.G / 255.0;
@@ -632,10 +632,10 @@ public struct Color : IEquatable<Color>
         SetLum(ref r, ref g, ref b, l);
 
         uint src = RGBA((int)(255.0 * r), (int)(255.0 * g), (int)(255.0 * b), 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint HslLuminosity(Color backdrop, Color source, int opacity)
+    private static uint HslLuminosity(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         double r = source.R / 255.0;
         double g = source.G / 255.0;
@@ -649,10 +649,10 @@ public struct Color : IEquatable<Color>
         SetLum(ref r, ref g, ref b, l);
 
         uint src = RGBA((int)(255.0 * r), (int)(255.0 * g), (int)(255.0 * b), 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Addition(Color backdrop, Color source, int opacity)
+    private static uint Addition(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int r = backdrop.R + source.R;
         int g = backdrop.G + source.G;
@@ -660,19 +660,19 @@ public struct Color : IEquatable<Color>
         uint src = RGBA(Math.Min(r, 255),
                         Math.Min(g, 255),
                         Math.Min(b, 255), 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Subtract(Color backdrop, Color source, int opacity)
+    private static uint Subtract(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int r = backdrop.R - source.R;
         int g = backdrop.G - source.G;
         int b = backdrop.B - source.B;
         uint src = RGBA(Math.Max(r, 0), Math.Max(g, 0), Math.Max(b, 0), 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 
-    private static uint Divide(Color backdrop, Color source, int opacity)
+    private static uint Divide(Rgba32 backdrop, Rgba32 source, int opacity)
     {
         int divide(int b, int s)
         {
@@ -693,6 +693,6 @@ public struct Color : IEquatable<Color>
         int g = divide(backdrop.G, source.G);
         int b = divide(backdrop.B, source.B);
         uint src = RGBA(r, g, b, 0) | (source._value & RGBA_A_MASK);
-        return Normal(backdrop, new Color(src), opacity);
+        return Normal(backdrop, new Rgba32(src), opacity);
     }
 }

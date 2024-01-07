@@ -27,12 +27,12 @@ namespace AsepriteDotNet.Tests;
 
 public sealed class ColorTests
 {
-    private static readonly Color _green = Color.FromRGBA(106, 190, 48, 255);
-    private static readonly Color _purple = Color.FromRGBA(63, 63, 116, 255);
-    private static readonly Color _pink = Color.FromRGBA(215, 123, 186, 255);
-    private static readonly Color _red = Color.FromRGBA(172, 50, 50, 255);
-    private static readonly Color _orange = Color.FromRGBA(223, 113, 38, 255);
-    private static readonly Color _transparent = Color.Transparent;
+    private static readonly Rgba32 _green = Rgba32.FromRGBA(106, 190, 48, 255);
+    private static readonly Rgba32 _purple = Rgba32.FromRGBA(63, 63, 116, 255);
+    private static readonly Rgba32 _pink = Rgba32.FromRGBA(215, 123, 186, 255);
+    private static readonly Rgba32 _red = Rgba32.FromRGBA(172, 50, 50, 255);
+    private static readonly Rgba32 _orange = Rgba32.FromRGBA(223, 113, 38, 255);
+    private static readonly Rgba32 _transparent = Rgba32.Transparent;
 
     /*
         In order to test the blend modes, I needed to have hard factual values to
@@ -58,7 +58,7 @@ public sealed class ColorTests
         pink,  pink,  red,    red,
         pink,  pink,  red,    red,
 
-        The top layers consists fo the following pixels, in order from 
+        The top layers consists fo the following pixels, in order from
         top-to-bottom, read left-to-right
 
         [Layer 2]
@@ -83,22 +83,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Normal;
 
         //  Color on Color
-        Assert.Equal(_orange, Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(_orange, Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(_orange, Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(_orange, Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -107,22 +107,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Darken;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(106, 113, 38, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(63, 63, 38, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(215, 113, 38, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(172, 50, 38, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(106, 113, 38, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(63, 63, 38, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(215, 113, 38, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(172, 50, 38, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -131,22 +131,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Multiply;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(93, 84, 7, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(55, 28, 17, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(188, 55, 28, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(150, 22, 7, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(93, 84, 7, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(55, 28, 17, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(188, 55, 28, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(150, 22, 7, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -155,22 +155,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.ColorBurn;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(85, 108, 0, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(35, 0, 0, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(209, 0, 0, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(160, 0, 0, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(85, 108, 0, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(35, 0, 0, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(209, 0, 0, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(160, 0, 0, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -179,22 +179,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Lighten;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(223, 190, 48, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(223, 113, 116, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(223, 123, 186, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(223, 113, 50, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(223, 190, 48, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(223, 113, 116, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(223, 123, 186, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(223, 113, 50, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -203,22 +203,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Screen;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(236, 219, 79, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(231, 148, 137, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(250, 181, 196, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(245, 141, 81, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(236, 219, 79, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(231, 148, 137, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(250, 181, 196, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(245, 141, 81, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -227,22 +227,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.ColorDodge;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(255, 255, 56, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(255, 113, 136, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(255, 221, 219, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(255, 90, 59, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 255, 56, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 113, 136, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 221, 219, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 90, 59, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -251,22 +251,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Addition;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(255, 255, 86, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(255, 176, 154, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(255, 236, 224, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(255, 163, 88, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 255, 86, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 176, 154, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 236, 224, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 163, 88, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -275,22 +275,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Overlay;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(185, 183, 14, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(110, 56, 35, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(245, 109, 138, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(234, 44, 15, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(185, 183, 14, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(110, 56, 35, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(245, 109, 138, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(234, 44, 15, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -299,22 +299,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.SoftLight;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(150, 184, 21, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(111, 58, 72, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(229, 116, 151, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(200, 45, 22, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(150, 184, 21, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(111, 58, 72, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(229, 116, 151, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(200, 45, 22, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -323,22 +323,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.HardLight;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(218, 168, 14, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(207, 56, 35, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(245, 109, 55, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(234, 44, 15, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(218, 168, 14, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(207, 56, 35, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(245, 109, 55, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(234, 44, 15, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -347,22 +347,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Difference;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(117, 77, 10, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(160, 50, 78, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(8, 10, 148, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(51, 63, 12, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(117, 77, 10, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(160, 50, 78, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(8, 10, 148, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(51, 63, 12, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -371,22 +371,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Exclusion;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(143, 135, 72, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(176, 120, 120, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(62, 126, 168, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(95, 119, 74, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(143, 135, 72, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(176, 120, 120, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(62, 126, 168, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(95, 119, 74, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -395,22 +395,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Subtract;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(0, 77, 10, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(0, 0, 78, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(0, 10, 148, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(0, 0, 12, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(0, 77, 10, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(0, 0, 78, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(0, 10, 148, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(0, 0, 12, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -419,22 +419,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Divide;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(121, 255, 255, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(72, 142, 255, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(246, 255, 255, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(197, 113, 255, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(121, 255, 255, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(72, 142, 255, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(246, 255, 255, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(197, 113, 255, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -443,22 +443,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Hue;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(214, 130, 72, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(93, 61, 40, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(199, 145, 107, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(142, 70, 20, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(214, 130, 72, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(93, 61, 40, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(199, 145, 107, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(142, 70, 20, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -467,22 +467,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Saturation;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(92, 202, 17, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(92, 29, 214, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(255, 98, 205, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(186, 51, 1, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(92, 202, 17, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(92, 29, 214, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(255, 98, 205, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(186, 51, 1, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -491,22 +491,22 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Color;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(234, 124, 49, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(127, 51, 0, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(242, 132, 57, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(160, 65, 0, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(234, 124, 49, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(127, 51, 0, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(242, 132, 57, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(160, 65, 0, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 
     [Fact]
@@ -515,21 +515,21 @@ public sealed class ColorTests
         BlendMode mode = BlendMode.Luminosity;
 
         //  Color on Color
-        Assert.Equal(Color.FromRGBA(94, 178, 36, 255), Color.Blend(mode, _green, _orange, 255));
-        Assert.Equal(Color.FromRGBA(131, 131, 184, 255), Color.Blend(mode, _purple, _orange, 255));
-        Assert.Equal(Color.FromRGBA(195, 103, 166, 255), Color.Blend(mode, _pink, _orange, 255));
-        Assert.Equal(Color.FromRGBA(223, 101, 101, 255), Color.Blend(mode, _red, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(94, 178, 36, 255), Rgba32.Blend(mode, _green, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(131, 131, 184, 255), Rgba32.Blend(mode, _purple, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(195, 103, 166, 255), Rgba32.Blend(mode, _pink, _orange, 255));
+        Assert.Equal(Rgba32.FromRGBA(223, 101, 101, 255), Rgba32.Blend(mode, _red, _orange, 255));
 
         //  Color on Transparent
-        Assert.Equal(_orange, Color.Blend(mode, _transparent, _orange, 255));
+        Assert.Equal(_orange, Rgba32.Blend(mode, _transparent, _orange, 255));
 
         //  Transparent on Color
-        Assert.Equal(_green, Color.Blend(mode, _green, _transparent, 255));
-        Assert.Equal(_purple, Color.Blend(mode, _purple, _transparent, 255));
-        Assert.Equal(_pink, Color.Blend(mode, _pink, _transparent, 255));
-        Assert.Equal(_red, Color.Blend(mode, _red, _transparent, 255));
+        Assert.Equal(_green, Rgba32.Blend(mode, _green, _transparent, 255));
+        Assert.Equal(_purple, Rgba32.Blend(mode, _purple, _transparent, 255));
+        Assert.Equal(_pink, Rgba32.Blend(mode, _pink, _transparent, 255));
+        Assert.Equal(_red, Rgba32.Blend(mode, _red, _transparent, 255));
 
         //  Transparent on Transparent
-        Assert.Equal(_transparent, Color.Blend(mode, _transparent, _transparent, 255));
+        Assert.Equal(_transparent, Rgba32.Blend(mode, _transparent, _transparent, 255));
     }
 }

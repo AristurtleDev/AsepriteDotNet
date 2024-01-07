@@ -42,16 +42,16 @@ public sealed class UserData
     public bool HasColor => Color is not null;
 
     /// <summary>
-    ///     Gets the text set for this <see cref="UserData"/>, or 
+    ///     Gets the text set for this <see cref="UserData"/>, or
     ///     <see langword="null"/> if none was set.
     /// </summary>
     public string? Text { get; internal set; } = default;
 
     /// <summary>
-    ///     Gets the <see cref="Color"/> set for this <see cref="UserData"/>, or 
+    ///     Gets the <see cref="Color"/> set for this <see cref="UserData"/>, or
     ///     <see langword="null"/> if none was set.
     /// </summary>
-    public Color? Color { get; internal set; } = default;
+    public Rgba32? Color { get; internal set; } = default;
 
     internal UserData() { }
 }

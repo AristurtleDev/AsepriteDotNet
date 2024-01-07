@@ -32,14 +32,14 @@ namespace AsepriteDotNet.Image;
 public sealed class SpritesheetSlice
 {
     /// <summary>
-    ///     Gets the bounds of this <see cref="SpritesheetSlice"/>, relative to 
+    ///     Gets the bounds of this <see cref="SpritesheetSlice"/>, relative to
     ///     the bounds of the <see cref="SpritesheetFrame"/> it is in.
     /// </summary>
     public Rectangle Bounds { get; }
 
     /// <summary>
-    ///     Gets the bounds for the center rectangle of this 
-    ///     <see cref="SpritesheetSlice"/> if it is a 9-patches slice; 
+    ///     Gets the bounds for the center rectangle of this
+    ///     <see cref="SpritesheetSlice"/> if it is a 9-patches slice;
     ///     otherwise, <see langword="null"/>.
     /// </summary>
     public Rectangle? CenterBounds { get; }
@@ -58,8 +58,8 @@ public sealed class SpritesheetSlice
     /// <summary>
     ///     Gets the color of this <see cref="SpritesheetSlice"/>.
     /// </summary>
-    public Color Color { get; }
+    public Rgba32 Color { get; }
 
-    internal SpritesheetSlice(Rectangle bounds, Rectangle? centerBounds, Point? pivot, string name, Color color) =>
+    internal SpritesheetSlice(Rectangle bounds, Rectangle? centerBounds, Point? pivot, string name, Rgba32 color) =>
         (Bounds, CenterBounds, Pivot, Name, Color) = (bounds, centerBounds, pivot, name, color);
 }

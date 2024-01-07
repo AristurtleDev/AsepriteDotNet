@@ -50,7 +50,7 @@ public sealed class Frame : IEnumerable<Cel>
     ///     The index of the <see cref="Cel"/> to retrieve.
     /// </param>
     /// <returns>
-    ///     The <see cref="Cel"/> at the specified index in this 
+    ///     The <see cref="Cel"/> at the specified index in this
     ///     <see cref="Frame"/>.
     /// </returns>
     public Cel this[int index]
@@ -90,7 +90,7 @@ public sealed class Frame : IEnumerable<Cel>
     /// <summary>
     ///     Flattens this <see cref="Frame"/> by blending each <see cref="Cel"/>
     ///     staring with the top most <see cref="Cel"/> and blending down.  Te
-    ///     result is an <see cref="Array"/> of <see cref="Color"/> elements
+    ///     result is an <see cref="Array"/> of <see cref="Rgba32"/> elements
     ///     representing the final flattened image of this <see cref="Frame"/>.
     /// </summary>
     /// <param name="onlyVisibleLayers">
@@ -98,12 +98,12 @@ public sealed class Frame : IEnumerable<Cel>
     ///     <see cref="Layer"/> that is visible should be included.
     /// </param>
     /// <returns>
-    ///     A new <see cref="Array"/> of <see cref="Color"/> elements that
+    ///     A new <see cref="Array"/> of <see cref="Rgba32"/> elements that
     ///     represent the flattened image of this <see cref="Frame"/>.
     /// </returns>
-    public Color[] FlattenFrame(bool onlyVisibleLayers = true)
+    public Rgba32[] FlattenFrame(bool onlyVisibleLayers = true)
     {
-        Color[] result = new Color[Size.Width * Size.Height];
+        Rgba32[] result = new Rgba32[Size.Width * Size.Height];
 
         for (int celNum = 0; celNum < Cels.Count; celNum++)
         {
@@ -130,7 +130,7 @@ public sealed class Frame : IEnumerable<Cel>
                 continue;
             }
 
-            byte opacity = Color.MUL_UN8(imageCel.Opacity, imageCel.Layer.Opacity);
+            byte opacity = Rgba32.MUL_UN8(imageCel.Opacity, imageCel.Layer.Opacity);
 
             for (int pixelNum = 0; pixelNum < imageCel.Pixels.Length; pixelNum++)
             {
@@ -139,16 +139,16 @@ public sealed class Frame : IEnumerable<Cel>
                 int index = y * Size.Width + x;
 
                 //  Sometimes a cell can have a negative x and/or y value. This
-                //  is caused by selecting an area within aseprite and then 
-                //  moving a portion of the selected pixels outside the canvas. 
+                //  is caused by selecting an area within aseprite and then
+                //  moving a portion of the selected pixels outside the canvas.
                 //  We don't care about these pixels so if the index is outside
                 //  the range of the array to store them in then we'll just
                 //  ignore them.
                 if (index < 0 || index >= result.Length) { continue; }
 
-                Color backdrop = result[index];
-                Color source = imageCel.Pixels[pixelNum];
-                result[index] = Color.Blend(imageCel.Layer.BlendMode, backdrop, source, opacity);
+                Rgba32 backdrop = result[index];
+                Rgba32 source = imageCel.Pixels[pixelNum];
+                result[index] = Rgba32.Blend(imageCel.Layer.BlendMode, backdrop, source, opacity);
             }
         }
 
@@ -163,12 +163,12 @@ public sealed class Frame : IEnumerable<Cel>
     ///     The absolute file path to save the generated .png file to.
     /// </param>
     /// <param name="onlyVisibleLayers">
-    ///     Whether only the <see cref="Cel"/> elements that are on a 
+    ///     Whether only the <see cref="Cel"/> elements that are on a
     ///     <see cref="Layer"/> that is visible should be included.
     /// </param>
     public void ToPng(string path, bool onlyVisibleLayers = true)
     {
-        Color[] frame = FlattenFrame(onlyVisibleLayers);
+        Rgba32[] frame = FlattenFrame(onlyVisibleLayers);
         PngWriter.SaveTo(path, Size, frame);
     }
 }

@@ -33,7 +33,7 @@ namespace AsepriteDotNet.Image;
 /// </summary>
 public sealed class Tilesheet : IEnumerable<TilesheetTile>
 {
-    private Color[] _pixels;
+    private Rgba32[] _pixels;
     private List<TilesheetTile> _tiles = new();
 
     /// <summary>
@@ -54,19 +54,19 @@ public sealed class Tilesheet : IEnumerable<TilesheetTile>
 
     /// <summary>
     ///     Gets a read-only collection of all pixels that make up the image for
-    ///     this <see cref="Tilesheet"/>.  Order of pixels is from 
+    ///     this <see cref="Tilesheet"/>.  Order of pixels is from
     ///     top-to-bottom, read left-to-right.
     /// </summary>
-    public ReadOnlyCollection<Color> Pixels { get; }
+    public ReadOnlyCollection<Rgba32> Pixels { get; }
 
-    internal Tilesheet(string name, Size size,  List<TilesheetTile> tiles, Color[] pixels)
+    internal Tilesheet(string name, Size size,  List<TilesheetTile> tiles, Rgba32[] pixels)
     {
         Name = name;
         Size = size;
         _tiles = tiles;
         Tiles = _tiles.AsReadOnly();
         _pixels = pixels;
-        Pixels = Array.AsReadOnly<Color>(_pixels);
+        Pixels = Array.AsReadOnly<Rgba32>(_pixels);
     }
 
     /// <summary>
@@ -82,8 +82,8 @@ public sealed class Tilesheet : IEnumerable<TilesheetTile>
     }
 
     /// <summary>
-    ///     Returns an enumerator that iterates through the 
-    ///     <see cref="TilesheetTile"/> elements in this 
+    ///     Returns an enumerator that iterates through the
+    ///     <see cref="TilesheetTile"/> elements in this
     ///     <see cref="Tilesheet"/>.
     /// </summary>
     /// <returns>

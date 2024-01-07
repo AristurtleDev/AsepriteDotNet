@@ -54,12 +54,12 @@ public class Tileset
     public string Name { get; }
 
     /// <summary>
-    ///     Gets or Sets an <see cref="Array"/> of <see cref="Color"/> elements 
+    ///     Gets or Sets an <see cref="Array"/> of <see cref="Rgba32"/> elements
     ///     that represents the raw pixel data for this <see cref="Tileset"/>.
     /// </summary>
-    public Color[] Pixels { get; }
+    public Rgba32[] Pixels { get; }
 
-    internal Tileset(int id, int count, Size tileSize, string name, Color[] pixels) =>
+    internal Tileset(int id, int count, Size tileSize, string name, Rgba32[] pixels) =>
         (ID, TileCount, TileSize, Name, Pixels) = (id, count, tileSize, name, pixels);
 
     /// <summary>
@@ -75,7 +75,7 @@ public class Tileset
     public Tilesheet ToTilesheet(TilesheetOptions options)
     {
         List<TilesheetTile> sheetTiles = new();
-        List<Color[]> tileColorLookup = SplitTiles();
+        List<Rgba32[]> tileColorLookup = SplitTiles();
         Dictionary<int, int> tileDuplicateMap = new();
 
         int columns, rows;
@@ -140,7 +140,7 @@ public class Tileset
 
         Size sheetSize = new(width, height);
 
-        Color[] sheetPixels = new Color[width * height];
+        Rgba32[] sheetPixels = new Rgba32[width * height];
 
         Dictionary<int, TilesheetTile> originalToDuplicateTileLookup = new();
 
@@ -157,7 +157,7 @@ public class Tileset
 
                 //  Inject the pixel color data from the tile into the final
                 //  tilesheet color data array
-                Color[] tilePixels = tileColorLookup[tileNum];
+                Rgba32[] tilePixels = tileColorLookup[tileNum];
 
                 for (int pixelNum = 0; pixelNum < tilePixels.Length; pixelNum++)
                 {
@@ -257,7 +257,7 @@ public class Tileset
 
 
     /// <summary>
-    ///     Writes the pixel data for this <see cref="ImageCel"/> to disk as a 
+    ///     Writes the pixel data for this <see cref="ImageCel"/> to disk as a
     ///     .png file.
     /// </summary>
     /// <param name="path">
@@ -287,7 +287,7 @@ public class Tileset
             //     tiles[i] = Pixels[(i * tileLen)..((i * tileLen) + tileLen)];
             // }
 
-            List<Color[]> tiles = SplitTiles();
+            List<Rgba32[]> tiles = SplitTiles();
 
             int columns, rows;
             int width, height;
@@ -316,13 +316,13 @@ public class Tileset
             width = columns * TileSize.Width;
             height = rows * TileSize.Height;
 
-            Color[] pixels = new Color[width * height];
+            Rgba32[] pixels = new Rgba32[width * height];
 
             for (int tileNum = 0; tileNum < TileCount; tileNum++)
             {
                 int tileCol = tileNum % columns;
                 int tileRow = tileNum / columns;
-                Color[] tilePixels = tiles[tileNum];
+                Rgba32[] tilePixels = tiles[tileNum];
 
                 for (int pixelNum = 0; pixelNum < tilePixels.Length; pixelNum++)
                 {
@@ -337,9 +337,9 @@ public class Tileset
         }
     }
 
-    internal List<Color[]> SplitTiles()
+    internal List<Rgba32[]> SplitTiles()
     {
-        List<Color[]> tiles = new();
+        List<Rgba32[]> tiles = new();
 
         int tileLen = TileSize.Width * TileSize.Height;
 

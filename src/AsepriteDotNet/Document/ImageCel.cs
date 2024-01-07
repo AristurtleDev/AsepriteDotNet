@@ -35,24 +35,24 @@ public sealed class ImageCel : Cel
     /// <summary>
     ///     Gets the width and height components of this <see cref="ImageCel"/>
     ///     as a <see cref="Size"/> value.
-    /// </summary> 
+    /// </summary>
     public Size Size { get; }
 
     /// <summary>
-    ///     Gets an <see cref="Array"/> of <see cref="Color"/> elements that
+    ///     Gets an <see cref="Array"/> of <see cref="Rgba32"/> elements that
     ///     represents the raw pixel data for this <see cref="ImageCel"/>.
     /// </summary>
     /// <remarks>
     ///     Order of pixels is row by row, from top to bottom, for each scanline
     ///     read pixels from left to right.
     /// </remarks>
-    public Color[] Pixels { get; } = Array.Empty<Color>();
+    public Rgba32[] Pixels { get; } = Array.Empty<Rgba32>();
 
-    internal ImageCel(Size size, Color[] pixels, Layer layer, Point position, int opacity)
+    internal ImageCel(Size size, Rgba32[] pixels, Layer layer, Point position, int opacity)
         : base(layer, position, opacity) => (Size, Pixels) = (size, pixels);
 
     /// <summary>
-    ///     Writes the pixel data for this <see cref="ImageCel"/> to disk as a 
+    ///     Writes the pixel data for this <see cref="ImageCel"/> to disk as a
     ///     .png file.
     /// </summary>
     /// <param name="path">

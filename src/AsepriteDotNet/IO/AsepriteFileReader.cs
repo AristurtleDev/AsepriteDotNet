@@ -104,8 +104,8 @@ public static class AsepriteFileReader
     /// <exception cref="ArgumentException">
     ///     Thrown if the specified <paramref name="path"/> is a zero-length
     ///     string, contains only white space, or contains one ore more
-    ///     invalid characters. Use 
-    ///     <see cref="System.IO.Path.GetInvalidPathChars"/> to query for 
+    ///     invalid characters. Use
+    ///     <see cref="System.IO.Path.GetInvalidPathChars"/> to query for
     ///     invalid characters.
     /// </exception>
     /// <exception cref="ArgumentNullException">
@@ -338,7 +338,7 @@ public static class AsepriteFileReader
                         ushort h = reader.ReadWord();                   //  Height, in pixels
                         byte[] pixelData = reader.ReadToPosition(chunkEnd); //  Raw pixel data
 
-                        Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
+                        Rgba32[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
                         Size size = new Size(w, h);
                         cel = new ImageCel(size, pixels, celLayer, position, opacity);
                     }
@@ -358,7 +358,7 @@ public static class AsepriteFileReader
                         ushort h = reader.ReadWord();                   //  Height, in pixels
                         byte[] compressed = reader.ReadToPosition(chunkEnd); //  Raw pixel data compressed with Zlib
                         byte[] pixelData = Zlib.Deflate(compressed);
-                        Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
+                        Rgba32[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
 
                         Size size = new Size(w, h);
                         cel = new ImageCel(size, pixels, celLayer, position, opacity);
@@ -436,7 +436,7 @@ public static class AsepriteFileReader
                         string name = reader.ReadString();  //  Tag name
 
                         LoopDirection loopDirection = (LoopDirection)direction;
-                        Color tagColor = Color.FromRGBA(r, g, b, 255);
+                        Rgba32 tagColor = Rgba32.FromRGBA(r, g, b, 255);
 
                         Tag tag = new(from, to, loopDirection, tagColor, name);
 
@@ -470,7 +470,7 @@ public static class AsepriteFileReader
                         {
                             _ = reader.ReadString();    //  Color name (ignored)
                         }
-                        doc.Palette[(int)i] = Color.FromRGBA(r, g, b, a);
+                        doc.Palette[(int)i] = Rgba32.FromRGBA(r, g, b, a);
                     }
 
                     paletteRead = true;
@@ -485,7 +485,7 @@ public static class AsepriteFileReader
                         text = reader.ReadString();     //  User Data text
                     }
 
-                    Color? color = default;
+                    Rgba32? color = default;
                     if (HasFlag(flags, ASE_USER_DATA_FLAG_HAS_COLOR))
                     {
                         byte r = reader.ReadByte();     //  Color Red (0 - 255)
@@ -493,7 +493,7 @@ public static class AsepriteFileReader
                         byte b = reader.ReadByte();     //  Color Blue (0 - 255)
                         byte a = reader.ReadByte();     //  Color Alpha (0 - 255)
 
-                        color = Color.FromRGBA(r, g, b, a);
+                        color = Rgba32.FromRGBA(r, g, b, a);
                     }
 
                     Debug.Assert(lastWithUserData is not null || paletteRead);
@@ -511,8 +511,8 @@ public static class AsepriteFileReader
                         if (lastWithUserData is Tag)
                         {
 
-                            //  Tags are a special case, user data for tags 
-                            //  comes all together (one next to the other) after 
+                            //  Tags are a special case, user data for tags
+                            //  comes all together (one next to the other) after
                             //  the tags chunk, in the same order:
                             //
                             //  * TAGS CHUNK (TAG1, TAG2, ..., TAGn)
@@ -521,8 +521,8 @@ public static class AsepriteFileReader
                             //  * ...
                             //  * USER DATA CHUNK FOR TAGn
                             //
-                            //  So here we expect that the next user data chunk 
-                            //  will correspond to the next tag in the tags 
+                            //  So here we expect that the next user data chunk
+                            //  will correspond to the next tag in the tags
                             //  collection
                             tagIterator++;
 
@@ -611,7 +611,7 @@ public static class AsepriteFileReader
                         byte[] compressed = reader.ReadBytes((int)len); //  Compressed tileset image
 
                         byte[] pixelData = Zlib.Deflate(compressed);
-                        Color[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
+                        Rgba32[] pixels = PixelsToColor(pixelData, doc.ColorDepth, doc.Palette);
 
                         Size tileSize = new Size(w, h);
 
@@ -679,7 +679,7 @@ public static class AsepriteFileReader
 
     private static bool HasFlag(uint value, uint flag) => (value & flag) != 0;
 
-    internal static Color[] PixelsToColor(byte[] pixels, ColorDepth depth, Palette palette)
+    internal static Rgba32[] PixelsToColor(byte[] pixels, ColorDepth depth, Palette palette)
     {
         return depth switch
         {
@@ -690,10 +690,10 @@ public static class AsepriteFileReader
         };
     }
 
-    internal static Color[] RGBAPixelsToColor(byte[] pixels)
+    internal static Rgba32[] RGBAPixelsToColor(byte[] pixels)
     {
         int bytesPerPixel = (int)ColorDepth.RGBA / 8;
-        Color[] results = new Color[pixels.Length / bytesPerPixel];
+        Rgba32[] results = new Rgba32[pixels.Length / bytesPerPixel];
 
         for (int i = 0, b = 0; i < results.Length; i++, b += bytesPerPixel)
         {
@@ -701,16 +701,16 @@ public static class AsepriteFileReader
             byte green = pixels[b + 1];
             byte blue = pixels[b + 2];
             byte alpha = pixels[b + 3];
-            results[i] = Color.FromRGBA(red, green, blue, alpha);
+            results[i] = Rgba32.FromRGBA(red, green, blue, alpha);
         }
 
         return results;
     }
 
-    internal static Color[] GrayscalePixelsToColor(byte[] pixels)
+    internal static Rgba32[] GrayscalePixelsToColor(byte[] pixels)
     {
         int bytesPerPixel = (int)ColorDepth.Grayscale / 8;
-        Color[] results = new Color[pixels.Length / bytesPerPixel];
+        Rgba32[] results = new Rgba32[pixels.Length / bytesPerPixel];
 
         for (int i = 0, b = 0; i < results.Length; i++, b += bytesPerPixel)
         {
@@ -718,16 +718,16 @@ public static class AsepriteFileReader
             byte green = pixels[b];
             byte blue = pixels[b];
             byte alpha = pixels[b + 1];
-            results[i] = Color.FromRGBA(red, green, blue, alpha);
+            results[i] = Rgba32.FromRGBA(red, green, blue, alpha);
         }
 
         return results;
     }
 
-    internal static Color[] IndexedPixelsToColor(byte[] pixels, Palette palette)
+    internal static Rgba32[] IndexedPixelsToColor(byte[] pixels, Palette palette)
     {
         int bytesPerPixel = (int)ColorDepth.Indexed / 8;
-        Color[] results = new Color[pixels.Length / bytesPerPixel];
+        Rgba32[] results = new Rgba32[pixels.Length / bytesPerPixel];
 
         for (int i = 0; i < pixels.Length; i++)
         {
@@ -735,7 +735,7 @@ public static class AsepriteFileReader
 
             if (index == palette.TransparentIndex)
             {
-                results[i] = Color.Transparent;
+                results[i] = Rgba32.Transparent;
             }
             else
             {

@@ -31,27 +31,27 @@ namespace AsepriteDotNet.Document;
 /// <summary>
 ///     Represents the palette of colors in an Aseprite image.
 /// </summary>
-public sealed class Palette : IEnumerable<Color>
+public sealed class Palette : IEnumerable<Rgba32>
 {
-    private Color[] _colors = Array.Empty<Color>();
+    private Rgba32[] _colors = Array.Empty<Rgba32>();
 
     /// <summary>
-    ///     Gets the <see cref="Color"/> element at the specified
+    ///     Gets the <see cref="Rgba32"/> element at the specified
     ///     <paramref name="index"/> from this <see cref="Palette"/>.
     /// </summary>
     /// <param name="index">
-    ///     The index of the <see cref="Color"/> element.
+    ///     The index of the <see cref="Rgba32"/> element.
     /// </param>
     /// <returns>
-    ///     The <see cref="Color"/> element at the specified 
+    ///     The <see cref="Rgba32"/> element at the specified
     ///     <paramref name="index"/> from this <see cref="Palette"/>.
     /// </returns>
     /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if <paramref name="index"/> is less than zero or 
+    ///     Thrown if <paramref name="index"/> is less than zero or
     ///     <paramref name="index"/> is equal to or greater than
     ///     <see cref="Count"/>.
     /// </exception>
-    public Color this[int index]
+    public Rgba32 this[int index]
     {
         get
         {
@@ -75,7 +75,7 @@ public sealed class Palette : IEnumerable<Color>
     }
 
     /// <summary>
-    ///     Gets the index of the <see cref="Color"/> element in this
+    ///     Gets the index of the <see cref="Rgba32"/> element in this
     ///     <see cref="Palette"/> that represents a transparent pixel.
     /// </summary>
     /// <remarks>
@@ -85,7 +85,7 @@ public sealed class Palette : IEnumerable<Color>
     public int TransparentIndex { get; }
 
     /// <summary>
-    ///     Get the total number of <see cref="Color"/> elements in this
+    ///     Get the total number of <see cref="Rgba32"/> elements in this
     ///     <see cref="Palette"/>.
     /// </summary>
     public int Count => _colors.Length;
@@ -94,20 +94,20 @@ public sealed class Palette : IEnumerable<Color>
 
     internal void Resize(int newSize)
     {
-        Color[] newColors = new Color[newSize];
+        Rgba32[] newColors = new Rgba32[newSize];
         Array.Copy(_colors, newColors, _colors.Length);
         _colors = newColors;
     }
 
     /// <summary>
-    ///     Returns an enumerator that iterates through the <see cref="Color"/> 
+    ///     Returns an enumerator that iterates through the <see cref="Rgba32"/>
     ///     elements in this <see cref="Palette"/> instance.
     /// </summary>
     /// <returns>
-    ///     An enumerator that iterates through the <see cref="Color"/> elements 
+    ///     An enumerator that iterates through the <see cref="Rgba32"/> elements
     ///     in this <see cref="Palette"/> instance.
     /// </returns>
-    public IEnumerator<Color> GetEnumerator()
+    public IEnumerator<Rgba32> GetEnumerator()
     {
         for (int i = 0; i < _colors.Length; i++)
         {
@@ -116,11 +116,11 @@ public sealed class Palette : IEnumerable<Color>
     }
 
     /// <summary>
-    ///     Returns an enumerator that iterates through the <see cref="Color"/> 
+    ///     Returns an enumerator that iterates through the <see cref="Rgba32"/>
     ///     elements in this <see cref="Palette"/> instance.
     /// </summary>
     /// <returns>
-    ///     An enumerator that iterates through the <see cref="Color"/> elements
+    ///     An enumerator that iterates through the <see cref="Rgba32"/> elements
     ///     in this <see cref="Palette"/> instance.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

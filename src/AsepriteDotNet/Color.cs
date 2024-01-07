@@ -31,9 +31,6 @@ public struct Rgba32 : IEquatable<Rgba32>
     private const byte RGBA_G_SHIFT = 8;
     private const byte RGBA_B_SHIFT = 16;
     private const byte RGBA_A_SHIFT = 24;
-    private const uint RGBA_R_MASK = 0x000000ff;
-    private const uint RGBA_G_MASK = 0x0000ff00;
-    private const uint RGBA_B_MASK = 0x00ff0000;
     private const uint RGBA_RGB_MASK = 0x00ffffff;
     private const uint RGBA_A_MASK = 0xff000000;
 

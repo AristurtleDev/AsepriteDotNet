@@ -5,84 +5,86 @@ namespace AsepriteDotNet;
 
 public static class BlendFunctions
 {
-    public static void Blend(ref this Pixel backdrop, Pixel source, int opacity, BlendMode mode)
+public static void Blend(ref this Pixel backdrop, Pixel source, int opacity, BlendMode mode)
+{
+    if(backdrop.A == 0 && source.A == 0)
     {
-        if(backdrop.A == 0 && source.A == 0)
-        {
-            backdrop.Rgba = 0;
-        }
-        else if(backdrop.A == 0)
-        {
-            backdrop = source;
-        }
-        else if(source.A == 0)
-        {
-            return;
-        }
-
-        switch(mode)
-        {
-            case BlendMode.Normal:
-                Normal(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Multiply:
-                Multiply(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Screen:
-                Screen(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Overlay:
-                Overlay(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Darken:
-                Darken(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Lighten:
-                Lighten(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.ColorDodge:
-                ColorDodge(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.ColorBurn:
-                ColorBurn(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.HardLight:
-                HardLight(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.SoftLight:
-                SoftLight(ref backdrop, source, opacity);
-                break;
-            case BlendMode.Difference:
-                Difference(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Exclusion:
-                Exclusion(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Hue:
-                HslHue(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Saturation:
-                HslSaturation(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Color:
-                HslColor(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Luminosity:
-                HslLuminosity(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Addition:
-                Addition(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Subtract:
-                Subtract(ref backdrop, in source, opacity);
-                break;
-            case BlendMode.Divide:
-                Divide(ref backdrop, in source, opacity);
-                break;
-            default:
-                throw new InvalidOperationException($"Unknown blend mode '{mode}'");
-        }
+        backdrop.Rgba = 0;
+        return;
     }
+    else if(backdrop.A == 0)
+    {
+        backdrop = source;
+        return;
+    }
+    else if(source.A == 0)
+    {
+        return;
+    }
+
+    switch(mode)
+    {
+        case BlendMode.Normal:
+            Normal(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Multiply:
+            Multiply(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Screen:
+            Screen(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Overlay:
+            Overlay(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Darken:
+            Darken(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Lighten:
+            Lighten(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.ColorDodge:
+            ColorDodge(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.ColorBurn:
+            ColorBurn(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.HardLight:
+            HardLight(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.SoftLight:
+            SoftLight(ref backdrop, source, opacity);
+            break;
+        case BlendMode.Difference:
+            Difference(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Exclusion:
+            Exclusion(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Hue:
+            HslHue(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Saturation:
+            HslSaturation(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Color:
+            HslColor(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Luminosity:
+            HslLuminosity(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Addition:
+            Addition(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Subtract:
+            Subtract(ref backdrop, in source, opacity);
+            break;
+        case BlendMode.Divide:
+            Divide(ref backdrop, in source, opacity);
+            break;
+        default:
+            throw new InvalidOperationException($"Unknown blend mode '{mode}'");
+    }
+}
 
 private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(g, b)) - Math.Min(r, Math.Min(g, b));
 
@@ -420,22 +422,22 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
         Normal(ref backdrop, in src, opacity);
     }
 
-    private static void HslColor(ref Pixel backdrop, in Pixel source, int opacity)
-    {
-        double r = backdrop.R / 255.0;
-        double g = backdrop.G / 255.0;
-        double b = backdrop.B / 255.0;
-        double l = Lum(r, g, b);
+private static void HslColor(ref Pixel backdrop, in Pixel source, int opacity)
+{
+    double r = backdrop.R / 255.0;
+    double g = backdrop.G / 255.0;
+    double b = backdrop.B / 255.0;
+    double l = Lum(r, g, b);
 
-        r = source.R / 255.0;
-        g = source.G / 255.0;
-        b = source.B / 255.0;
+    r = source.R / 255.0;
+    g = source.G / 255.0;
+    b = source.B / 255.0;
 
-        SetLum(ref r, ref g, ref b, l);
+    SetLum(ref r, ref g, ref b, l);
 
-        Pixel src = new Pixel((byte)(r * 255), (byte)(g * 255), (byte)(b * 255), source.A);
-        Normal(ref backdrop, in src, opacity);
-    }
+    Pixel src = new Pixel((byte)(r * 255), (byte)(g * 255), (byte)(b * 255), source.A);
+    Normal(ref backdrop, in src, opacity);
+}
 
     private static void HslLuminosity(ref Pixel backdrop, in Pixel source, int opacity)
     {

@@ -28,9 +28,6 @@ namespace AsepriteDotNet.Tests;
 public sealed class PixelTests
 {
     private static readonly Pixel _green = new Pixel(106, 190, 48, 255);
-    private static readonly Pixel _purple = new Pixel(63, 63, 116, 255);
-    private static readonly Pixel _pink = new Pixel(215, 123, 186, 255);
-    private static readonly Pixel _red = new Pixel(172, 50, 50, 255);
     private static readonly Pixel _orange = new Pixel(223, 113, 38, 255);
     private static readonly Pixel _transparent = new Pixel(0, 0, 0, 0);
 
@@ -78,225 +75,218 @@ public sealed class PixelTests
         ported code blends colors the same way that Aseprite does to match it 1:1.
     */
 
-    public sealed class NormalBlend
+    [Fact]
+    public void Always_Return_Backdrop_If_Source_Transparent_All_BlendModes()
     {
-        [Fact]
-        public void ColorOnColor()
+        foreach (BlendMode mode in (BlendMode[])Enum.GetValues(typeof(BlendMode)))
         {
-            BlendMode mode = BlendMode.Normal;
-
-            //  Color on Color
-            Pixel backdrop = _green;
-            backdrop.Blend(_orange, 255, mode);
-            Assert.Equal(_orange, backdrop);
-
-            //  Color on Transparent
-            backdrop = _transparent;
-            backdrop.Blend(_orange, 255, mode);
-            Assert.Equal(_orange, backdrop);
-
-            //  Transparent on Color
-            backdrop = _green;
-            backdrop.Blend(_transparent, 255, mode);
-            Assert.Equal(_green, backdrop);
-
-            //  Transparent on Transparent
-            backdrop = _transparent;
-            backdrop.Blend(_transparent, 255, mode);
-            Assert.Equal(_transparent, backdrop);
-
-
-            //     Assert.Equal(_orange, _green.Blend(_orange, 255, mode));
-            //     Assert.Equal(_orange, Pixel.Blend(mode, _green, _orange, 255));
-            //     Assert.Equal(_orange, Pixel.Blend(mode, _purple, _orange, 255));
-            //     Assert.Equal(_orange, Pixel.Blend(mode, _pink, _orange, 255));
-            //     Assert.Equal(_orange, Pixel.Blend(mode, _red, _orange, 255));
-
-            //     //  Color on Transparent
-            //     Assert.Equal(_orange, Pixel.Blend(mode, _transparent, _orange, 255));
-
-            //     //  Transparent on Color
-            //     Assert.Equal(_green, Pixel.Blend(mode, _green, _transparent, 255));
-            //     Assert.Equal(_purple, Pixel.Blend(mode, _purple, _transparent, 255));
-            //     Assert.Equal(_pink, Pixel.Blend(mode, _pink, _transparent, 255));
-            //     Assert.Equal(_red, Pixel.Blend(mode, _red, _transparent, 255));
-
-            //     //  Transparent on Transparent
-            //     Assert.Equal(_transparent, Pixel.Blend(mode, _transparent, _transparent, 255));
-            // }
-
-            // [Fact]
-            // public void Color_DarkenBlendTest()
-            // {
-            //     BlendMode mode = BlendMode.Darken;
-
-            //     //  Color on Color
-            //     Assert.Equal(Pixel.FromRGBA(106, 113, 38, 255), Pixel.Blend(mode, _green, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(63, 63, 38, 255), Pixel.Blend(mode, _purple, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(215, 113, 38, 255), Pixel.Blend(mode, _pink, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(172, 50, 38, 255), Pixel.Blend(mode, _red, _orange, 255));
-
-            //     //  Color on Transparent
-            //     Assert.Equal(_orange, Pixel.Blend(mode, _transparent, _orange, 255));
-
-            //     //  Transparent on Color
-            //     Assert.Equal(_green, Pixel.Blend(mode, _green, _transparent, 255));
-            //     Assert.Equal(_purple, Pixel.Blend(mode, _purple, _transparent, 255));
-            //     Assert.Equal(_pink, Pixel.Blend(mode, _pink, _transparent, 255));
-            //     Assert.Equal(_red, Pixel.Blend(mode, _red, _transparent, 255));
-
-            //     //  Transparent on Transparent
-            //     Assert.Equal(_transparent, Pixel.Blend(mode, _transparent, _transparent, 255));
-            // }
-
-            // [Fact]
-            // public void Color_MultiplyBlendTest()
-            // {
-            //     BlendMode mode = BlendMode.Multiply;
-
-            //     //  Color on Color
-            //     Assert.Equal(Pixel.FromRGBA(93, 84, 7, 255), Pixel.Blend(mode, _green, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(55, 28, 17, 255), Pixel.Blend(mode, _purple, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(188, 55, 28, 255), Pixel.Blend(mode, _pink, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(150, 22, 7, 255), Pixel.Blend(mode, _red, _orange, 255));
-
-            //     //  Color on Transparent
-            //     Assert.Equal(_orange, Pixel.Blend(mode, _transparent, _orange, 255));
-
-            //     //  Transparent on Color
-            //     Assert.Equal(_green, Pixel.Blend(mode, _green, _transparent, 255));
-            //     Assert.Equal(_purple, Pixel.Blend(mode, _purple, _transparent, 255));
-            //     Assert.Equal(_pink, Pixel.Blend(mode, _pink, _transparent, 255));
-            //     Assert.Equal(_red, Pixel.Blend(mode, _red, _transparent, 255));
-
-            //     //  Transparent on Transparent
-            //     Assert.Equal(_transparent, Pixel.Blend(mode, _transparent, _transparent, 255));
-            // }
-
-            // [Fact]
-            // public void Color_ColorBurnBlendTest()
-            // {
-            //     BlendMode mode = BlendMode.ColorBurn;
-
-            //     //  Color on Color
-            //     Assert.Equal(Pixel.FromRGBA(85, 108, 0, 255), Pixel.Blend(mode, _green, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(35, 0, 0, 255), Pixel.Blend(mode, _purple, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(209, 0, 0, 255), Pixel.Blend(mode, _pink, _orange, 255));
-            //     Assert.Equal(Pixel.FromRGBA(160, 0, 0, 255), Pixel.Blend(mode, _red, _orange, 255));
-
-            //     //  Color on Transparent
-            //     Assert.Equal(_orange, Pixel.Blend(mode, _transparent, _orange, 255));
-
-            //     //  Transparent on Color
-            //     Assert.Equal(_green, Pixel.Blend(mode, _green, _transparent, 255));
-            //     Assert.Equal(_purple, Pixel.Blend(mode, _purple, _transparent, 255));
-            //     Assert.Equal(_pink, Pixel.Blend(mode, _pink, _transparent, 255));
-            //     Assert.Equal(_red, Pixel.Blend(mode, _red, _transparent, 255));
-
-            //     //  Transparent on Transparent
-            //     Assert.Equal(_transparent, Pixel.Blend(mode, _transparent, _transparent, 255));
-        }
-
-        [Fact]
-        public void ColorOnTransparent()
-        {
-            BlendMode mode = BlendMode.Normal;
-            Pixel backdrop = _transparent;
-            backdrop.Blend(_orange, 255, mode);
-            Assert.Equal(_orange, backdrop);
-        }
-
-        [Fact]
-        public void TransparentOnColor()
-        {
-            BlendMode mode = BlendMode.Normal;
-            Pixel backdrop = _green;
-            backdrop.Blend(_transparent, 255, mode);
-            Assert.Equal(_green, backdrop);
-        }
-
-        [Fact]
-        public void TransparentOnTransparent()
-        {
-            BlendMode mode = BlendMode.Normal;
-            Pixel backdrop = _transparent;
-            backdrop.Blend(_transparent, 255, mode);
-            Assert.Equal(_transparent, backdrop);
+            Pixel background = _orange;
+            Pixel source = _transparent;
+            Pixel expected = _orange;
+            background.Blend(source, 255, mode);
+            Assert.Equal(expected, background);
         }
     }
 
+    [Fact]
+    public void Always_Return_Source_If_Backdrop_Transparent_All_BlendModes()
+    {
+        foreach (BlendMode mode in (BlendMode[])Enum.GetValues(typeof(BlendMode)))
+        {
+            Pixel background = _transparent;
+            Pixel source = _orange;
+            Pixel expected = _orange;
+            background.Blend(source, 255, mode);
+            Assert.Equal(expected, background);
+        }
+    }
 
-    // [Fact]
-    // public void Color_DarkenBlendTest()
-    // {
-    //     BlendMode mode = BlendMode.Darken;
+    [Fact]
+    public void Always_Return_Transparent_If_Source_And_Backdrop_Transparent_All_BlendModes()
+    {
+        foreach (BlendMode mode in (BlendMode[])Enum.GetValues(typeof(BlendMode)))
+        {
+            Pixel background = _transparent;
+            Pixel source = _transparent;
+            Pixel expected = _transparent;
+            background.Blend(source, 255, mode);
+            Assert.Equal(expected, background);
+        }
+    }
 
-    //     //  Color on Color
-    //     Assert.Equal(Pixel.FromRGBA(106, 113, 38, 255), Pixel.Blend(mode, _green, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(63, 63, 38, 255), Pixel.Blend(mode, _purple, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(215, 113, 38, 255), Pixel.Blend(mode, _pink, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(172, 50, 38, 255), Pixel.Blend(mode, _red, _orange, 255));
+    [Fact]
+    public void Normal_Blend_Color_on_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Normal);
+        Assert.Equal(_orange, backdrop);
+    }
 
-    //     //  Color on Transparent
-    //     Assert.Equal(_orange, Pixel.Blend(mode, _transparent, _orange, 255));
+    [Fact]
+    public void Darken_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Darken);
+        Pixel expected = new Pixel(106, 113, 38, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Transparent on Color
-    //     Assert.Equal(_green, Pixel.Blend(mode, _green, _transparent, 255));
-    //     Assert.Equal(_purple, Pixel.Blend(mode, _purple, _transparent, 255));
-    //     Assert.Equal(_pink, Pixel.Blend(mode, _pink, _transparent, 255));
-    //     Assert.Equal(_red, Pixel.Blend(mode, _red, _transparent, 255));
+    [Fact]
+    public void Multiply_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Multiply);
+        Pixel expected = new Pixel(93, 84, 7, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Transparent on Transparent
-    //     Assert.Equal(_transparent, Pixel.Blend(mode, _transparent, _transparent, 255));
-    // }
+    [Fact]
+    public void ColorBurn_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.ColorBurn);
+        Pixel expected = new Pixel(85, 108, 0, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    // [Fact]
-    // public void Color_MultiplyBlendTest()
-    // {
-    //     BlendMode mode = BlendMode.Multiply;
+    [Fact]
+    public void ColorLighten_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Lighten);
+        Pixel expected = new Pixel(223, 190, 48, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Color on Color
-    //     Assert.Equal(Pixel.FromRGBA(93, 84, 7, 255), Pixel.Blend(mode, _green, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(55, 28, 17, 255), Pixel.Blend(mode, _purple, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(188, 55, 28, 255), Pixel.Blend(mode, _pink, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(150, 22, 7, 255), Pixel.Blend(mode, _red, _orange, 255));
+    [Fact]
+    public void Screen_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Screen);
+        Pixel expected = new Pixel(236, 219, 79, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Color on Transparent
-    //     Assert.Equal(_orange, Pixel.Blend(mode, _transparent, _orange, 255));
+    [Fact]
+    public void ColorDodge_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.ColorDodge);
+        Pixel expected = new Pixel(255, 255, 56, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Transparent on Color
-    //     Assert.Equal(_green, Pixel.Blend(mode, _green, _transparent, 255));
-    //     Assert.Equal(_purple, Pixel.Blend(mode, _purple, _transparent, 255));
-    //     Assert.Equal(_pink, Pixel.Blend(mode, _pink, _transparent, 255));
-    //     Assert.Equal(_red, Pixel.Blend(mode, _red, _transparent, 255));
+    [Fact]
+    public void Addition_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Addition);
+        Pixel expected = new Pixel(255, 255, 86, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Transparent on Transparent
-    //     Assert.Equal(_transparent, Pixel.Blend(mode, _transparent, _transparent, 255));
-    // }
+    [Fact]
+    public void Overlay_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Overlay);
+        Pixel expected = new Pixel(185, 183, 14, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    // [Fact]
-    // public void Color_ColorBurnBlendTest()
-    // {
-    //     BlendMode mode = BlendMode.ColorBurn;
+    [Fact]
+    public void SoftLight_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.SoftLight);
+        Pixel expected = new Pixel(150, 184, 21, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Color on Color
-    //     Assert.Equal(Pixel.FromRGBA(85, 108, 0, 255), Pixel.Blend(mode, _green, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(35, 0, 0, 255), Pixel.Blend(mode, _purple, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(209, 0, 0, 255), Pixel.Blend(mode, _pink, _orange, 255));
-    //     Assert.Equal(Pixel.FromRGBA(160, 0, 0, 255), Pixel.Blend(mode, _red, _orange, 255));
+    [Fact]
+    public void HardLight_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.HardLight);
+        Pixel expected = new Pixel(218, 168, 14, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Color on Transparent
-    //     Assert.Equal(_orange, Pixel.Blend(mode, _transparent, _orange, 255));
+    [Fact]
+    public void Difference_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Difference);
+        Pixel expected = new Pixel(117, 77, 10, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Transparent on Color
-    //     Assert.Equal(_green, Pixel.Blend(mode, _green, _transparent, 255));
-    //     Assert.Equal(_purple, Pixel.Blend(mode, _purple, _transparent, 255));
-    //     Assert.Equal(_pink, Pixel.Blend(mode, _pink, _transparent, 255));
-    //     Assert.Equal(_red, Pixel.Blend(mode, _red, _transparent, 255));
+    [Fact]
+    public void Exclusion_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Exclusion);
+        Pixel expected = new Pixel(143, 135, 72, 255);
+        Assert.Equal(expected, backdrop);
+    }
 
-    //     //  Transparent on Transparent
-    //     Assert.Equal(_transparent, Pixel.Blend(mode, _transparent, _transparent, 255));
+    [Fact]
+    public void Subtract_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Subtract);
+        Pixel expected = new Pixel(0, 77, 10, 255);
+        Assert.Equal(expected, backdrop);
+    }
+
+    [Fact]
+    public void Divide_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Divide);
+        Pixel expected = new Pixel(121, 255, 255, 255);
+        Assert.Equal(expected, backdrop);
+    }
+
+    [Fact]
+    public void Hue_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Hue);
+        Pixel expected = new Pixel(214, 130, 72, 255);
+        Assert.Equal(expected, backdrop);
+    }
+
+    [Fact]
+    public void Saturation_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Saturation);
+        Pixel expected = new Pixel(92, 202, 17, 255);
+        Assert.Equal(expected, backdrop);
+    }
+
+    [Fact]
+    public void Color_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Color);
+        Pixel expected = new Pixel(234, 124, 49, 255);
+        Assert.Equal(expected, backdrop);
+    }
+
+    [Fact]
+    public void Luminosity_Blend_Color_On_Color_Test()
+    {
+        Pixel backdrop = _green;
+        backdrop.Blend(_orange, 255, BlendMode.Luminosity);
+        Pixel expected = new Pixel(94, 178, 36, 255);
+        Assert.Equal(expected, backdrop);
+    }
+
 }
+
+
 
 // [Fact]
 // public void Color_LightenBlendTest()

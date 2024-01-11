@@ -1,0 +1,4 @@
+- Replace `Color` struct with `Pixel` struct
+  - Renaming prevents namespace collision with `System.Drawing.Color`
+  - Moved to root of project directory
+  - Explicit field layout defined allowing 4-byte storage for the red, gree, blue, and green components and an additional `Rgba` field that supplies the `uint` packed value without additional storage.

@@ -2,3 +2,7 @@
   - Renaming prevents namespace collision with `System.Drawing.Color`
   - Moved to root of project directory
   - Explicit field layout defined allowing 4-byte storage for the red, gree, blue, and green components and an additional `Rgba` field that supplies the `uint` packed value without additional storage.
+- Moved blend logic to `BlendFunctions` class
+  - Separates logic out of the struct representing color values (`Pixel`)
+  - Uses `ref` for `backdrop` params to prevent value copying across all blend functions
+- Moved `MUL_UN8` and `DIV_UN8` to Pixman/Combine32.cs.  Added appropriate license in file header.

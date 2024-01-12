@@ -51,7 +51,7 @@ public sealed class UserData
     ///     Gets the <see cref="Color"/> set for this <see cref="UserData"/>, or
     ///     <see langword="null"/> if none was set.
     /// </summary>
-    public Rgba32? Color { get; internal set; } = default;
+    public Pixel? Color { get; internal set; } = default;
 
     internal UserData() { }
 }

@@ -33,7 +33,7 @@ namespace AsepriteDotNet.Image;
 /// </summary>
 public sealed class Tilesheet : IEnumerable<TilesheetTile>
 {
-    private Rgba32[] _pixels;
+    private Pixel[] _pixels;
     private List<TilesheetTile> _tiles = new();
 
     /// <summary>
@@ -57,16 +57,16 @@ public sealed class Tilesheet : IEnumerable<TilesheetTile>
     ///     this <see cref="Tilesheet"/>.  Order of pixels is from
     ///     top-to-bottom, read left-to-right.
     /// </summary>
-    public ReadOnlyCollection<Rgba32> Pixels { get; }
+    public ReadOnlyCollection<Pixel> Pixels { get; }
 
-    internal Tilesheet(string name, Size size,  List<TilesheetTile> tiles, Rgba32[] pixels)
+    internal Tilesheet(string name, Size size,  List<TilesheetTile> tiles, Pixel[] pixels)
     {
         Name = name;
         Size = size;
         _tiles = tiles;
         Tiles = _tiles.AsReadOnly();
         _pixels = pixels;
-        Pixels = Array.AsReadOnly<Rgba32>(_pixels);
+        Pixels = Array.AsReadOnly<Pixel>(_pixels);
     }
 
     /// <summary>

@@ -46,9 +46,9 @@ public sealed class ImageCel : Cel
     ///     Order of pixels is row by row, from top to bottom, for each scanline
     ///     read pixels from left to right.
     /// </remarks>
-    public Rgba32[] Pixels { get; } = Array.Empty<Rgba32>();
+    public Pixel[] Pixels { get; } = Array.Empty<Pixel>();
 
-    internal ImageCel(Size size, Rgba32[] pixels, Layer layer, Point position, int opacity)
+    internal ImageCel(Size size, Pixel[] pixels, Layer layer, Point position, int opacity)
         : base(layer, position, opacity) => (Size, Pixels) = (size, pixels);
 
     /// <summary>

@@ -27,7 +27,7 @@ namespace AsepriteDotNet.Document;
 /// </summary>
 public sealed class Tag : IUserData
 {
-    private Rgba32 _oldVersionColor;
+    private Pixel _oldVersionColor;
 
     /// <summary>
     ///     Gets the inclusive index of the frame the animation for this
@@ -50,7 +50,7 @@ public sealed class Tag : IUserData
     /// <summary>
     ///     Gest the color of this <see cref="Tag"/>.
     /// </summary>
-    public Rgba32 Color
+    public Pixel Color
     {
         get
         {
@@ -73,6 +73,6 @@ public sealed class Tag : IUserData
     /// </summary>
     public UserData UserData { get; internal set; } = new();
 
-    internal Tag(int from, int to, LoopDirection direction, Rgba32 color, string name) =>
+    internal Tag(int from, int to, LoopDirection direction, Pixel color, string name) =>
         (From, To, LoopDirection, _oldVersionColor, Name) = (from, to, direction, color, name);
 }

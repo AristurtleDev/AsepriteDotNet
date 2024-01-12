@@ -22,6 +22,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using AsepriteDotNet.IO.Image;
 using AsepriteDotNet.Common;
+using AsepriteDotNet.Pixman;
 
 namespace AsepriteDotNet.Document;
 
@@ -101,9 +102,9 @@ public sealed class Frame : IEnumerable<Cel>
     ///     A new <see cref="Array"/> of <see cref="Rgba32"/> elements that
     ///     represent the flattened image of this <see cref="Frame"/>.
     /// </returns>
-    public Rgba32[] FlattenFrame(bool onlyVisibleLayers = true)
+    public Pixel[] FlattenFrame(bool onlyVisibleLayers = true)
     {
-        Rgba32[] result = new Rgba32[Size.Width * Size.Height];
+        Pixel[] result = new Pixel[Size.Width * Size.Height];
 
         for (int celNum = 0; celNum < Cels.Count; celNum++)
         {
@@ -130,7 +131,7 @@ public sealed class Frame : IEnumerable<Cel>
                 continue;
             }
 
-            byte opacity = Rgba32.MUL_UN8(imageCel.Opacity, imageCel.Layer.Opacity);
+            byte opacity = Combine32.MUL_UN8(imageCel.Opacity, imageCel.Layer.Opacity);
 
             for (int pixelNum = 0; pixelNum < imageCel.Pixels.Length; pixelNum++)
             {
@@ -146,9 +147,7 @@ public sealed class Frame : IEnumerable<Cel>
                 //  ignore them.
                 if (index < 0 || index >= result.Length) { continue; }
 
-                Rgba32 backdrop = result[index];
-                Rgba32 source = imageCel.Pixels[pixelNum];
-                result[index] = Rgba32.Blend(imageCel.Layer.BlendMode, backdrop, source, opacity);
+                result[index].Blend(imageCel.Pixels[pixelNum], opacity, imageCel.Layer.BlendMode);
             }
         }
 
@@ -168,7 +167,7 @@ public sealed class Frame : IEnumerable<Cel>
     /// </param>
     public void ToPng(string path, bool onlyVisibleLayers = true)
     {
-        Rgba32[] frame = FlattenFrame(onlyVisibleLayers);
-        PngWriter.SaveTo(path, Size, frame);
+        Pixel[] pixels = FlattenFrame(onlyVisibleLayers);
+        PngWriter.SaveTo(path, Size, pixels);
     }
 }

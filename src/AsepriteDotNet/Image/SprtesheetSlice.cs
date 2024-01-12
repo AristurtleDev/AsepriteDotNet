@@ -58,8 +58,8 @@ public sealed class SpritesheetSlice
     /// <summary>
     ///     Gets the color of this <see cref="SpritesheetSlice"/>.
     /// </summary>
-    public Rgba32 Color { get; }
+    public Pixel Color { get; }
 
-    internal SpritesheetSlice(Rectangle bounds, Rectangle? centerBounds, Point? pivot, string name, Rgba32 color) =>
+    internal SpritesheetSlice(Rectangle bounds, Rectangle? centerBounds, Point? pivot, string name, Pixel color) =>
         (Bounds, CenterBounds, Pivot, Name, Color) = (bounds, centerBounds, pivot, name, color);
 }

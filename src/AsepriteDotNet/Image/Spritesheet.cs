@@ -33,7 +33,7 @@ namespace AsepriteDotNet.Image;
 /// </summary>
 public sealed class Spritesheet
 {
-    private Rgba32[] _pixels;
+    private Pixel[] _pixels;
     private List<SpritesheetFrame> _frames;
     private List<SpritesheetAnimation> _animations;
 
@@ -60,9 +60,9 @@ public sealed class Spritesheet
     ///     for this <see cref="Spritesheet"/>.  Order of pixels is from
     ///     top-to-bottom, read left-to-right.
     /// </summary>
-    public ReadOnlyCollection<Rgba32> Pixels { get; }
+    public ReadOnlyCollection<Pixel> Pixels { get; }
 
-    internal Spritesheet(Size size, List<SpritesheetFrame> frames, List<SpritesheetAnimation> animations, Rgba32[] pixels)
+    internal Spritesheet(Size size, List<SpritesheetFrame> frames, List<SpritesheetAnimation> animations, Pixel[] pixels)
     {
         Size = size;
         _frames = frames;
@@ -70,7 +70,7 @@ public sealed class Spritesheet
         _animations = animations;
         Animations = _animations.AsReadOnly();
         _pixels = pixels;
-        Pixels = Array.AsReadOnly<Rgba32>(_pixels);
+        Pixels = Array.AsReadOnly<Pixel>(_pixels);
     }
 
     /// <summary>

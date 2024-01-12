@@ -1,92 +1,93 @@
 using System.ComponentModel;
 using AsepriteDotNet.Common;
+using AsepriteDotNet.Pixman;
 
 namespace AsepriteDotNet;
 
 public static class BlendFunctions
 {
-public static void Blend(ref this Pixel backdrop, Pixel source, int opacity, BlendMode mode)
-{
-    if(backdrop.A == 0 && source.A == 0)
+    public static void Blend(ref this Pixel backdrop, Pixel source, int opacity, BlendMode mode)
     {
-        backdrop.Rgba = 0;
-        return;
-    }
-    else if(backdrop.A == 0)
-    {
-        backdrop = source;
-        return;
-    }
-    else if(source.A == 0)
-    {
-        return;
+        if (backdrop.A == 0 && source.A == 0)
+        {
+            backdrop.Rgba = 0;
+            return;
+        }
+        else if (backdrop.A == 0)
+        {
+            backdrop = source;
+            return;
+        }
+        else if (source.A == 0)
+        {
+            return;
+        }
+
+        switch (mode)
+        {
+            case BlendMode.Normal:
+                Normal(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Multiply:
+                Multiply(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Screen:
+                Screen(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Overlay:
+                Overlay(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Darken:
+                Darken(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Lighten:
+                Lighten(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.ColorDodge:
+                ColorDodge(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.ColorBurn:
+                ColorBurn(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.HardLight:
+                HardLight(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.SoftLight:
+                SoftLight(ref backdrop, source, opacity);
+                break;
+            case BlendMode.Difference:
+                Difference(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Exclusion:
+                Exclusion(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Hue:
+                HslHue(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Saturation:
+                HslSaturation(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Color:
+                HslColor(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Luminosity:
+                HslLuminosity(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Addition:
+                Addition(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Subtract:
+                Subtract(ref backdrop, in source, opacity);
+                break;
+            case BlendMode.Divide:
+                Divide(ref backdrop, in source, opacity);
+                break;
+            default:
+                throw new InvalidOperationException($"Unknown blend mode '{mode}'");
+        }
     }
 
-    switch(mode)
-    {
-        case BlendMode.Normal:
-            Normal(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Multiply:
-            Multiply(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Screen:
-            Screen(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Overlay:
-            Overlay(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Darken:
-            Darken(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Lighten:
-            Lighten(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.ColorDodge:
-            ColorDodge(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.ColorBurn:
-            ColorBurn(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.HardLight:
-            HardLight(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.SoftLight:
-            SoftLight(ref backdrop, source, opacity);
-            break;
-        case BlendMode.Difference:
-            Difference(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Exclusion:
-            Exclusion(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Hue:
-            HslHue(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Saturation:
-            HslSaturation(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Color:
-            HslColor(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Luminosity:
-            HslLuminosity(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Addition:
-            Addition(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Subtract:
-            Subtract(ref backdrop, in source, opacity);
-            break;
-        case BlendMode.Divide:
-            Divide(ref backdrop, in source, opacity);
-            break;
-        default:
-            throw new InvalidOperationException($"Unknown blend mode '{mode}'");
-    }
-}
-
-private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(g, b)) - Math.Min(r, Math.Min(g, b));
+    private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(g, b)) - Math.Min(r, Math.Min(g, b));
 
     private static double Lum(double r, double g, double b) => 0.3 * r + 0.59 * g + 0.11 * b;
 
@@ -144,34 +145,23 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
         }
     }
 
-    internal static byte MUL_UN8(int a, int b)
-    {
-        int t = (a * b) + 0x80;
-        return (byte)(((t >> 8) + t) >> 8);
-    }
-
-    internal static byte DIV_UN8(int a, int b)
-    {
-        return (byte)(((ushort)a * 0xFF + (b / 2)) / b);
-    }
-
     private static void Normal(ref Pixel backdrop, in Pixel src, int opacity)
     {
-        if(src.A == 0)
+        if (src.A == 0)
         {
             return;
         }
 
-        byte alpha = MUL_UN8(src.A, opacity);
+        byte alpha = Combine32.MUL_UN8(src.A, opacity);
 
-        if(backdrop.A == 0)
+        if (backdrop.A == 0)
         {
             backdrop = src;
             backdrop.A = alpha;
             return;
         }
 
-        backdrop.A = (byte)(alpha + backdrop.A - MUL_UN8(backdrop.A, alpha));
+        backdrop.A = (byte)(alpha + backdrop.A - Combine32.MUL_UN8(backdrop.A, alpha));
         backdrop.R = (byte)(backdrop.R + (src.R - backdrop.R) * alpha / backdrop.A);
         backdrop.G = (byte)(backdrop.G + (src.G - backdrop.G) * alpha / backdrop.A);
         backdrop.B = (byte)(backdrop.B + (src.B - backdrop.B) * alpha / backdrop.A);
@@ -179,18 +169,18 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
 
     private static void Multiply(ref Pixel backdrop, in Pixel source, int opacity)
     {
-        byte r = MUL_UN8(backdrop.R, source.R);
-        byte g = MUL_UN8(backdrop.G, source.G);
-        byte b = MUL_UN8(backdrop.B, source.B);
+        byte r = Combine32.MUL_UN8(backdrop.R, source.R);
+        byte g = Combine32.MUL_UN8(backdrop.G, source.G);
+        byte b = Combine32.MUL_UN8(backdrop.B, source.B);
         Pixel src = new Pixel(r, g, b, source.A);
         Normal(ref backdrop, in src, opacity);
     }
 
     private static void Screen(ref Pixel backdrop, in Pixel source, int opacity)
     {
-        byte r = (byte)(backdrop.R + source.R - MUL_UN8(backdrop.R, source.R));
-        byte g = (byte)(backdrop.G + source.G - MUL_UN8(backdrop.G, source.G));
-        byte b = (byte)(backdrop.B + source.B - MUL_UN8(backdrop.B, source.B));
+        byte r = (byte)(backdrop.R + source.R - Combine32.MUL_UN8(backdrop.R, source.R));
+        byte g = (byte)(backdrop.G + source.G - Combine32.MUL_UN8(backdrop.G, source.G));
+        byte b = (byte)(backdrop.B + source.B - Combine32.MUL_UN8(backdrop.B, source.B));
         Pixel src = new Pixel(r, g, b, source.A);
         Normal(ref backdrop, in src, opacity);
     }
@@ -202,12 +192,12 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
             if (b < 128)
             {
                 b <<= 1;
-                return MUL_UN8(s, b);
+                return Combine32.MUL_UN8(s, b);
             }
             else
             {
                 b = (byte)((b << 1) - 255);
-                return (byte)(s + b - MUL_UN8(s, b));
+                return (byte)(s + b - Combine32.MUL_UN8(s, b));
             }
         }
 
@@ -257,7 +247,7 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
             }
             else
             {
-                return DIV_UN8(b, s);
+                return Combine32.DIV_UN8(b, s);
             }
         }
 
@@ -285,7 +275,7 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
             }
             else
             {
-                return (byte)(255 - DIV_UN8(b, s));
+                return (byte)(255 - Combine32.DIV_UN8(b, s));
             }
         }
 
@@ -304,12 +294,12 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
             if (s < 128)
             {
                 s <<= 1;
-                return MUL_UN8(b, s);
+                return Combine32.MUL_UN8(b, s);
             }
             else
             {
                 s = (byte)((s << 1) - 255);
-                return (byte)(b + s - MUL_UN8(b, s));
+                return (byte)(b + s - Combine32.MUL_UN8(b, s));
             }
         }
 
@@ -374,7 +364,7 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
     {
         byte exclusion(byte b, byte s)
         {
-            return (byte)(b + s - 2 * MUL_UN8(b, s));
+            return (byte)(b + s - 2 * Combine32.MUL_UN8(b, s));
         }
 
         byte r = exclusion(backdrop.R, source.R);
@@ -422,22 +412,22 @@ private static double Sat(double r, double g, double b) => Math.Max(r, Math.Max(
         Normal(ref backdrop, in src, opacity);
     }
 
-private static void HslColor(ref Pixel backdrop, in Pixel source, int opacity)
-{
-    double r = backdrop.R / 255.0;
-    double g = backdrop.G / 255.0;
-    double b = backdrop.B / 255.0;
-    double l = Lum(r, g, b);
+    private static void HslColor(ref Pixel backdrop, in Pixel source, int opacity)
+    {
+        double r = backdrop.R / 255.0;
+        double g = backdrop.G / 255.0;
+        double b = backdrop.B / 255.0;
+        double l = Lum(r, g, b);
 
-    r = source.R / 255.0;
-    g = source.G / 255.0;
-    b = source.B / 255.0;
+        r = source.R / 255.0;
+        g = source.G / 255.0;
+        b = source.B / 255.0;
 
-    SetLum(ref r, ref g, ref b, l);
+        SetLum(ref r, ref g, ref b, l);
 
-    Pixel src = new Pixel((byte)(r * 255), (byte)(g * 255), (byte)(b * 255), source.A);
-    Normal(ref backdrop, in src, opacity);
-}
+        Pixel src = new Pixel((byte)(r * 255), (byte)(g * 255), (byte)(b * 255), source.A);
+        Normal(ref backdrop, in src, opacity);
+    }
 
     private static void HslLuminosity(ref Pixel backdrop, in Pixel source, int opacity)
     {
@@ -488,7 +478,7 @@ private static void HslColor(ref Pixel backdrop, in Pixel source, int opacity)
             }
             else
             {
-                return DIV_UN8(b, s);
+                return Combine32.DIV_UN8(b, s);
             }
         }
         byte r = divide(backdrop.R, source.R);

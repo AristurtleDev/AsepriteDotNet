@@ -31,9 +31,9 @@ namespace AsepriteDotNet.Document;
 /// <summary>
 ///     Represents the palette of colors in an Aseprite image.
 /// </summary>
-public sealed class Palette : IEnumerable<Rgba32>
+public sealed class Palette : IEnumerable<Pixel>
 {
-    private Rgba32[] _colors = Array.Empty<Rgba32>();
+    private Pixel[] _colors = Array.Empty<Pixel>();
 
     /// <summary>
     ///     Gets the <see cref="Rgba32"/> element at the specified
@@ -51,7 +51,7 @@ public sealed class Palette : IEnumerable<Rgba32>
     ///     <paramref name="index"/> is equal to or greater than
     ///     <see cref="Count"/>.
     /// </exception>
-    public Rgba32 this[int index]
+    public Pixel this[int index]
     {
         get
         {
@@ -94,7 +94,7 @@ public sealed class Palette : IEnumerable<Rgba32>
 
     internal void Resize(int newSize)
     {
-        Rgba32[] newColors = new Rgba32[newSize];
+        Pixel[] newColors = new Pixel[newSize];
         Array.Copy(_colors, newColors, _colors.Length);
         _colors = newColors;
     }
@@ -107,7 +107,7 @@ public sealed class Palette : IEnumerable<Rgba32>
     ///     An enumerator that iterates through the <see cref="Rgba32"/> elements
     ///     in this <see cref="Palette"/> instance.
     /// </returns>
-    public IEnumerator<Rgba32> GetEnumerator()
+    public IEnumerator<Pixel> GetEnumerator()
     {
         for (int i = 0; i < _colors.Length; i++)
         {

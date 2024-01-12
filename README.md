@@ -99,19 +99,19 @@ SpritesheetOptions options = new
     OnlyVisibleLayers = true,
 
     //  Should duplicate frames be merged into one frame?
-    MergeDuplicate = true,  
+    MergeDuplicate = true,
 
-    //  Can be Horizontal, Vertical, or Square.        
-    PackingMethod = SquarePacked,   
+    //  Can be Horizontal, Vertical, or Square.
+    PackingMethod = SquarePacked,
 
     //  Padding added between each frame and edge of spritesheet.
-    BorderPadding = 0,  
+    BorderPadding = 0,
 
     //  Amount of transparent pixels to added between each frame.
     Spacing = 0,
 
     //  Amount of transparent pixels to add to the inside of each frame's edge.
-    InnerPadding = 0    
+    InnerPadding = 0
 }
 
 //  Create the spritesheet using the options from the file.
@@ -140,19 +140,19 @@ AsepriteFile file = AsepriteFile.Load("file.aseprite");
 SpritesheetOptions options = new
 {
     //  Should duplicate tiles be merged into one tile?
-    MergeDuplicate = true,  
+    MergeDuplicate = true,
 
-    //  Can be Horizontal, Vertical, or Square.        
-    PackingMethod = SquarePacked,   
+    //  Can be Horizontal, Vertical, or Square.
+    PackingMethod = SquarePacked,
 
     //  Padding added between each tile and edge of tilesheet.
-    BorderPadding = 0,  
+    BorderPadding = 0,
 
     //  Amount of transparent pixels to added between each tile.
     Spacing = 0,
 
     //  Amount of transparent pixels to add to the inside of each tile's edge.
-    InnerPadding = 0    
+    InnerPadding = 0
 }
 
 //  Create the tilesheet form a tile using the options.
@@ -163,7 +163,7 @@ sheet.ToPng("tilesheet.png");
 ```
 
 ## Create `Asepritesheet`
-An `Asepritesheet` combines both the `Spritesheet` and `Tilesheet` data into a single class instance.  
+An `Asepritesheet` combines both the `Spritesheet` and `Tilesheet` data into a single class instance.
 
 ```csharp
 using AsepriteDotNet;
@@ -188,3 +188,5 @@ Asepritesheet sheet = file.ToAsepritesheet(spritesheetOptions, tilesheetOptions)
 
 # License
 **AsepriteDotNet** is licensed under the **MIT License**.  Please refer to the [LICENSE](LICENSE) file for full license text.
+
+**Combine32.cs** contains ports of the `MUL_UN8` and `DIV_UN8` functions from the [Pixamn](https://gitlab.freedesktop.org/pixman) library. Pixman is licensed under the **MIT License**. The license text can be found in the [/src/AsepriteDotNet/Pixman/Combine32.cs file header](./src//AsepriteDotNet/Pixman/Combine32.cs)

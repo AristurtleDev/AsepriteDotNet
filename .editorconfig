@@ -447,3 +447,23 @@ dotnet_naming_style.s_camelcase.required_prefix = s_
 dotnet_naming_style.s_camelcase.required_suffix =
 dotnet_naming_style.s_camelcase.word_separator =
 dotnet_naming_style.s_camelcase.capitalization = camel_case
+
+
+################################################################################
+###
+### Warning Supressions
+###
+################################################################################
+[*.{cs,vb}]
+
+################################################################################
+### CA1027: Mark enums with FlagsAttribute
+### https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1027
+################################################################################
+dotnet_diagnostic.CA1027.severity = none
+
+################################################################################
+### CA1008: Enums should have zero value
+### https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1008
+################################################################################
+dotnet_diagnostic.CA1008.severity = none

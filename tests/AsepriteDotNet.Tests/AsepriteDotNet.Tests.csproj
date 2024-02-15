@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Project level compilation properties -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <!-- Reference projects that need testing -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\source\AsepriteDotNet\AsepriteDotNet.csproj" />
+  </ItemGroup>
+
+</Project>

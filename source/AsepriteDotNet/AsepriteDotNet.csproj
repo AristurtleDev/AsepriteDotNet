@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Project level compilation properties -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <!-- Project level package properties -->
+  <PropertyGroup>
+    <PackageId>AsepriteDotNet</PackageId>
+    <Description>
+      AsepriteDotNet is a cross-platform C# library for reading Aseprite
+      (.aseprite/.ase) files. Once file has been read, the library presents an
+      easy to navigate AsepriteFile class containing the data read from the file.
+    </Description>
+  </PropertyGroup>
+
+  <!-- Allow Test project to access internals -->
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>AsepriteDotNet.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

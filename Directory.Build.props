@@ -19,7 +19,7 @@
     <PropertyGroup>
         <NeutralLanguage>en</NeutralLanguage>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <Version>1.0.0</Version>
     </PropertyGroup>
 

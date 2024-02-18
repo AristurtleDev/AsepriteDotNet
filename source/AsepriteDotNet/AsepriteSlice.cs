@@ -48,5 +48,6 @@ public sealed class AsepriteSlice
         IsNinePatch = isNinePatch;
         HasPivot = hasPivot;
         Keys = keys.ToFrozenSet();
+        UserData = new AsepriteUserData();
     }
 }

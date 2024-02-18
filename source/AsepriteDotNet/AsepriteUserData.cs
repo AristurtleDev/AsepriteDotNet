@@ -2,8 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
-using System.Drawing;
-
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -20,7 +18,7 @@ public sealed class AsepriteUserData
     /// Gets the color that was set for this user data in Aseprite, if a color was set; otherwise,
     /// <see langword="null"/>.
     /// </summary>
-    public Color? Color { get; }
+    public Rgba32? Color { get; }
 
-    internal AsepriteUserData(string? text, Color? color) => (Text, Color) = (text, color);
+    internal AsepriteUserData(string? text, Rgba32? color) => (Text, Color) = (text, color);
 }

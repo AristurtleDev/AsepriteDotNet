@@ -14,7 +14,7 @@ public sealed class AsepriteLinkedCel : AsepriteCel
     /// </summary>
     public AsepriteCel Cel { get; }
 
-    internal AsepriteLinkedCel(AsepriteCel cel) : base(cel.Layer, cel.X, cel.Y, cel.Opacity, cel.UserData)
+    internal AsepriteLinkedCel(AsepriteCel cel) : base(cel.Layer, cel.Position, cel.Opacity, cel.UserData)
     {
         Cel = cel;
     }

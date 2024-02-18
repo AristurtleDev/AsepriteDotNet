@@ -28,8 +28,8 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// </summary>
     public FrozenSet<Rgba32> Pixels { get; }
 
-    internal AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, int width, int height, Rgba32[] pixels)
-        : base(layer, x, y, opacity)
+    internal AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, AsepriteUserData? userData, int width, int height, Rgba32[] pixels)
+        : base(layer, x, y, opacity, userData)
     {
         Width = width;
         Height = height;

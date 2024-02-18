@@ -56,9 +56,9 @@ public abstract class AsepriteLayer
     /// The <see cref="AsepriteUserData"/> that was set in the properties for this <see cref="AsepriteLayer"/> in
     /// Aseprite.
     /// </summary>
-    public AsepriteUserData UserData { get; }
+    public AsepriteUserData? UserData { get; }
 
-    internal AsepriteLayer(string name, bool isVisible, bool isBackground, bool isReference, int childLevel, AsepriteBlendMode blendMode, int opacity)
+    internal AsepriteLayer(string name, bool isVisible, bool isBackground, bool isReference, int childLevel, AsepriteBlendMode blendMode, int opacity, AsepriteUserData? userData)
     {
         Name = name;
         IsVisible = isVisible;
@@ -67,6 +67,6 @@ public abstract class AsepriteLayer
         ChildLevel = childLevel;
         BlendMode = blendMode;
         Opacity = opacity;
-        UserData = new AsepriteUserData();
+        UserData = userData;
     }
 }

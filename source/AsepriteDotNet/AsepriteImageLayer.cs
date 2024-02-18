@@ -9,6 +9,6 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteImageLayer : AsepriteLayer
 {
-    internal AsepriteImageLayer(string name, bool isVisible, bool isBackground, bool isReference, int childLevel, AsepriteBlendMode blendMode, int opacity)
-        : base(name, isVisible, isBackground, isReference, childLevel, blendMode, opacity) { }
+    internal AsepriteImageLayer(string name, bool isVisible, bool isBackground, bool isReference, int childLevel, AsepriteBlendMode blendMode, int opacity, AsepriteUserData? userData)
+        : base(name, isVisible, isBackground, isReference, childLevel, blendMode, opacity, userData) { }
 }

@@ -18,8 +18,8 @@ public sealed class AsepriteGroupLayer : AsepriteLayer
     /// </summary>
     public FrozenSet<AsepriteLayer> Children { get; }
 
-    internal AsepriteGroupLayer(string name, bool isVisible, bool isBackground, bool isReference, int childLevel, AsepriteBlendMode blendMode, int opacity, List<AsepriteLayer> children)
-        : base(name, isVisible, isBackground, isReference, childLevel, blendMode, opacity)
+    internal AsepriteGroupLayer(string name, bool isVisible, bool isBackground, bool isReference, int childLevel, AsepriteBlendMode blendMode, int opacity, AsepriteUserData? userData, List<AsepriteLayer> children)
+        : base(name, isVisible, isBackground, isReference, childLevel, blendMode, opacity, userData)
     {
         Children = children.ToFrozenSet();
     }

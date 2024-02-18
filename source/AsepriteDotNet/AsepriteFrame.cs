@@ -14,7 +14,7 @@ public sealed class AsepriteFrame
     /// of <see cref="AsepriteCel"/> elements are from bottom most layer to top most layer within the
     /// <see cref="AsepriteFrame"/>
     /// </summary>
-    public List<AsepriteCel> Cels;
+    public List<AsepriteCel> Cels { get; }
 
     /// <summary>
     /// The name of this <see cref="AsepriteFrame"/>.
@@ -25,29 +25,33 @@ public sealed class AsepriteFrame
     /// when the AsepriteFile is parsed based on the name of the Aseprite file, without extension, appended with the
     /// zero-based index of the frame. (e.g. sprite0).
     /// </remarks>
-    public string Name;
+    public string Name { get; }
 
     /// <summary>
     /// The width of this <see cref="AsepriteFrame"/>, in pixels.
     /// </summary>
-    public int Width;
+    public int Width { get; }
 
     /// <summary>
     /// The height of this <see cref="AsepriteFrame"/>, in pixels.
     /// </summary>
-    public int Height;
+    public int Height { get; }
 
     /// <summary>
     /// The duration that this <see cref="AsepriteFrame"/> should be displayed when used as part of an animation.
     /// </summary>
-    public TimeSpan Duration;
+    public TimeSpan Duration { get; }
 
     /// <summary>
     /// Creates a new instance of the <see cref="AsepriteCel"/> class.
     /// </summary>
-    public AsepriteFrame()
+    public AsepriteFrame(string name, int width, int height, TimeSpan duration, List<AsepriteCel> cels)
     {
-        Cels = new List<AsepriteCel>();
+        Name = name;
+        Width = width;
+        Height = height;
+        Duration = duration;
+        Cels = cels;
     }
 }
 

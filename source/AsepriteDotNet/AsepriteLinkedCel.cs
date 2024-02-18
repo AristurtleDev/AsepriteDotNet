@@ -14,10 +14,7 @@ public sealed class AsepriteLinkedCel : AsepriteCel
     /// </summary>
     public AsepriteCel Cel { get; }
 
-    /// <summary>
-    /// Creates a new instance of the <see cref="AsepriteLinkedCel"/> class.
-    /// </summary>
-    public AsepriteLinkedCel()
+    internal AsepriteLinkedCel()
     {
 
     }

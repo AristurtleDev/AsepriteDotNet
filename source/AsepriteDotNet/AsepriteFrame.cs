@@ -42,10 +42,7 @@ public sealed class AsepriteFrame
     /// </summary>
     public TimeSpan Duration { get; }
 
-    /// <summary>
-    /// Creates a new instance of the <see cref="AsepriteCel"/> class.
-    /// </summary>
-    public AsepriteFrame(string name, int width, int height, TimeSpan duration, List<AsepriteCel> cels)
+    internal AsepriteFrame(string name, int width, int height, TimeSpan duration, List<AsepriteCel> cels)
     {
         Name = name;
         Width = width;

@@ -12,22 +12,25 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// <summary>
     /// The width of this <see cref="AsepriteImageCel"/>, in pixels.
     /// </summary>
-    public int Width;
+    public int Width { get; }
 
     /// <summary>
     /// The height of this <see cref="AsepriteImageCel"/>, in pixels.
     /// </summary>
-    public int Height;
+    public int Height { get; }
 
     /// <summary>
     /// An array of <see cref="Rgba32"/> color elements that represents the pixel data that makes up the image for this
     /// cel. Order of the color elements starts with the top-left most pixel and is read left-to-right from
     /// top-to-bottom.
     /// </summary>
-    public Rgba32[] Pixels;
+    public Rgba32[] Pixels { get; }
 
-    public AsepriteImageCel() : base()
+    public AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, int width, int height, Rgba32[] pixels)
+        : base(layer, x, y, opacity)
     {
-        Pixels = Array.Empty<Rgba32>();
+        Width = width;
+        Height = height;
+        Pixels = pixels;
     }
 }

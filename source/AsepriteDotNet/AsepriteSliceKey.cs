@@ -100,10 +100,7 @@ public sealed class AsepriteSliceKey
     /// </summary>
     public int PivotY { get; }
 
-    /// <summary>
-    /// Creates a new instance of the <see cref="AsepriteSliceKey"/> class.
-    /// </summary>
-    public AsepriteSliceKey(AsepriteSlice slice, int frame, int x, int y, int width, int height, int centerX, int centerY, int centerWidth, int centerHeight, int pivotX, int pivotY)
+    internal AsepriteSliceKey(AsepriteSlice slice, int frame, int x, int y, int width, int height, int centerX, int centerY, int centerWidth, int centerHeight, int pivotX, int pivotY)
     {
         Slice = slice;
         FrameIndex = frame;

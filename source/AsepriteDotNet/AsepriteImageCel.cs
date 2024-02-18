@@ -26,7 +26,7 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// </summary>
     public Rgba32[] Pixels { get; }
 
-    public AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, int width, int height, Rgba32[] pixels)
+    internal AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, int width, int height, Rgba32[] pixels)
         : base(layer, x, y, opacity)
     {
         Width = width;

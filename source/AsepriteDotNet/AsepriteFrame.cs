@@ -2,6 +2,8 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
+using System.Collections.Frozen;
+
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -14,7 +16,7 @@ public sealed class AsepriteFrame
     /// of <see cref="AsepriteCel"/> elements are from bottom most layer to top most layer within the
     /// <see cref="AsepriteFrame"/>
     /// </summary>
-    public List<AsepriteCel> Cels { get; }
+    public FrozenSet<AsepriteCel> Cels { get; }
 
     /// <summary>
     /// The name of this <see cref="AsepriteFrame"/>.
@@ -48,7 +50,7 @@ public sealed class AsepriteFrame
         Width = width;
         Height = height;
         Duration = duration;
-        Cels = cels;
+        Cels = cels.ToFrozenSet();
     }
 }
 

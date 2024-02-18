@@ -7,7 +7,7 @@ namespace AsepriteDotNet;
 /// <summary>
 ///	Defines the color depth mode used by an Aseprite sprite.
 /// </summary>
-public enum AsepriteColorDepth : ushort
+public enum AsepriteColorDepth
 {
     /// <summary>
     /// Defines that the Aseprite sprite uses an Indexed mode of 8-bits per pixel.

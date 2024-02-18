@@ -2,6 +2,8 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
+using System.Drawing;
+
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -25,95 +27,34 @@ public sealed class AsepriteSliceKey
     public int FrameIndex { get; }
 
     /// <summary>
-    /// The x-coordinate position of the top-left corner of the bounds of the <see cref="AsepriteSlice"/> during the
-    /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/>
+    /// The bounds of the <see cref="AsepriteSlice"/> during the <see cref="AsepriteFrame"/> of this
+    /// <see cref="AsepriteSliceKey"/>, relative to the bounds of the frame.
     /// </summary>
-    public int X { get; }
+    public Rectangle Bounds { get; }
 
     /// <summary>
-    /// The y-coordinate position of the top-left corner of the bounds of the <see cref="AsepriteSlice"/> during the
-    /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/>
-    /// </summary>
-    public int Y { get; }
-
-    /// <summary>
-    /// The width, in pixels, of the <see cref="AsepriteSlice"/> during the <see cref="AsepriteFrame"/> of this
-    /// <see cref="AsepriteSliceKey"/>
-    /// </summary>
-    public int Width { get; }
-
-    /// <summary>
-    /// The height, in pixels, of the <see cref="AsepriteSlice"/> during the <see cref="AsepriteFrame"/> of this
-    /// <see cref="AsepriteSliceKey"/>
-    /// </summary>
-    public int Height { get; }
-
-    /// <summary>
-    /// The x-coordinate position of the top-left corner of the center bounds of the <see cref="AsepriteSlice"/> during
-    /// the <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/>.
+    /// The center bounds of the <see cref="AsepriteSlice"/> during the <see cref="AsepriteFrame"/> of this
+    /// <see cref="AsepriteSliceKey"/>, relative ot the bounds of the frame.
     /// </summary>
     /// <remarks>
-    /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for
-    /// <see cref="Slice"/>, otherwise it should be ignored.
+    /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for 
+    /// <see cref="Slice"/>; otherwise, <see langword="null"/>.
     /// </remarks>
-    public int CenterX { get; }
+    public Rectangle? CenterBounds { get; }
 
     /// <summary>
-    /// The y-coordinate position of the top-left corner of the center bounds of the <see cref="AsepriteSlice"/> during
-    /// the <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/>.
-    /// </summary>
-    /// <remarks>
-    /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for
-    /// <see cref="Slice"/>, otherwise it should be ignore.
-    /// </remarks>
-    public int CenterY { get; }
-
-    /// <summary>
-    /// The width, in pixels, of the center bounds of the see <see cref="AsepriteSlice"/> during the
-    /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/>
-    /// </summary>
-    /// <remarks>
-    /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for
-    /// <see cref="Slice"/>, otherwise it should be ignored.
-    /// </remarks>
-    public int CenterWidth { get; }
-
-    /// <summary>
-    /// The height, in pixels, of the center bounds of the see <see cref="AsepriteSlice"/> during the
-    /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/>
-    /// </summary>
-    /// <remarks>
-    /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for
-    /// <see cref="Slice"/>, otherwise it should be ignored.
-    /// </remarks>
-    public int CenterHeight { get; }
-
-    /// <summary>
-    /// The x-coordinate position relative to the top-left corner of the <see cref="AsepriteSlice"/> during the
+    /// The xy-coordinate position relative to the top-left corner of the <see cref="AsepriteSlice"/> during the
     /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/> in which the slice should pivot from.
     /// </summary>
-    public int PivotX { get; }
+    public Point? Pivot { get; }
 
-    /// <summary>
-    /// The y-coordinate position relative to the top-left corner of the <see cref="AsepriteSlice"/> during the
-    /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/> in which the slice should pivot from.
-    /// </summary>
-    public int PivotY { get; }
-
-    internal AsepriteSliceKey(AsepriteSlice slice, int frame, int x, int y, int width, int height, int centerX, int centerY, int centerWidth, int centerHeight, int pivotX, int pivotY)
+    internal AsepriteSliceKey(AsepriteSlice slice, int frame, Rectangle bounds,  Rectangle? centerBounds, Point? pivot)
     {
         Slice = slice;
         FrameIndex = frame;
-        X = x;
-        Y = y;
-        Width = width;
-        Height = height;
-        CenterX = centerX;
-        CenterY = centerY;
-        CenterWidth = centerWidth;
-        CenterHeight = centerHeight;
-        PivotX = pivotX;
-        PivotY = pivotY;
+        Bounds = bounds;
+        CenterBounds = centerBounds;
+        Pivot = pivot;
     }
 
 }

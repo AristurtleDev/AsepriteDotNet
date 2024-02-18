@@ -40,10 +40,7 @@ public sealed class AsepriteSlice
     /// </summary>
     public AsepriteUserData UserData { get; }
 
-    /// <summary>
-    /// Creates a new instance of the <see cref="AsepriteSlice"/> class.
-    /// </summary>
-    public AsepriteSlice(string name, bool isNinePatch, bool hasPivot, List<AsepriteSliceKey> keys)
+    internal AsepriteSlice(string name, bool isNinePatch, bool hasPivot, List<AsepriteSliceKey> keys)
     {
         Name = name;
         IsNinePatch = isNinePatch;

@@ -13,14 +13,9 @@ namespace AsepriteDotNet;
 public sealed class AsepriteImageCel : AsepriteCel
 {
     /// <summary>
-    /// The width of this <see cref="AsepriteImageCel"/>, in pixels.
+    /// The size of this <see cref="AsepriteImageCel"/>, in pixels.
     /// </summary>
-    public int Width { get; }
-
-    /// <summary>
-    /// The height of this <see cref="AsepriteImageCel"/>, in pixels.
-    /// </summary>
-    public int Height { get; }
+    public Size Size { get; }
 
     /// <summary>
     /// A collection of the <see cref="Color"/> elements that represents the pixel data that makes up the image
@@ -29,11 +24,10 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// </summary>
     public FrozenSet<Color> Pixels { get; }
 
-    internal AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, AsepriteUserData? userData, int width, int height, Color[] pixels)
+    internal AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, AsepriteUserData? userData, Size size, Color[] pixels)
         : base(layer, x, y, opacity, userData)
     {
-        Width = width;
-        Height = height;
+        Size = size;
         Pixels = pixels.ToFrozenSet();
     }
 }

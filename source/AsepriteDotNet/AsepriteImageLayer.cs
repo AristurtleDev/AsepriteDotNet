@@ -9,8 +9,5 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteImageLayer : AsepriteLayer
 {
-    /// <summary>
-    /// Creates a new instance of the <see cref="AsepriteImageLayer"/> class.
-    /// </summary>
-    public AsepriteImageLayer() : base() { }
+    internal AsepriteImageLayer() : base() { }
 }

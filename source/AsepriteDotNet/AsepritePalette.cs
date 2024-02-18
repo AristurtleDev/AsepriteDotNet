@@ -13,7 +13,7 @@ public sealed class AsepritePalette
     /// An array of <see cref="Rgba32"/> color elements that represent the colors of the palette.  Order of elements is
     /// the same as the order of colors in the palette in Aseprite.
     /// </summary>
-    public Rgba32[] Colors;
+    public Rgba32[] Colors { get; }
 
     /// <summary>
     /// The index of the element in <see cref="Colors"/> that represents a color that should be interpreted as a
@@ -23,13 +23,14 @@ public sealed class AsepritePalette
     /// This value is only valid when the <see cref="AsepriteColorDepth"/> mode used is
     /// <see cref="AsepriteColorDepth.Indexed"/>.
     /// </remarks>
-    public int TransparentIndex;
+    public int TransparentIndex { get; }
 
     /// <summary>
     /// Creates a new instance of the <see cref="AsepritePalette"/> class.
     /// </summary>
-    public AsepritePalette()
+    public AsepritePalette(Rgba32[] colors, int transparentIndex)
     {
-        Colors = Array.Empty<Rgba32>();
+        Colors = colors;
+        TransparentIndex  = transparentIndex;
     }
 }

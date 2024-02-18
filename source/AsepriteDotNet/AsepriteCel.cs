@@ -16,7 +16,7 @@ public abstract class AsepriteCel
 
     /// <summary>
     /// The x-coordinate position of this <see cref="AsepriteCel"/>, relative to the bounds of the
-    /// <see cref="AsperiteFrame"/> it is in.
+    /// <see cref="AsepriteFrame"/> it is in.
     /// </summary>
     public int X { get; }
 

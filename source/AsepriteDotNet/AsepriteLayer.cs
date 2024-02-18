@@ -12,19 +12,19 @@ public abstract class AsepriteLayer
     /// <summary>
     /// <see langword="true"/> if this <see cref="AsepriteLayer"/> is visible; otherwise, <see langword="false"/>.
     /// </summary>
-    public bool IsVisible;
+    public bool IsVisible { get; }
 
     /// <summary>
     /// <see langword="true"/> if this <see cref="AsepriteLayer"/> was marked as the background layer in Aseprite;
     /// otherwise, <see langword="false"/>.
     /// </summary>
-    public bool IsBackgroundLayer;
+    public bool IsBackgroundLayer { get; }
 
     /// <summary>
     /// <see langword="true"/> if this <see cref="AsepriteLayer"/> was marked as a reference layer containing a
     /// reference image in Aseprite; otherwise, <see langword="false"/>.
     /// </summary>
-    public bool IsReferenceLayer;
+    public bool IsReferenceLayer { get; }
 
     /// <summary>
     /// The level of this <see cref="AsepriteLayer"/> in relation to its parent.
@@ -33,28 +33,40 @@ public abstract class AsepriteLayer
     /// See <see href="https://github.com/aseprite/aseprite/blob/main/docs/ase-file-specs.md#note1"/> for more
     /// information.
     /// </remarks>
-    public int ChildLevel;
+    public int ChildLevel { get; }
 
     /// <summary>
     /// Indicates the <see cref="AsepriteBlendMode"/> used by the <see cref="AsepriteCel"/> elements that are on
     /// this <see cref="AsepriteLayer"/> when blending with <see cref="AsepriteCel"/> elements on the
     /// <see cref="AsepriteLayer"/> below.
     /// </summary>
-    public AsepriteBlendMode BlendMode;
+    public AsepriteBlendMode BlendMode { get; }
 
     /// <summary>
     /// The opacity level for this <see cref="AsepriteLayer"/>.
     /// </summary>
-    public int Opacity;
+    public int Opacity { get; }
 
     /// <summary>
     /// The name of this <see cref="AsepriteLayer"/>.
     /// </summary>
-    public string Name;
+    public string Name { get; }
 
     /// <summary>
     /// The <see cref="AsepriteUserData"/> that was set in the properties for this <see cref="AsepriteLayer"/> in
     /// Aseprite.
     /// </summary>
-    public AsepriteUserData UserData;
+    public AsepriteUserData UserData { get; }
+
+    internal AsepriteLayer(string name, bool isVisible, bool isBackground, bool isReference, int childLevel, AsepriteBlendMode blendMode, int opacity)
+    {
+        Name = name;
+        IsVisible = isVisible;
+        IsBackgroundLayer = isBackground;
+        IsReferenceLayer = isReference;
+        ChildLevel = childLevel;
+        BlendMode = blendMode;
+        Opacity = opacity;
+        UserData = new AsepriteUserData();
+    }
 }

@@ -23,7 +23,7 @@ public sealed class AsepriteImageCel : AsepriteCel
     public int Height { get; }
 
     /// <summary>
-    /// A collection of the <see cref="Rgba32"/> color elements that represents the pixel data that makes up the image
+    /// A collection of the <see cref="Color"/> elements that represents the pixel data that makes up the image
     /// for this <see cref="AsepriteCel"/>.  Order of the color elements starts with the top-left most pixel and is read
     /// left-to-right from top-to-bottom.
     /// </summary>

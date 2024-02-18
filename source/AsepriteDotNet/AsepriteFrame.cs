@@ -3,6 +3,7 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Collections.Frozen;
+using System.Drawing;
 
 namespace AsepriteDotNet;
 
@@ -30,25 +31,19 @@ public sealed class AsepriteFrame
     public string Name { get; }
 
     /// <summary>
-    /// The width of this <see cref="AsepriteFrame"/>, in pixels.
+    /// The size of this <see cref="AsepriteFrame"/>, in pixels.
     /// </summary>
-    public int Width { get; }
-
-    /// <summary>
-    /// The height of this <see cref="AsepriteFrame"/>, in pixels.
-    /// </summary>
-    public int Height { get; }
+    public Size Size { get; }
 
     /// <summary>
     /// The duration that this <see cref="AsepriteFrame"/> should be displayed when used as part of an animation.
     /// </summary>
     public TimeSpan Duration { get; }
 
-    internal AsepriteFrame(string name, int width, int height, TimeSpan duration, List<AsepriteCel> cels)
+    internal AsepriteFrame(string name, Size size, TimeSpan duration, List<AsepriteCel> cels)
     {
         Name = name;
-        Width = width;
-        Height = height;
+        Size = size;
         Duration = duration;
         Cels = cels.ToFrozenSet();
     }

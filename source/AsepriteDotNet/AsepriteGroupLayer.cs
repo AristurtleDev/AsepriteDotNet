@@ -14,10 +14,10 @@ public sealed class AsepriteGroupLayer : AsepriteLayer
     /// <see cref="AsepriteGroupLayer"/>.  Order of <see cref="AsepriteLayer"/> elements is from bottom most layer to
     /// top most layer in the group.
     /// </summary>
-    public List<AsepriteLayer> Children;
+    public List<AsepriteLayer> Children { get; }
 
-    public AsepriteGroupLayer() : base()
+    public AsepriteGroupLayer(List<AsepriteLayer> children) : base()
     {
-        Children = new();
+        Children = children;
     }
 }

@@ -25,10 +25,7 @@ public sealed class AsepritePalette
     /// </remarks>
     public int TransparentIndex { get; }
 
-    /// <summary>
-    /// Creates a new instance of the <see cref="AsepritePalette"/> class.
-    /// </summary>
-    public AsepritePalette(Rgba32[] colors, int transparentIndex)
+    internal AsepritePalette(Rgba32[] colors, int transparentIndex)
     {
         Colors = colors;
         TransparentIndex  = transparentIndex;

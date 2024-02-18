@@ -2,6 +2,8 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
+using System.Drawing;
+
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -32,14 +34,14 @@ public sealed class AsepriteTag
     /// <summary>
     /// The color assigned to this tag in Aseprite.
     /// </summary>
-    public Rgba32 Color { get; }
+    public Color Color { get; }
 
     /// <summary>
     /// The custom user data that was set in the properties for this tag in Aseprite.
     /// </summary>
     public AsepriteUserData? UserData { get; }
 
-    internal AsepriteTag(int from, int to, AsepriteLoopDirection loopDirection, Rgba32 color, string name, AsepriteUserData? userData)
+    internal AsepriteTag(int from, int to, AsepriteLoopDirection loopDirection, Color color, string name, AsepriteUserData? userData)
     {
         From = from;
         To = to;

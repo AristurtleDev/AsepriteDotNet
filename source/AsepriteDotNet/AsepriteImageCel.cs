@@ -3,6 +3,7 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Collections.Frozen;
+using System.Drawing;
 
 namespace AsepriteDotNet;
 
@@ -26,9 +27,9 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// for this <see cref="AsepriteCel"/>.  Order of the color elements starts with the top-left most pixel and is read
     /// left-to-right from top-to-bottom.
     /// </summary>
-    public FrozenSet<Rgba32> Pixels { get; }
+    public FrozenSet<Color> Pixels { get; }
 
-    internal AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, AsepriteUserData? userData, int width, int height, Rgba32[] pixels)
+    internal AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, AsepriteUserData? userData, int width, int height, Color[] pixels)
         : base(layer, x, y, opacity, userData)
     {
         Width = width;

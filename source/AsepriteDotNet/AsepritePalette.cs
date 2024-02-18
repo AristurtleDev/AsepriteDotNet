@@ -3,6 +3,7 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Collections.Frozen;
+using System.Drawing;
 
 namespace AsepriteDotNet;
 
@@ -12,10 +13,10 @@ namespace AsepriteDotNet;
 public sealed class AsepritePalette
 {
     /// <summary>
-    /// An array of <see cref="Rgba32"/> color elements that represent the colors of the palette.  Order of elements is
+    /// An array of <see cref="Color"/> color elements that represent the colors of the palette.  Order of elements is
     /// the same as the order of colors in the palette in Aseprite.
     /// </summary>
-    public FrozenSet<Rgba32> Colors { get; }
+    public FrozenSet<Color> Colors { get; }
 
     /// <summary>
     /// The index of the element in <see cref="Colors"/> that represents a color that should be interpreted as a
@@ -27,7 +28,7 @@ public sealed class AsepritePalette
     /// </remarks>
     public int TransparentIndex { get; }
 
-    internal AsepritePalette(Rgba32[] colors, int transparentIndex)
+    internal AsepritePalette(Color[] colors, int transparentIndex)
     {
         Colors = colors.ToFrozenSet();
         TransparentIndex  = transparentIndex;

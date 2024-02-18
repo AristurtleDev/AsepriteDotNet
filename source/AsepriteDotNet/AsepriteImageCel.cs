@@ -24,8 +24,8 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// </summary>
     public FrozenSet<Color> Pixels { get; }
 
-    internal AsepriteImageCel(AsepriteLayer layer, int x, int y, int opacity, AsepriteUserData? userData, Size size, Color[] pixels)
-        : base(layer, x, y, opacity, userData)
+    internal AsepriteImageCel(AsepriteLayer layer, Point position, int opacity, AsepriteUserData? userData, Size size, Color[] pixels)
+        : base(layer, position, opacity, userData)
     {
         Size = size;
         Pixels = pixels.ToFrozenSet();

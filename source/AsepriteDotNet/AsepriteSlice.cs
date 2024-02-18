@@ -2,6 +2,8 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
+using System.Collections.Frozen;
+
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -14,7 +16,7 @@ public sealed class AsepriteSlice
     /// similar to an animation key that defines the properties of the <see cref="AsepriteSlice"/> starting on a
     /// specific frame.
     /// </summary>
-    public List<AsepriteSliceKey> Keys { get; }
+    public FrozenSet<AsepriteSliceKey> Keys { get; }
 
     /// <summary>
     /// <see langword="true"/> if this <see cref="AsepriteSlice"/> has nine patch data in its keys; otherwise,
@@ -45,6 +47,6 @@ public sealed class AsepriteSlice
         Name = name;
         IsNinePatch = isNinePatch;
         HasPivot = hasPivot;
-        Keys = keys;
+        Keys = keys.ToFrozenSet();
     }
 }

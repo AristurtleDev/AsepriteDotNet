@@ -16,37 +16,37 @@ public sealed class AsepriteSliceKey
     /// <summary>
     /// The <see cref="AsepriteSlice"/> this <see cref="AsepriteSliceKey"/> is for.
     /// </summary>
-    public AsepriteSlice Slice;
+    public AsepriteSlice Slice { get; }
 
     /// <summary>
     /// The index of the <see cref="AsepriteFrame"/> that the properties of this <see cref="AsepriteSliceKey"/> are
     /// applied on.
     /// </summary>
-    public readonly int FrameIndex;
+    public int FrameIndex { get; }
 
     /// <summary>
     /// The x-coordinate position of the top-left corner of the bounds of the <see cref="AsepriteSlice"/> during the
     /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/>
     /// </summary>
-    public int X;
+    public int X { get; }
 
     /// <summary>
     /// The y-coordinate position of the top-left corner of the bounds of the <see cref="AsepriteSlice"/> during the
     /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/>
     /// </summary>
-    public int Y;
+    public int Y { get; }
 
     /// <summary>
     /// The width, in pixels, of the <see cref="AsepriteSlice"/> during the <see cref="AsepriteFrame"/> of this
     /// <see cref="AsepriteSliceKey"/>
     /// </summary>
-    public int Width;
+    public int Width { get; }
 
     /// <summary>
     /// The height, in pixels, of the <see cref="AsepriteSlice"/> during the <see cref="AsepriteFrame"/> of this
     /// <see cref="AsepriteSliceKey"/>
     /// </summary>
-    public int Height;
+    public int Height { get; }
 
     /// <summary>
     /// The x-coordinate position of the top-left corner of the center bounds of the <see cref="AsepriteSlice"/> during
@@ -56,7 +56,7 @@ public sealed class AsepriteSliceKey
     /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for
     /// <see cref="Slice"/>, otherwise it should be ignored.
     /// </remarks>
-    public int CenterX;
+    public int CenterX { get; }
 
     /// <summary>
     /// The y-coordinate position of the top-left corner of the center bounds of the <see cref="AsepriteSlice"/> during
@@ -66,7 +66,7 @@ public sealed class AsepriteSliceKey
     /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for
     /// <see cref="Slice"/>, otherwise it should be ignore.
     /// </remarks>
-    public int CenterY;
+    public int CenterY { get; }
 
     /// <summary>
     /// The width, in pixels, of the center bounds of the see <see cref="AsepriteSlice"/> during the
@@ -76,7 +76,7 @@ public sealed class AsepriteSliceKey
     /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for
     /// <see cref="Slice"/>, otherwise it should be ignored.
     /// </remarks>
-    public int CenterWidth;
+    public int CenterWidth { get; }
 
     /// <summary>
     /// The height, in pixels, of the center bounds of the see <see cref="AsepriteSlice"/> during the
@@ -86,26 +86,37 @@ public sealed class AsepriteSliceKey
     /// This value is only valid when <see cref="AsepriteSlice.IsNinePatch"/> is <see langword="true"/> for
     /// <see cref="Slice"/>, otherwise it should be ignored.
     /// </remarks>
-    public int CenterHeight;
+    public int CenterHeight { get; }
 
     /// <summary>
     /// The x-coordinate position relative to the top-left corner of the <see cref="AsepriteSlice"/> during the
     /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/> in which the slice should pivot from.
     /// </summary>
-    public int PivotX;
+    public int PivotX { get; }
 
     /// <summary>
     /// The y-coordinate position relative to the top-left corner of the <see cref="AsepriteSlice"/> during the
     /// <see cref="AsepriteFrame"/> of this <see cref="AsepriteSliceKey"/> in which the slice should pivot from.
     /// </summary>
-    public int PivotY;
+    public int PivotY { get; }
 
     /// <summary>
     /// Creates a new instance of the <see cref="AsepriteSliceKey"/> class.
     /// </summary>
-    public AsepriteSliceKey()
+    public AsepriteSliceKey(AsepriteSlice slice, int frame, int x, int y, int width, int height, int centerX, int centerY, int centerWidth, int centerHeight, int pivotX, int pivotY)
     {
-
+        Slice = slice;
+        FrameIndex = frame;
+        X = x;
+        Y = y;
+        Width = width;
+        Height = height;
+        CenterX = centerX;
+        CenterY = centerY;
+        CenterWidth = centerWidth;
+        CenterHeight = centerHeight;
+        PivotX = pivotX;
+        PivotY = pivotY;
     }
 
 }

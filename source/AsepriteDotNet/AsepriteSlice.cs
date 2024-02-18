@@ -14,37 +14,40 @@ public sealed class AsepriteSlice
     /// similar to an animation key that defines the properties of the <see cref="AsepriteSlice"/> starting on a
     /// specific frame.
     /// </summary>
-    public List<AsepriteSliceKey> Keys;
+    public List<AsepriteSliceKey> Keys { get; }
 
     /// <summary>
     /// <see langword="true"/> if this <see cref="AsepriteSlice"/> has nine patch data in its keys; otherwise,
     /// <see langword="false"/>.
     /// </summary>
-    public bool IsNinePatch;
+    public bool IsNinePatch { get; }
 
     /// <summary>
     /// <see langword="true"/> if this <see cref="AsepriteSlice"/> has pivot data in its keys; otherwise,
     /// <see langword="false"/>.
     /// Indicates whether this slice was marked to have a pivot point in Aseprite.
     /// </summary>
-    public bool HasPivot;
+    public bool HasPivot { get; }
 
     /// <summary>
     /// The name of this <see cref="AsepriteSlice"/>.
     /// </summary>
-    public string Name;
+    public string Name { get; }
 
     /// <summary>
     /// The <see cref="AsepriteUserData"/> that was set in the properties for this <see cref="AsepriteSlice"/> in
     /// Aseprite.
     /// </summary>
-    public AsepriteUserData UserData;
+    public AsepriteUserData UserData { get; }
 
     /// <summary>
     /// Creates a new instance of the <see cref="AsepriteSlice"/> class.
     /// </summary>
-    public AsepriteSlice()
+    public AsepriteSlice(string name, bool isNinePatch, bool hasPivot, List<AsepriteSliceKey> keys)
     {
-        Keys = new List<AsepriteSliceKey>();
+        Name = name;
+        IsNinePatch = isNinePatch;
+        HasPivot = hasPivot;
+        Keys = keys;
     }
 }

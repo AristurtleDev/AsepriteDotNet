@@ -16,7 +16,7 @@ public sealed class AsepriteGroupLayer : AsepriteLayer
     /// </summary>
     public List<AsepriteLayer> Children { get; }
 
-    public AsepriteGroupLayer(List<AsepriteLayer> children) : base()
+    internal AsepriteGroupLayer(List<AsepriteLayer> children) : base()
     {
         Children = children;
     }

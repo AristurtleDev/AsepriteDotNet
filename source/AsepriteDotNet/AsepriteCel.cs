@@ -10,7 +10,7 @@ namespace AsepriteDotNet;
 public abstract class AsepriteCel
 {
     /// <summary>
-    /// The <see cref="AsepriteLayer"/> that this <see cref="AsperiteCel"/> exists on.
+    /// The <see cref="AsepriteLayer"/> that this <see cref="AsepriteCel"/> exists on.
     /// </summary>
     public AsepriteLayer Layer;
 

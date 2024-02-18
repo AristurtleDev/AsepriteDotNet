@@ -2,7 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
-using System.Collections.Frozen;
 using System.Drawing;
 
 namespace AsepriteDotNet;
@@ -12,6 +11,8 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteTilemapCel : AsepriteCel
 {
+    private readonly AsepriteTile[] _tiles;
+
     /// <summary>
     /// The size of this <see cref="AsepriteTilemapCel"/>, in tiles.
     /// </summary>
@@ -46,7 +47,7 @@ public sealed class AsepriteTilemapCel : AsepriteCel
     /// The collection of tiles that make up this cel.  Tile elements are in order of left-to-right, read
     /// top-to-bottom.
     /// </summary>
-    public FrozenSet<AsepriteTile> Tiles { get; }
+    public ReadOnlySpan<AsepriteTile> Tiles => _tiles;
 
     internal AsepriteTilemapCel(Size size, int bitsPerTile, uint tileIDBitmask, uint flipHorizontallyBitmask, uint flipVerticallyBitmask, uint flipDiagonallyBitmask, AsepriteTile[] tiles, AsepriteLayer layer, Point position, int opacity, AsepriteUserData? userData)
         : base(layer, position, opacity, userData)
@@ -57,7 +58,7 @@ public sealed class AsepriteTilemapCel : AsepriteCel
         FlipHorizontallyBitmask = flipHorizontallyBitmask;
         FlipVerticallyBitmask = flipVerticallyBitmask;
         FlipDiagonallyBitmask = flipDiagonallyBitmask;
-        Tiles = tiles.ToFrozenSet();
+        _tiles = [.. tiles];
     }
 
 }

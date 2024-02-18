@@ -2,7 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-using System.Collections.Frozen;
 using System.Drawing;
 
 namespace AsepriteDotNet;
@@ -12,6 +11,8 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteImageCel : AsepriteCel
 {
+    private readonly Color[] _pixels;
+
     /// <summary>
     /// The size of this <see cref="AsepriteImageCel"/>, in pixels.
     /// </summary>
@@ -22,12 +23,12 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// for this <see cref="AsepriteCel"/>.  Order of the color elements starts with the top-left most pixel and is read
     /// left-to-right from top-to-bottom.
     /// </summary>
-    public FrozenSet<Color> Pixels { get; }
+    public ReadOnlySpan<Color> Pixels => _pixels;
 
     internal AsepriteImageCel(AsepriteLayer layer, Point position, int opacity, AsepriteUserData? userData, Size size, Color[] pixels)
         : base(layer, position, opacity, userData)
     {
         Size = size;
-        Pixels = pixels.ToFrozenSet();
+        _pixels = pixels;
     }
 }

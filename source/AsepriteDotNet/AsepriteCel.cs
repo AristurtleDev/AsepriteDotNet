@@ -2,6 +2,8 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
+using System.Drawing;
+
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -15,16 +17,10 @@ public abstract class AsepriteCel
     public AsepriteLayer Layer { get; }
 
     /// <summary>
-    /// The x-coordinate position of this <see cref="AsepriteCel"/>, relative to the bounds of the
+    /// The top-left xy-coordinate position of this <see cref="AsepriteCel"/> relative to the bounds of the
     /// <see cref="AsepriteFrame"/> it is in.
     /// </summary>
-    public int X { get; }
-
-    /// <summary>
-    /// The y-coordinate position of this <see cref="AsepriteCel"/>, relative to the bounds of the
-    /// <see cref="AsepriteFrame"/> it is in.
-    /// </summary>
-    public int Y { get; }
+    public Point Position { get; }
 
     /// <summary>
     /// The opacity level of this <see cref="AsepriteCel"/>.
@@ -37,11 +33,10 @@ public abstract class AsepriteCel
     /// </summary>
     public AsepriteUserData? UserData { get; }
 
-    internal AsepriteCel(AsepriteLayer layer, int x, int y, int opacity, AsepriteUserData? userData)
+    internal AsepriteCel(AsepriteLayer layer, Point position, int opacity, AsepriteUserData? userData)
     {
         Layer = layer;
-        X = x;
-        Y = y;
+        Position = position;
         Opacity = opacity;
         UserData = userData;
     }

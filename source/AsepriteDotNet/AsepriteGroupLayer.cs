@@ -2,6 +2,8 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
+using System.Collections.Frozen;
+
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -14,10 +16,10 @@ public sealed class AsepriteGroupLayer : AsepriteLayer
     /// <see cref="AsepriteGroupLayer"/>.  Order of <see cref="AsepriteLayer"/> elements is from bottom most layer to
     /// top most layer in the group.
     /// </summary>
-    public List<AsepriteLayer> Children { get; }
+    public FrozenSet<AsepriteLayer> Children { get; }
 
     internal AsepriteGroupLayer(List<AsepriteLayer> children) : base()
     {
-        Children = children;
+        Children = children.ToFrozenSet();
     }
 }

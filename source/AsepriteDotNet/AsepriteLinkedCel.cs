@@ -12,7 +12,7 @@ public sealed class AsepriteLinkedCel : AsepriteCel
     /// <summary>
     /// The <see cref="AsepriteCel"/> that this <see cref="AsepriteLinkedCel"/> is linked to.
     /// </summary>
-    public AsepriteCel Cel;
+    public AsepriteCel Cel { get; }
 
     /// <summary>
     /// Creates a new instance of the <see cref="AsepriteLinkedCel"/> class.

@@ -11,7 +11,7 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteImageCel : AsepriteCel
 {
-    private readonly Color[] _pixels;
+    private readonly AseColor[] _pixels;
 
     /// <summary>
     /// The size of this <see cref="AsepriteImageCel"/>, in pixels.
@@ -23,12 +23,12 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// for this <see cref="AsepriteCel"/>.  Order of the color elements starts with the top-left most pixel and is read
     /// left-to-right from top-to-bottom.
     /// </summary>
-    public ReadOnlySpan<Color> Pixels => _pixels;
+    public ReadOnlySpan<AseColor> Pixels => _pixels;
 
-    internal AsepriteImageCel(AsepriteLayer layer, Point position, int opacity, AsepriteUserData? userData, Size size, Color[] pixels)
-        : base(layer, position, opacity, userData)
+    internal AsepriteImageCel(CelProperties celProperties, AsepriteLayer layer, ImageCelProperties imageCelProperties, AseColor[] pixels)
+        : base(celProperties, layer)
     {
-        Size = size;
+        Size = new Size(imageCelProperties.Width, imageCelProperties.Height);
         _pixels = pixels;
     }
 }

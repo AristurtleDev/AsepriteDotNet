@@ -31,13 +31,13 @@ public abstract class AsepriteCel
     /// The <see cref="AsepriteUserData"/> that was set in the properties for this <see cref="AsepriteCel"/> in
     /// Aseprite.
     /// </summary>
-    public AsepriteUserData? UserData { get; }
+    public AsepriteUserData UserData { get; }
 
-    internal AsepriteCel(AsepriteLayer layer, Point position, int opacity, AsepriteUserData? userData)
+    internal AsepriteCel(CelProperties celProperties, AsepriteLayer layer)
     {
         Layer = layer;
-        Position = position;
-        Opacity = opacity;
-        UserData = userData;
+        Position = new Point(celProperties.X, celProperties.Y);
+        Opacity = celProperties.Opacity;
+        UserData = new AsepriteUserData();
     }
 }

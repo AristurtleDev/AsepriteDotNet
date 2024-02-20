@@ -104,7 +104,7 @@ public class AsepriteFileReader
                 ReadLayerChunk(builder);
                 break;
             case aseChunkTypeCel:
-                ReadCelChunk(builder);
+                ReadCelChunk(builder, end);
                 break;
             case aseChunkTypeOldPalette1:
             case aseChunkTypeOldPalette2:

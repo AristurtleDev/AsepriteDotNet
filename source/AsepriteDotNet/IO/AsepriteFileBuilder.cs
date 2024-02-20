@@ -10,11 +10,16 @@ internal partial class AsepriteFileBuilder
     private readonly List<string> _warnings;
     private readonly List<AsepriteLayer> _layers;
     private readonly List<AsepriteTileset> _tilesets;
+    private readonly List<AsepriteSlice> _slices;
     private readonly AsepriteFrame[] _frames;
 
     private AsepriteGroupLayer? _lastGroupLayer;
     private readonly List<AsepriteLayer> _childLayers;
     private readonly List<AsepriteCel> _currentFrameCels;
+    private AsepriteUserData _spriteUserData;
+
+    private AsepriteUserData? _currentUserDataReference;
+    private bool _paletteRead;
 
 
     internal AsepriteFileBuilder(FileHeader header)
@@ -24,10 +29,12 @@ internal partial class AsepriteFileBuilder
         _warnings = new List<string>();
         _layers = new List<AsepriteLayer>();
         _tilesets = new List<AsepriteTileset>();
+        _slices = new List<AsepriteSlice>();
         _childLayers = new List<AsepriteLayer>();
         _isLayerOpacityValid = (_header.Flags & 1) != 0;
         _palette = new AsepritePalette(new AseColor[_header.NumberOfColors], _header.TransparentIndex);
         _currentFrameCels = new List<AsepriteCel>();
+        _spriteUserData = new AsepriteUserData();
     }
 
     internal void BeginFrameRead()
@@ -84,7 +91,56 @@ internal partial class AsepriteFileBuilder
 
     internal void AddTilemapCel(CelProperties celProperties, TilemapCelProperties tilemapCelProperties, byte[] tileData)
     {
+        const byte tileIdShift = 0;
 
+        //  Per Aseprite file spec, the "bits" per tile is, at the moment, always 32-bits.  This means its 4-bytes per
+        //  tile (32 / 8 = 4).  Meaning that each tile value is a uint (DWORD)
+        const int bytesPerTile = sizeof(uint);
+
+        AsepriteTile[] tiles = new AsepriteTile[tileData.Length / bytesPerTile];
+
+        unsafe
+        {
+            fixed (byte* tileDataPtr = tileData)
+            {
+                for (int i = 0; i < tiles.Length; i++)
+                {
+                    uint value = *(uint*)(tileDataPtr + i * bytesPerTile);
+                    uint id = (value & tilemapCelProperties.TileIdBitmask) >> tileIdShift;
+                    bool horizontalFlip = value.HasFlag(tilemapCelProperties.HorizontalFlipBitmask);
+                    bool verticalFlip = value.HasFlag(tilemapCelProperties.VerticalFlipBitmask);
+                    bool diagonalFlip = value.HasFlag(tilemapCelProperties.DiagonalFlipBitmask);
+
+                    AsepriteTile tile = new AsepriteTile((int)id, horizontalFlip, verticalFlip, diagonalFlip);
+                    tiles[i] = tile;
+                }
+            }
+        }
+
+        AsepriteLayer layer = _layers[celProperties.LayerIndex];
+        AsepriteTilemapCel tilemapCel = new AsepriteTilemapCel(celProperties, layer, tilemapCelProperties, tiles);
+        _currentFrameCels.Add(tilemapCel);
+    }
+
+    internal void AddUserData(string? text, AseColor? color)
+    {
+        if (_currentUserDataReference is null && !_paletteRead)
+        {
+            _spriteUserData.Text = text;
+            _spriteUserData.Color = color;
+        }
+    }
+
+    internal void AddSlice(SliceProperties sliceProperties, string name, AsepriteSliceKey[] keys)
+    {
+        _slices.Add(new AsepriteSlice(sliceProperties, name, keys));
+    }
+
+    internal void AddTileset(TilesetProperties tilesetProperties, string name, byte[] pixelData)
+    {
+        AseColor[] pixels = PixelsToColor(pixelData, (AsepriteColorDepth)_header.Depth, _palette);
+        AsepriteTileset tileset = new AsepriteTileset(tilesetProperties, name, pixels);
+        _tilesets.Add(tileset);
     }
 
     private static AseColor[] PixelsToColor(byte[] pixels, AsepriteColorDepth depth, AsepritePalette palette)

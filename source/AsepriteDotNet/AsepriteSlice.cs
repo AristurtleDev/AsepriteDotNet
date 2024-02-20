@@ -40,14 +40,13 @@ public sealed class AsepriteSlice
     /// The <see cref="AsepriteUserData"/> that was set in the properties for this <see cref="AsepriteSlice"/> in
     /// Aseprite.
     /// </summary>
-    public AsepriteUserData? UserData { get; }
+    public AsepriteUserData? UserData { get; } = new AsepriteUserData();
 
-    internal AsepriteSlice(string name, bool isNinePatch, bool hasPivot, List<AsepriteSliceKey> keys, AsepriteUserData? userData)
+    internal AsepriteSlice(SliceProperties sliceProperties, string name, AsepriteSliceKey[] keys)
     {
         Name = name;
-        IsNinePatch = isNinePatch;
-        HasPivot = hasPivot;
-        _keys = [.. keys];
-        UserData = userData;
+        IsNinePatch = sliceProperties.Flags.HasFlag(1);
+        HasPivot = sliceProperties.Flags.HasFlag(2);
+        _keys = keys;
     }
 }

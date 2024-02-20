@@ -11,7 +11,7 @@ using System.Text;
 
 namespace AsepriteDotNet.IO;
 
-public class AsepriteFileReader
+public partial class AsepriteFileReader
 {
     private Stream _stream;
     private BinaryReader _reader;
@@ -105,6 +105,18 @@ public class AsepriteFileReader
                 break;
             case aseChunkTypeCel:
                 ReadCelChunk(builder, end);
+                break;
+            case aseChunkTypeTags:
+                break;
+            case aseChunkTypePalette:
+                break;
+            case aseChunkTypeUserData:
+                break;
+            case aseChunkTypeSlice:
+                ReadSliceChunk(builder);
+                break;
+            case aseChunkTypeTileset:
+                ReadTilesetChunk(builder);
                 break;
             case aseChunkTypeOldPalette1:
             case aseChunkTypeOldPalette2:
@@ -218,6 +230,116 @@ public class AsepriteFileReader
                 }
                 break;
         }
+    }
+
+    private void ReadUserDataChunk(AsepriteFileBuilder builder)
+    {
+        uint flags = _reader.ReadDword();
+
+        string? text = null;
+        AseColor? color = null;
+
+        if (flags.HasFlag(1))
+        {
+            int len = _reader.ReadWord();
+            text = Encoding.UTF8.GetString(_reader.ReadBytes(len));
+        }
+
+        if (flags.HasFlag(2))
+        {
+            color = ReadPropertiesUnsafe<AseColor>(AseColor.StructSize);
+        }
+
+        //  Support for reading custom properties is not implemented at this time.  It is not implemented in the
+        //  Aseprite UI and is only available through the LUA scripting extensions. If users ask for this, I'll consider
+        //  implementing it, otherwise, it will remain unimplemented until such time that it is added as part of the
+        //  AsepriteUI.
+        //
+        //  HERE IS WHERE I WOULD READ PROPERTIES
+
+        builder.AddUserData(text, color);
+    }
+
+    private void ReadSliceChunk(AsepriteFileBuilder builder)
+    {
+        SliceProperties sliceProperties = ReadPropertiesUnsafe<SliceProperties>(SliceProperties.StructSize);
+        string name = Encoding.UTF8.GetString(_reader.ReadBytes(sliceProperties.NameLen));
+        AsepriteSliceKey[] keys = new AsepriteSliceKey[sliceProperties.KeyCount];
+        for (int i = 0; i < sliceProperties.KeyCount; i++)
+        {
+            keys[i] = ReadSliceKey(sliceProperties.Flags);
+        }
+
+        builder.AddSlice(sliceProperties, name, keys);
+    }
+
+    private AsepriteSliceKey ReadSliceKey(uint flags)
+    {
+        const int flagNinePatch = 1;
+        const int flagPivot = 2;
+
+        bool isNinePatch = flags.HasFlag(flagNinePatch);
+        bool hasPivot = flags.HasFlag(flagPivot);
+
+        SliceKeyProperties sliceKeyProperties = ReadPropertiesUnsafe<SliceKeyProperties>(SliceKeyProperties.StructSize);
+        NinePatchProperties? ninePatchProperties = isNinePatch ? ReadPropertiesUnsafe<NinePatchProperties>(NinePatchProperties.StructSize) : null;
+        PivotProperties? pivotProperties = hasPivot ? ReadPropertiesUnsafe<PivotProperties>(PivotProperties.StructSize) : null;
+        return new AsepriteSliceKey(sliceKeyProperties, ninePatchProperties, pivotProperties);
+    }
+
+    private T ReadPropertiesUnsafe<T>(int size) where T : struct
+    {
+        T properties;
+        Span<byte> data = _reader.ReadBytes(size);
+        unsafe
+        {
+            fixed (byte* ptr = data)
+            {
+                properties = Marshal.PtrToStructure<T>((IntPtr)ptr);
+            }
+        }
+
+        return properties;
+    }
+
+
+    private void ReadTilesetChunk(AsepriteFileBuilder builder)
+    {
+        const int flagExternalFile = 1;
+        const int flagEmbedded = 2;
+
+        TilesetProperties tilesetProperties;
+        Span<byte> tilesetPropertiesData = _reader.ReadBytes(TilesetProperties.StructSize);
+        unsafe
+        {
+            fixed (byte* ptr = tilesetPropertiesData)
+            {
+                tilesetProperties = Marshal.PtrToStructure<TilesetProperties>((IntPtr)ptr);
+            }
+        }
+
+        string name = Encoding.UTF8.GetString(_reader.ReadBytes(tilesetProperties.NameLen));
+
+        if (tilesetProperties.Flags.HasFlag(flagExternalFile))
+        {
+            //  No support for external files at this time. To my knowledge, Aseprite
+            //  doesn't support this directly in the UI and is only something that
+            //  can be added through the LUA scripting extensions.  So unless someone
+            //  opens an issue and needs this, not implementing it.
+            //
+            throw new InvalidOperationException($"Tileset '{name}' includes the tileset in an external file. This is not supported at this time.");
+        }
+
+        if (tilesetProperties.Flags.DoesNotHaveFlag(flagEmbedded))
+        {
+            //  Only support at this time for tileset data that is embedded in the file.
+            throw new InvalidOperationException($"Tileset '{name}' does not include tileset image embedded in file.");
+        }
+
+        uint len = _reader.ReadDword();
+        byte[] pixelData = _reader.ReadBytes((int)len);
+        pixelData = Deflate(pixelData);
+        builder.AddTileset(tilesetProperties, name, pixelData);
     }
 
     private static byte[] Deflate(byte[] data)

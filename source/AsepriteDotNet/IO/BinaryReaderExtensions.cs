@@ -6,9 +6,9 @@ namespace AsepriteDotNet.IO;
 
 internal static class BinaryReaderExtensions
 {
-    internal static int ReadWord(this BinaryReader reader) => reader.ReadUInt16();
-    internal static int ReadShort(this BinaryReader reader) => reader.ReadInt16();
-    internal static int ReadDword(this BinaryReader reader) => (int)reader.ReadUInt32();
+    internal static ushort ReadWord(this BinaryReader reader) => reader.ReadUInt16();
+    internal static short ReadShort(this BinaryReader reader) => reader.ReadInt16();
+    internal static uint ReadDword(this BinaryReader reader) => reader.ReadUInt32();
     internal static int ReadLong(this BinaryReader reader) => reader.ReadInt32();
     internal static string ReadString(this BinaryReader reader) => System.Text.Encoding.UTF8.GetString(reader.ReadBytes(reader.ReadWord()));
 

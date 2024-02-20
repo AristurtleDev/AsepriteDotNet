@@ -2,8 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
-using System.Drawing;
-
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -11,7 +9,7 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteTileset
 {
-    private readonly Color[] _pixels;
+    private readonly AseColor[] _pixels;
 
     /// <summary>
     /// Gets the ID of this <see cref="AsepriteTileset"/>.
@@ -24,9 +22,14 @@ public sealed class AsepriteTileset
     public int TileCount { get; }
 
     /// <summary>
-    /// Gets the size of each tile in this <see cref="AsepriteTileset"/>.
+    /// Gets the width of each tile in this <see cref="AsepriteTileset"/>, in pixels.
     /// </summary>
-    public Size TileSize { get; }
+    public int Width { get; }
+
+    /// <summary>
+    /// Gets the height of each tile in this <see cref="AsepriteTileset"/>, in pixels.
+    /// </summary>
+    public int Height { get; }
 
     /// <summary>
     /// Gets the name of this <see cref="AsepriteTileset"/>.
@@ -37,13 +40,14 @@ public sealed class AsepriteTileset
     /// An array of color elements that represent the pixel data for image of this tileset.  Order of elements is
     /// from top-left pixel read left-to-right top-to-bottom.
     /// </summary>
-    public ReadOnlySpan<Color> Pixels => _pixels;
+    public ReadOnlySpan<AseColor> Pixels => _pixels;
 
-    internal AsepriteTileset(int id, int tileCount, Size tileSize, string name, Color[] pixels)
+    internal AsepriteTileset(TilesetProperties tilesetProperties, string name, AseColor[] pixels)
     {
-        ID = id;
-        TileCount = tileCount;
-        TileSize = tileSize;
+        ID = (int)tilesetProperties.Id;
+        TileCount = (int)tilesetProperties.NumberOfTiles;
+        Width = (int)tilesetProperties.TileWidth;
+        Height = (int)tilesetProperties.TileHeight;
         Name = name;
         _pixels = pixels;
     }

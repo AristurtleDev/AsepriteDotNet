@@ -27,6 +27,7 @@ internal partial class AsepriteFileBuilder
         _childLayers = new List<AsepriteLayer>();
         _isLayerOpacityValid = (_header.Flags & 1) != 0;
         _palette = new AsepritePalette(new AseColor[_header.NumberOfColors], _header.TransparentIndex);
+        _currentFrameCels = new List<AsepriteCel>();
     }
 
     internal void BeginFrameRead()

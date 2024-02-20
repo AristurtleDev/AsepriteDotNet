@@ -9,7 +9,7 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteGroupLayer : AsepriteLayer
 {
-    private readonly AsepriteLayer[] _children;
+    private AsepriteLayer[] _children;
 
     /// <summary>
     /// The collection of all child <see cref="AsepriteLayer"/> elements grouped into this
@@ -18,8 +18,12 @@ public sealed class AsepriteGroupLayer : AsepriteLayer
     /// </summary>
     public ReadOnlySpan<AsepriteLayer> Children => _children;
 
-    internal AsepriteGroupLayer(string name, bool isVisible, bool isBackground, bool isReference, int childLevel, AsepriteBlendMode blendMode, int opacity, AsepriteUserData? userData, List<AsepriteLayer> children)
-        : base(name, isVisible, isBackground, isReference, childLevel, blendMode, opacity, userData)
+    internal AsepriteGroupLayer(LayerChunkHeader header, string name) : base(header, name)
+    {
+        _children = Array.Empty<AsepriteLayer>();
+    }
+
+    internal void SetChildren(List<AsepriteLayer> children)
     {
         _children = [.. children];
     }

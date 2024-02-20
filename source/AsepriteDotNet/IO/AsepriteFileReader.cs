@@ -212,7 +212,7 @@ public class AsepriteFileReader
                     }
 
                     int dataLen = (int)(chunkEnd - _stream.Position);
-                    byte[] data = _reader.ReadByte(dataLen);
+                    byte[] data = _reader.ReadBytes(dataLen);
                     data = Deflate(data);
                     builder.AddTilemapCel(celProperties, tilemapCelProperties, data);
                 }

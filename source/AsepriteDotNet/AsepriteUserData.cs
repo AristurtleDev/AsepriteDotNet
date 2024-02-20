@@ -14,13 +14,14 @@ public sealed class AsepriteUserData
     /// <summary>
     /// Gets the text that was set for this user data in Aseprite; if text was set; otherwise, <see langword="null"/>.
     /// </summary>
-    public string? Text { get; }
+    public string? Text { get; internal set; }
 
     /// <summary>
     /// Gets the color that was set for this user data in Aseprite, if a color was set; otherwise,
     /// <see langword="null"/>.
     /// </summary>
-    public Color? Color { get; }
+    public Color? Color { get; internal set; }
 
+    internal AsepriteUserData() : this(null, null) { }
     internal AsepriteUserData(string? text, Color? color) => (Text, Color) = (text, color);
 }

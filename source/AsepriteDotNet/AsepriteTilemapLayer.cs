@@ -15,7 +15,7 @@ public sealed class AsepriteTilemapLayer : AsepriteLayer
     /// </summary>
     public AsepriteTileset Tileset { get; }
 
-    internal AsepriteTilemapLayer(LayerChunkHeader header, string name, AsepriteTileset tileset)
+    internal AsepriteTilemapLayer(LayerProperties header, string name, AsepriteTileset tileset)
         : base(header, name)
     {
         Tileset = tileset;

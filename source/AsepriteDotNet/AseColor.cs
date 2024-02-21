@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 [StructLayout(LayoutKind.Explicit)]
 public struct AseColor : IEquatable<AseColor>
 {
-    internal static int StructSize = sizeof(uint);
+    internal const int StructSize = sizeof(uint);
 
     /// <summary>
     /// The red color component of this <see cref="AseColor"/>.

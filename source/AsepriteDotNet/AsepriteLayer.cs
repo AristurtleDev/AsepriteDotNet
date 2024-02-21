@@ -58,7 +58,7 @@ public abstract class AsepriteLayer
     /// </summary>
     public AsepriteUserData? UserData { get; } = new AsepriteUserData();
 
-    internal AsepriteLayer(LayerChunkHeader header, string name)
+    internal AsepriteLayer(LayerProperties header, string name)
     {
         Name = name;
         IsVisible = (header.Flags & 1) != 0;

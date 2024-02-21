@@ -42,11 +42,11 @@ public sealed class AsepriteSlice
     /// </summary>
     public AsepriteUserData? UserData { get; } = new AsepriteUserData();
 
-    internal AsepriteSlice(SliceProperties sliceProperties, string name, AsepriteSliceKey[] keys)
+    internal AsepriteSlice(string name, bool isNinePatch, bool hasPivot, AsepriteSliceKey[] keys)
     {
         Name = name;
-        IsNinePatch = sliceProperties.Flags.HasFlag(1);
-        HasPivot = sliceProperties.Flags.HasFlag(2);
+        IsNinePatch = isNinePatch;
+        HasPivot = hasPivot;
         _keys = keys;
     }
 }

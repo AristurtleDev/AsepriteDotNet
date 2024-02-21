@@ -18,7 +18,7 @@ public sealed class AsepriteGroupLayer : AsepriteLayer
     /// </summary>
     public ReadOnlySpan<AsepriteLayer> Children => _children;
 
-    internal AsepriteGroupLayer(LayerChunkHeader header, string name) : base(header, name)
+    internal AsepriteGroupLayer(LayerProperties header, string name) : base(header, name)
     {
         _children = Array.Empty<AsepriteLayer>();
     }

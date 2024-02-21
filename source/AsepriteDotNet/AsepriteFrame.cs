@@ -2,8 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-using System.Drawing;
-
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -32,20 +30,26 @@ public sealed class AsepriteFrame
     public string Name { get; }
 
     /// <summary>
-    /// The size of this <see cref="AsepriteFrame"/>, in pixels.
+    /// Gets the width of this <see cref="AsepriteFrame"/>, in pixels.
     /// </summary>
-    public Size Size { get; }
+    public int Width { get; }
+
+    /// <summary>
+    /// Gets the height of this <see cref="AsepriteFrame"/>, in pixels.
+    /// </summary>
+    public int Height { get; }
 
     /// <summary>
     /// The duration that this <see cref="AsepriteFrame"/> should be displayed when used as part of an animation.
     /// </summary>
     public TimeSpan Duration { get; }
 
-    internal AsepriteFrame(string name, Size size, TimeSpan duration, List<AsepriteCel> cels)
+    internal AsepriteFrame(string name, int width, int height, int duration, List<AsepriteCel> cels)
     {
         Name = name;
-        Size = size;
-        Duration = duration;
+        Width = width;
+        Height = height;
+        Duration = TimeSpan.FromMilliseconds(duration);
         _cels = [.. cels];
     }
 }

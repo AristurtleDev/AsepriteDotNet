@@ -9,13 +9,13 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct ImageCelProperties
 {
-    public const int StructSize = sizeof(ushort) +  //  Width
-                                  sizeof(ushort);   //  Height
+    internal const int StructSize = sizeof(ushort) +    //  Width
+                                    sizeof(ushort);     //  Height
 
 
     [FieldOffset(0)]
-    public ushort Width;
+    internal ushort Width;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort Height;
+    internal ushort Height;
 }

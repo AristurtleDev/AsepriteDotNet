@@ -9,24 +9,24 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct SliceKeyProperties
 {
-    public const int StructSize = sizeof(uint) +    //  FrameNumber
-                                  sizeof(long) +    //  X
-                                  sizeof(long) +    //  Y
-                                  sizeof(uint) +    //  Width
-                                  sizeof(uint);     //  Height
+    internal const int StructSize = sizeof(uint) +  //  FrameNumber
+                                    sizeof(long) +  //  X
+                                    sizeof(long) +  //  Y
+                                    sizeof(uint) +  //  Width
+                                    sizeof(uint);   //  Height
 
     [FieldOffset(0)]
-    public uint FrameNumber;
+    internal uint FrameNumber;
 
     [FieldOffset(sizeof(uint))]
-    public long X;
+    internal long X;
 
     [FieldOffset(sizeof(long))]
-    public long Y;
+    internal long Y;
 
     [FieldOffset(sizeof(long))]
-    public uint Width;
+    internal uint Width;
 
     [FieldOffset(sizeof(uint))]
-    public uint Height;
+    internal uint Height;
 }

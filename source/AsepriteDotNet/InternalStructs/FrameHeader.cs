@@ -9,27 +9,27 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct FrameHeader
 {
-    public const int StructSize = sizeof(uint) +        //  Length
-                                  sizeof(ushort) +      //  MagicNumber
-                                  sizeof(ushort) +      //  OldChunkCount
-                                  sizeof(ushort) +      //  Duration
-                                  (sizeof(byte) * 2) +  //  Reserved
-                                  sizeof(uint);         //  NewChunkCount
+    internal const int StructSize = sizeof(uint) +          //  Length
+                                    sizeof(ushort) +        //  MagicNumber
+                                    sizeof(ushort) +        //  OldChunkCount
+                                    sizeof(ushort) +        //  Duration
+                                    (sizeof(byte) * 2) +    //  Reserved
+                                    sizeof(uint);           //  NewChunkCount
     [FieldOffset(0)]
-    public uint Length;
+    internal uint Length;
 
     [FieldOffset(sizeof(uint))]
-    public ushort MagicNumber;
+    internal ushort MagicNumber;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort OldChunkCount;
+    internal ushort OldChunkCount;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort Duration;
+    internal ushort Duration;
 
     [FieldOffset(sizeof(ushort))]
-    public byte[] Reserved;
+    internal byte[] Reserved;
 
     [FieldOffset(sizeof(byte) * 2)]
-    public uint NewChunkCount;
+    internal uint NewChunkCount;
 }

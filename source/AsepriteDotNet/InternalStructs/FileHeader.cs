@@ -9,65 +9,65 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct FileHeader
 {
-    public const int StructSize = 128;
+    internal const int StructSize = 128;
 
     [FieldOffset(0)]
-    public uint FileSize;
+    internal uint FileSize;
 
     [FieldOffset(sizeof(uint))]
-    public ushort MagicNumber;
+    internal ushort MagicNumber;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort FrameCount;
+    internal ushort FrameCount;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort CanvasWidth;
+    internal ushort CanvasWidth;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort CanvasHeight;
+    internal ushort CanvasHeight;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort Depth;
+    internal ushort Depth;
 
     [FieldOffset(sizeof(ushort))]
-    public uint Flags;
+    internal uint Flags;
 
     [FieldOffset(sizeof(uint))]
-    public ushort Speed;
+    internal ushort Speed;
 
     [FieldOffset(sizeof(ushort))]
-    public uint Ignore1;
+    internal uint Ignore1;
 
     [FieldOffset(sizeof(uint))]
-    public uint Ignore2;
+    internal uint Ignore2;
 
     [FieldOffset(sizeof(uint))]
-    public byte TransparentIndex;
+    internal byte TransparentIndex;
 
     [FieldOffset(sizeof(byte))]
-    public byte[] Ignore3;
+    internal byte[] Ignore3;
 
     [FieldOffset(sizeof(byte) * 3)]
-    public ushort NumberOfColors;
+    internal ushort NumberOfColors;
 
     [FieldOffset(sizeof(ushort))]
-    public byte PixelWidth;
+    internal byte PixelWidth;
 
     [FieldOffset(sizeof(byte))]
-    public byte PixelHeight;
+    internal byte PixelHeight;
 
     [FieldOffset(sizeof(byte))]
-    public short GridXPosition;
+    internal short GridXPosition;
 
     [FieldOffset(sizeof(short))]
-    public short GridYPosition;
+    internal short GridYPosition;
 
     [FieldOffset(sizeof(short))]
-    public ushort GridWidth;
+    internal ushort GridWidth;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort GridHeight;
+    internal ushort GridHeight;
 
     [FieldOffset(sizeof(ushort))]
-    public byte[] Ignore4;
+    internal byte[] Ignore4;
 }

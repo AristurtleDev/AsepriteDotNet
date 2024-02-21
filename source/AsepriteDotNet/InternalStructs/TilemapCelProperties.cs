@@ -9,37 +9,37 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct TilemapCelProperties
 {
-    public const int StructSize = sizeof(ushort) +      //  Width
-                                  sizeof(ushort) +      //  Height
-                                  sizeof(ushort) +      //  BitsPerTile
-                                  sizeof(uint) +        //  TileIdBitmask
-                                  sizeof(uint) +        //  VerticalFlipBitmask
-                                  sizeof(uint) +        //  HorizontalFlipBitmask
-                                  sizeof(uint) +        //  DiagonalFlipBitmask
-                                  (sizeof(byte) * 10);  //  Reserved
+    internal const int StructSize = sizeof(ushort) +        //  Width
+                                    sizeof(ushort) +        //  Height
+                                    sizeof(ushort) +        //  BitsPerTile
+                                    sizeof(uint) +          //  TileIdBitmask
+                                    sizeof(uint) +          //  VerticalFlipBitmask
+                                    sizeof(uint) +          //  HorizontalFlipBitmask
+                                    sizeof(uint) +          //  DiagonalFlipBitmask
+                                    (sizeof(byte) * 10);    //  Reserved
 
 
     [FieldOffset(0)]
-    public ushort Width;
+    internal ushort Width;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort Height;
+    internal ushort Height;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort BitsPerTile;
+    internal ushort BitsPerTile;
 
     [FieldOffset(sizeof(ushort))]
-    public uint TileIdBitmask;
+    internal uint TileIdBitmask;
 
     [FieldOffset(sizeof(uint))]
-    public uint VerticalFlipBitmask;
+    internal uint VerticalFlipBitmask;
 
     [FieldOffset(sizeof(uint))]
-    public uint HorizontalFlipBitmask;
+    internal uint HorizontalFlipBitmask;
 
     [FieldOffset(sizeof(uint))]
-    public uint DiagonalFlipBitmask;
+    internal uint DiagonalFlipBitmask;
 
     [FieldOffset(sizeof(uint))]
-    public byte[] Reserved;
+    internal byte[] Reserved;
 }

@@ -9,12 +9,12 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct PaletteEntry
 {
-    public const int StructSize = sizeof(ushort) +      //  NewSize
-                                  AseColor.StructSize;  //  FirstIndex
+    internal const int StructSize = sizeof(ushort) +        //  NewSize
+                                    AseColor.StructSize;    //  FirstIndex
 
     [FieldOffset(0)]
-    public ushort Flags;
+    internal ushort Flags;
 
     [FieldOffset(sizeof(uint))]
-    public AseColor Color;    
+    internal AseColor Color;
 }

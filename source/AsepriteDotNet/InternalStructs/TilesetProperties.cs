@@ -9,38 +9,36 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct TilesetProperties
 {
-    public const int StructSize = sizeof(uint) +        //  Id
-                                  sizeof(uint) +        //  Flags
-                                  sizeof(uint) +        //  NumberOfTiles
-                                  sizeof(ushort) +      //  TileWidth
-                                  sizeof(ushort) +      //  TileHeight
-                                  sizeof(short) +       //  BaseIndex
-                                  (sizeof(byte) * 14) + //  Reserved
-                                  sizeof(ushort);       //  NameLen
+    internal const int StructSize = sizeof(uint) +          //  Id
+                                    sizeof(uint) +          //  Flags
+                                    sizeof(uint) +          //  NumberOfTiles
+                                    sizeof(ushort) +        //  TileWidth
+                                    sizeof(ushort) +        //  TileHeight
+                                    sizeof(short) +         //  BaseIndex
+                                    (sizeof(byte) * 14) +   //  Reserved
+                                    sizeof(ushort);         //  NameLen
 
     [FieldOffset(0)]
-    public uint Id;
+    internal uint Id;
 
     [FieldOffset(sizeof(uint))]
-    public uint Flags;
+    internal uint Flags;
 
     [FieldOffset(sizeof(uint))]
-    public uint NumberOfTiles;
+    internal uint NumberOfTiles;
 
     [FieldOffset(sizeof(uint))]
-    public ushort TileWidth;
+    internal ushort TileWidth;
 
     [FieldOffset(sizeof(ushort))]
-    public ushort TileHeight;
+    internal ushort TileHeight;
 
     [FieldOffset(sizeof(ushort))]
-    public short BaseIndex;
+    internal short BaseIndex;
 
     [FieldOffset(sizeof(short))]
-    public byte[] Reserved;
+    internal byte[] Reserved;
 
     [FieldOffset(sizeof(byte) * 14)]
-    public ushort NameLen;
-
-
+    internal ushort NameLen;
 }

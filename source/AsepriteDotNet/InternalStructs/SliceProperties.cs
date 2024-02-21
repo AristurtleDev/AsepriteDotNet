@@ -9,21 +9,21 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct SliceProperties
 {
-    public const int StructSize = sizeof(uint) +    //  KeyCount
-                                  sizeof(uint) +    //  Flags
-                                  sizeof(uint) +    //  Reserved
-                                  sizeof(ushort);   //  NameLen
+    internal const int StructSize = sizeof(uint) +  //  KeyCount
+                                    sizeof(uint) +  //  Flags
+                                    sizeof(uint) +  //  Reserved
+                                    sizeof(ushort); //  NameLen
 
     [FieldOffset(0)]
-    public uint KeyCount;
+    internal uint KeyCount;
 
     [FieldOffset(sizeof(uint))]
-    public uint Flags;
+    internal uint Flags;
 
     [FieldOffset(sizeof(uint))]
-    public uint Reserved;
+    internal uint Reserved;
 
     [FieldOffset(sizeof(uint))]
-    public ushort NameLen;
+    internal ushort NameLen;
 
 }

@@ -9,20 +9,20 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct PaletteProperties
 {
-    public const int StructSize = sizeof(uint) +        //  NewSize
-                                  sizeof(uint) +        //  FirstIndex
-                                  sizeof(uint) +        //  LastIndex
-                                  (sizeof(byte) * 8);   //  Reserved
+    internal const int StructSize = sizeof(uint) +      //  NewSize
+                                    sizeof(uint) +      //  FirstIndex
+                                    sizeof(uint) +      //  LastIndex
+                                    (sizeof(byte) * 8); //  Reserved
 
     [FieldOffset(0)]
-    public uint NewSize;
+    internal uint NewSize;
 
     [FieldOffset(sizeof(uint))]
-    public uint FirstIndex;
+    internal uint FirstIndex;
 
     [FieldOffset(sizeof(uint))]
-    public uint LastIndex;
+    internal uint LastIndex;
 
     [FieldOffset(sizeof(uint))]
-    public byte[] Reserved;
+    internal byte[] Reserved;
 }

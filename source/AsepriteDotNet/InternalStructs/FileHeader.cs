@@ -5,6 +5,8 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct FileHeader
 {
+    public const int StructSize = 128;
+
     [FieldOffset(0)]
     public uint FileSize;
 

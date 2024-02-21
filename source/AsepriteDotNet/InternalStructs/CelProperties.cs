@@ -9,13 +9,13 @@ namespace AsepriteDotNet;
 [StructLayout(LayoutKind.Explicit)]
 internal struct CelProperties
 {
-    public const int SizeOf = sizeof(ushort) +  //  LayerIndex
-                              sizeof(short) +   //  X
-                              sizeof(short) +   //  Y
-                              sizeof(byte) +    //  Opacity
-                              sizeof(ushort) +  //  Type
-                              sizeof(short) +   //  ZIndex
-                              sizeof(byte) * 5; //  Ignore1
+    public const int StructSize = sizeof(ushort) +  //  LayerIndex
+                                  sizeof(short) +   //  X
+                                  sizeof(short) +   //  Y
+                                  sizeof(byte) +    //  Opacity
+                                  sizeof(ushort) +  //  Type
+                                  sizeof(short) +   //  ZIndex
+                                  sizeof(byte) * 5; //  Reserved
 
 
     [FieldOffset(0)]
@@ -37,5 +37,5 @@ internal struct CelProperties
     public short ZIndex;
 
     [FieldOffset(sizeof(short))]
-    public byte[] Ignore1;
+    public byte[] Reserved;
 }

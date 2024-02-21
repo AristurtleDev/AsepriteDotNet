@@ -2,8 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
-using System.Drawing;
-
 namespace AsepriteDotNet;
 
 /// <summary>
@@ -11,43 +9,57 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteTag
 {
+    private AseColor _color;
+
     /// <summary>
-    /// The frame that the animation defined by this tag starts on.
+    /// Gets the index of the <see cref="AsepriteFrame"/> that the animation defined by this <see cref="AsepriteTag"/>
+    /// starts on.
     /// </summary>
     public int From { get; }
 
     /// <summary>
-    /// The frame that the animation defined by this tag ends on.
+    /// Gets the index of the <see cref="AsepriteFrame"/> that the animation defined by this <see cref="AsepriteTag"/>
+    /// ends on.
     /// </summary>
     public int To { get; }
 
     /// <summary>
-    /// The loop direction defined for the animation represented by this tag.
+    /// Gets the <see cref="AsepriteLoopDirection"/> used by the animation defined by this <see cref="AsepriteTag"/>.
     /// </summary>
     public AsepriteLoopDirection LoopDirection { get; }
 
     /// <summary>
-    /// The name given this tag in Aseprite.
+    /// Gets the name fo this <see cref="AsepriteTag"/>.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    /// The color assigned to this tag in Aseprite.
+    /// Gets the <see cref="AseColor"/> that defines the color of this <see cref="AsepriteTag"/>.
     /// </summary>
-    public Color Color { get; }
+    public AseColor Color
+    {
+        get
+        {
+            if (UserData.HasColor)
+            {
+                return UserData.Color;
+            }
+
+            return _color;
+        }
+    }
 
     /// <summary>
-    /// The custom user data that was set in the properties for this tag in Aseprite.
+    /// Gets the <see cref="AsepriteUserData"/> that was set for this <see cref="AsepriteTag"/> in Aseprite.
     /// </summary>
-    public AsepriteUserData? UserData { get; }
+    public AsepriteUserData UserData { get; } = new AsepriteUserData();
 
-    internal AsepriteTag(int from, int to, AsepriteLoopDirection loopDirection, Color color, string name, AsepriteUserData? userData)
+    internal AsepriteTag(TagProperties properties, string name)
     {
-        From = from;
-        To = to;
-        LoopDirection = loopDirection;
+        From = properties.From;
+        To = properties.To;
+        LoopDirection = (AsepriteLoopDirection)properties.Direction;
         Name = name;
-        UserData = userData;
-        Color = userData?.Color ?? color;
+        _color = new AseColor(properties.RGB[0], properties.RGB[1], properties.RGB[2]);
     }
 }

@@ -42,7 +42,7 @@ public sealed class AsepriteTag
         {
             if (UserData.HasColor)
             {
-                return UserData.Color;
+                return UserData.Color.Value;
             }
 
             return _color;

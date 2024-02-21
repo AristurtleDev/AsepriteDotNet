@@ -9,5 +9,5 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteImageLayer : AsepriteLayer
 {
-    internal AsepriteImageLayer(LayerChunkHeader header, string name) : base(header, name) { }
+    internal AsepriteImageLayer(LayerProperties header, string name) : base(header, name) { }
 }

@@ -3,6 +3,7 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Drawing;
+using AsepriteDotNet.Document;
 
 namespace AsepriteDotNet;
 
@@ -11,16 +12,21 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AsepriteFile
 {
-    private readonly AsepriteFrame[] _frames;
-    private readonly AsepriteLayer[] _layers;
-    private readonly AsepriteTag[] _tags;
-    private readonly AsepriteSlice[] _slices;
+    private readonly Frame[] _frames;
+    private readonly Layer[] _layers;
+    private readonly Tag[] _tags;
+    private readonly Slice[] _slices;
     private readonly string[] _warnings;
 
     /// <summary>
-    /// Gets the size defined for the canvas in Aseprite.
+    /// Gets the width of the canvas, in pixels.
     /// </summary>
-    public Size CanvasSize { get; }
+    public int CanvasWidth { get; }
+
+    /// <summary>
+    /// Gets the height of the canvas, in pixels.
+    /// </summary>
+    public int CanvasHeight { get; }
 
     /// <summary>
     /// Gets the <see cref="AsepriteColorDepth"/> mode used in Aseprite.
@@ -31,25 +37,25 @@ public sealed class AsepriteFile
     /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteFrame"/> elements in this
     /// <see cref="AsepriteFile"/>.  Order of elements is from first-to-last.
     /// </summary>
-    public ReadOnlySpan<AsepriteFrame> Frames => _frames;
+    public ReadOnlySpan<Frame> Frames => _frames;
 
     /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteLayer"/> elements in this
+    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="Layer"/> elements in this
     /// <see cref="AsepriteFile"/>.  Order of elements is from bottom-to-top.
     /// </summary>
-    public ReadOnlySpan<AsepriteLayer> Layers => _layers;
+    public ReadOnlySpan<Layer> Layers => _layers;
 
     /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteTag"/> elements in this
+    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="Tag"/> elements in this
     /// <see cref="AsepriteFile"/>.  ORder of elements is as defined in the Aseprite UI from left-to-right.
     /// </summary>
-    public ReadOnlySpan<AsepriteTag> Tags => _tags;
+    public ReadOnlySpan<Tag> Tags => _tags;
 
     /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteSlice"/> elements in this
+    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="Slice"/> elements in this
     /// <see cref="AsepriteFile"/>.  Order of elements is in the order they were created in Aseprite.
     /// </summary>
-    public ReadOnlySpan<AsepriteSlice> Slices => _slices;
+    public ReadOnlySpan<Slice> Slices => _slices;
 
     /// <summary>
     /// Gets a <see cref="ReadOnlySpan{T}"/> of any warnings issued when the Aseprite file was parsed to create this
@@ -59,24 +65,25 @@ public sealed class AsepriteFile
     public ReadOnlySpan<string> Warnings => _warnings;
 
     /// <summary>
-    /// Gets the <see cref="AsepritePalette"/> for this <see cref="AsepriteFile"/>.
+    /// Gets the <see cref="AsepriteDotNet.Document.Palette"/> for this <see cref="AsepriteFile"/>.
     /// </summary>
-    public AsepritePalette Palette { get; }
+    public Palette Palette { get; }
 
     /// <summary>
-    /// Gets the <see cref="AsepriteUserData"/> that was set in the properties for the sprite in Aseprite.
+    /// Gets the <see cref="AsepriteDotNet.Document.UserData"/> that was set in the properties for the sprite in Aseprite.
     /// </summary>
-    public AsepriteUserData? UserData { get; }
+    public UserData? UserData { get; }
 
     /// <summary>
     /// Gets the name of the Aseprite file (without the extension).
     /// </summary>
     public string Name { get; }
 
-    internal AsepriteFile(string name, AsepritePalette palette, Size canvasSize, AsepriteColorDepth colorDepth, List<AsepriteFrame> frames, List<AsepriteLayer> layers, List<AsepriteTag> tags, List<AsepriteSlice> slices, AsepriteUserData? userData, List<string> warnings)
+    internal AsepriteFile(string name, Palette palette, int canvasWidth, int canvasHeight, AsepriteColorDepth colorDepth, List<Frame> frames, List<Layer> layers, List<Tag> tags, List<Slice> slices, UserData? userData, List<string> warnings)
     {
         Name = name;
-        CanvasSize = canvasSize;
+        CanvasWidth = canvasWidth;
+        CanvasHeight = canvasHeight;  
         ColorDepth = colorDepth;
         _frames = [.. frames];
         _tags = [.. tags];

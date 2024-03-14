@@ -2,39 +2,37 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
-namespace AsepriteDotNet;
+namespace AsepriteDotNet.Document;
 
 /// <summary>
-/// Represents an animation tag define in the Aseprite file.
+/// Defines the properties of an Aseprite animation tag.  This class cannot be inherited.
 /// </summary>
-public sealed class AsepriteTag
+public sealed class Tag
 {
     private AseColor _color;
 
     /// <summary>
-    /// Gets the index of the <see cref="AsepriteFrame"/> that the animation defined by this <see cref="AsepriteTag"/>
-    /// starts on.
+    /// Gets the index of the frame that the animation defined by this tag starts on.
     /// </summary>
     public int From { get; }
 
     /// <summary>
-    /// Gets the index of the <see cref="AsepriteFrame"/> that the animation defined by this <see cref="AsepriteTag"/>
-    /// ends on.
+    /// Gets the index of the frame that the animation defined by this tag ends on.
     /// </summary>
     public int To { get; }
 
     /// <summary>
-    /// Gets the <see cref="AsepriteLoopDirection"/> used by the animation defined by this <see cref="AsepriteTag"/>.
+    /// Gets the loop direction used by the animation defined by this tag.
     /// </summary>
     public AsepriteLoopDirection LoopDirection { get; }
 
     /// <summary>
-    /// Gets the name fo this <see cref="AsepriteTag"/>.
+    /// Gets the name of this tag.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    /// Gets the <see cref="AseColor"/> that defines the color of this <see cref="AsepriteTag"/>.
+    /// Gets the color defined for this tag.
     /// </summary>
     public AseColor Color
     {
@@ -50,11 +48,11 @@ public sealed class AsepriteTag
     }
 
     /// <summary>
-    /// Gets the <see cref="AsepriteUserData"/> that was set for this <see cref="AsepriteTag"/> in Aseprite.
+    /// Gets the custom user data that was set in the properties for this tag in Aseprite.
     /// </summary>
-    public AsepriteUserData UserData { get; } = new AsepriteUserData();
+    public UserData UserData { get; } = new UserData();
 
-    internal AsepriteTag(TagProperties properties, string name)
+    internal Tag(TagProperties properties, string name)
     {
         From = properties.From;
         To = properties.To;

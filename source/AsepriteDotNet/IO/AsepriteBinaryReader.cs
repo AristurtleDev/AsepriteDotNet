@@ -22,7 +22,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// </summary>
     public long Position => _stream.Position;
 
-    public AsepriteBinaryReader(Stream input, bool leaveOpen)
+    public AsepriteBinaryReader(Stream input, bool leaveOpen = false)
     {
         ArgumentNullException.ThrowIfNull(input);
         ValidateCanRead(input.CanRead);

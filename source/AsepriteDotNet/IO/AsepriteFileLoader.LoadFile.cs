@@ -128,15 +128,15 @@ public static unsafe partial class AsepriteFileLoader
                             switch (properties.Type)
                             {
                                 case ASE_LAYER_TYPE_NORMAL:
-                                    layer = new ImageLayer(properties, fileName);
+                                    layer = new ImageLayer(properties, layerName);
                                     break;
                                 case ASE_LAYER_TYPE_GROUP:
-                                    layer = new GroupLayer(properties, fileName);
+                                    layer = new GroupLayer(properties, layerName);
                                     break;
                                 case ASE_LAYER_TYPE_TILEMAP:
                                     uint tilesetIndex = reader.ReadDword();
                                     Tileset tileset = tilesets[(int)tilesetIndex];
-                                    layer = new TilemapLayer(properties, fileName, tileset);
+                                    layer = new TilemapLayer(properties, layerName, tileset);
                                     break;
                                 default:
                                     reader.Dispose();

@@ -87,7 +87,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     }
 
     /// <summary>
-    /// Reads a 2-byte unsigned integer from teh underlying stream and advances the stream by two bytes.
+    /// Reads a 2-byte unsigned integer from the underlying stream and advances the stream by two bytes.
     /// </summary>
     /// <returns>The 2-byte unsigned integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
@@ -105,7 +105,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     }
 
     /// <summary>
-    /// Reads a 2-byte signed integer from teh underlying stream and advances the stream by two bytes.
+    /// Reads a 2-byte signed integer from the underlying stream and advances the stream by two bytes.
     /// </summary>
     /// <returns>The 2-byte signed integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
@@ -123,7 +123,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     }
 
     /// <summary>
-    /// Reads a 4-byte unsigned integer from teh underlying stream and advances the stream by four bytes.
+    /// Reads a 4-byte unsigned integer from the underlying stream and advances the stream by four bytes.
     /// </summary>
     /// <returns>The 4-byte unsigned integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
@@ -141,7 +141,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     }
 
     /// <summary>
-    /// Reads a 4-byte signed integer from teh underlying stream and advances the stream by four bytes.
+    /// Reads a 4-byte signed integer from the underlying stream and advances the stream by four bytes.
     /// </summary>
     /// <returns>The 4-byte signed integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">

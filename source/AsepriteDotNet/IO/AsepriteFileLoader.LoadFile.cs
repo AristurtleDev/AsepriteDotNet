@@ -2,7 +2,7 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-using System.Text;
+using AsepriteDotNet.Document;
 
 namespace AsepriteDotNet.IO;
 
@@ -15,7 +15,7 @@ public static partial class AsepriteFileLoader
         List<string> warnings = new List<string>();
 
         //  Reference to the last group layer that was read so that subsequent child layers can be added to it.
-        AsepriteGroupLayer? lastGroupLayer = null;
+        GroupLayer? lastGroupLayer = null;
 
         //  Flag to determine if the palette has been read.  This is used to flag that a user data chunk is for the
         //  sprite due to changes in Aseprite 1.3
@@ -58,24 +58,24 @@ public static partial class AsepriteFileLoader
             warnings.Add("Transparent index only valid for Indexed Color Depth mode.  Defaulting to 0");
         }
 
-        AsepritePalette palette = new AsepritePalette(fileHeader.TransparentIndex);
-        List<AsepriteFrame> frames = new List<AsepriteFrame>();
-        List<AsepriteLayer> layers = new List<AsepriteLayer>();
-        List<AsepriteTag> tags = new List<AsepriteTag>();
-        List<AsepriteSlice> slices = new List<AsepriteSlice>();
-        List<AsepriteTileset> tilesets = new List<AsepriteTileset>();
-        AsepriteUserData spriteUserData = new AsepriteUserData();
+        Palette palette = new Palette(fileHeader.TransparentIndex);
+        List<Frame> frames = new List<Frame>();
+        List<Layer> layers = new List<Layer>();
+        List<Tag> tags = new List<Tag>();
+        List<Slice> slices = new List<Slice>();
+        List<Tileset> tilesets = new List<Tileset>();
+        UserData spriteUserData = new UserData();
 
         //  Read frame-by-frame until all frames are read.
         for (int frameNum = 0; frameNum < fileHeader.FrameCount; frameNum++)
         {
-            List<AsepriteCel> cels = new List<AsepriteCel>();
+            List<Cel> cels = new List<Cel>();
 
             uint? lastReadChunkType = null;
 
             //  Reference to the user data object to apply user data to from the last chunk that was read that
             //  could have had user data
-            AsepriteUserData? currentUserData = null;
+            UserData? currentUserData = null;
 
             //  Tracks the iteration of the tags when reading user data for tags chunk.
             int tagIterator = 0;
@@ -108,19 +108,19 @@ public static partial class AsepriteFileLoader
                         {
                             LayerProperties properties = reader.ReadUnsafe<LayerProperties>(LayerProperties.StructSize);
                             string layerName = reader.ReadString(properties.NameLen);
-                            AsepriteLayer layer;
+                            Layer layer;
                             switch (properties.Type)
                             {
                                 case ASE_LAYER_TYPE_NORMAL:
-                                    layer = new AsepriteImageLayer(properties, fileName);
+                                    layer = new ImageLayer(properties, fileName);
                                     break;
                                 case ASE_LAYER_TYPE_GROUP:
-                                    layer = new AsepriteGroupLayer(properties, fileName);
+                                    layer = new GroupLayer(properties, fileName);
                                     break;
                                 case ASE_LAYER_TYPE_TILEMAP:
                                     uint tilesetIndex = reader.ReadDword();
-                                    AsepriteTileset tileset = tilesets[(int)tilesetIndex];
-                                    layer = new AsepriteTilemapLayer(properties, fileName, tileset);
+                                    Tileset tileset = tilesets[(int)tilesetIndex];
+                                    layer = new TilemapLayer(properties, fileName, tileset);
                                     break;
                                 default:
                                     reader.Dispose();
@@ -129,10 +129,10 @@ public static partial class AsepriteFileLoader
 
                             if (properties.Level != 0 && lastGroupLayer is not null)
                             {
-                                lastGroupLayer.Children.Add(layer);
+                                lastGroupLayer.AddChild(layer);
                             }
 
-                            if (layer is AsepriteGroupLayer groupLayer)
+                            if (layer is GroupLayer groupLayer)
                             {
                                 lastGroupLayer = groupLayer;
                             }
@@ -145,8 +145,8 @@ public static partial class AsepriteFileLoader
                     case ASE_CHUNK_CEL:
                         {
                             CelProperties properties = reader.ReadUnsafe<CelProperties>(CelProperties.StructSize);
-                            AsepriteCel cel;
-                            AsepriteLayer celLayer = layers[properties.LayerIndex];
+                            Cel cel;
+                            Layer celLayer = layers[properties.LayerIndex];
 
                             switch (properties.Type)
                             {
@@ -157,15 +157,15 @@ public static partial class AsepriteFileLoader
                                         int len = (int)(chunkEnd - reader.Position);
                                         byte[] data = properties.Type == ASE_CEL_TYPE_COMPRESSED_IMAGE ? reader.ReadCompressed(len) : reader.ReadBytes(len);
                                         AseColor[] pixels = PixelsToColor(data, depth, palette);
-                                        cel = new AsepriteImageCel(properties, celLayer, imageCelProperties, pixels);
+                                        cel = new ImageCel(properties, celLayer, imageCelProperties, pixels);
                                     }
                                     break;
 
                                 case ASE_CEL_TYPE_LINKED:
                                     {
                                         ushort frameIndex = reader.ReadWord();
-                                        AsepriteCel otherCel = frames[frameIndex].Cels[cels.Count];
-                                        cel = new AsepriteLinkedCel(properties, otherCel);
+                                        Cel otherCel = frames[frameIndex].Cels[cels.Count];
+                                        cel = new LinkedCel(properties, otherCel);
                                     }
                                     break;
 
@@ -175,11 +175,11 @@ public static partial class AsepriteFileLoader
                                         int len = (int)(chunkEnd - reader.Position);
                                         byte[] data = reader.ReadCompressed(len);
 
-                                        //  Per Aseprite fiel spec, the "bits" per tile is, at the moment, always
+                                        //  Per Aseprite file spec, the "bits" per tile is, at the moment, always
                                         //  32-bits.  This means it's 4-bytes per tile (32 / 8 = 4).  Meaning that each
                                         //  tile value is a uint (DWORD)
                                         int bytesPerTile = sizeof(uint);
-                                        AsepriteTile[] tiles = new AsepriteTile[data.Length / bytesPerTile];
+                                        Tile[] tiles = new Tile[data.Length / bytesPerTile];
 
                                         unsafe
                                         {
@@ -193,12 +193,12 @@ public static partial class AsepriteFileLoader
                                                     bool flipVertically = HasFlag(value, tilemapCelProperties.VerticalFlipBitmask);
                                                     bool flipDiagonally = HasFlag(value, tilemapCelProperties.DiagonalFlipBitmask);
 
-                                                    AsepriteTile tile = new AsepriteTile((int)id, flipHorizontally, flipVertically, flipDiagonally);
+                                                    Tile tile = new Tile((int)id, flipHorizontally, flipVertically, flipDiagonally);
                                                     tiles[i] = tile;
                                                 }
                                             }
                                         }
-                                        cel = new AsepriteTilemapCel(properties, celLayer, tilemapCelProperties, tiles);
+                                        cel = new TilemapCel(properties, celLayer, tilemapCelProperties, tiles);
                                     }
                                     break;
 
@@ -232,10 +232,11 @@ public static partial class AsepriteFileLoader
                                 AseColor tagColor = new AseColor(properties.RGB[0], properties.RGB[1], properties.RGB[2]);
                                 AsepriteLoopDirection loopDirection = (AsepriteLoopDirection)properties.Direction;
 
-                                AsepriteTag tag = new AsepriteTag(properties, tagName);
+                                Tag tag = new Tag(properties, tagName);
                             }
                         }
                         break;
+
                     case ASE_CHUNK_PALETTE:
                         {
                             PaletteProperties properties = reader.ReadUnsafe<PaletteProperties>(PaletteProperties.StructSize);
@@ -321,16 +322,16 @@ public static partial class AsepriteFileLoader
                             string sliceName = reader.ReadString(properties.NameLen);
                             bool isNinePatch = HasFlag(properties.Flags, ASE_SLICE_FLAGS_IS_NINE_PATCH);
                             bool hasPivot = HasFlag(properties.Flags, ASE_SLICE_FLAGS_HAS_PIVOT);
-                            AsepriteSliceKey[] keys = new AsepriteSliceKey[properties.KeyCount];
+                            SliceKey[] keys = new SliceKey[properties.KeyCount];
                             for (int i = 0; i < properties.KeyCount; i++)
                             {
                                 SliceKeyProperties sliceKeyProperties = reader.ReadUnsafe<SliceKeyProperties>(SliceKeyProperties.StructSize);
                                 NinePatchProperties? ninePatchProperties = isNinePatch ? reader.ReadUnsafe<NinePatchProperties>(NinePatchProperties.StructSize) : null;
                                 PivotProperties? pivotProperties = hasPivot ? reader.ReadUnsafe<PivotProperties>(PivotProperties.StructSize) : null;
-                                keys[i] = new AsepriteSliceKey(sliceKeyProperties, ninePatchProperties, pivotProperties);
+                                keys[i] = new SliceKey(sliceKeyProperties, ninePatchProperties, pivotProperties);
                             }
 
-                            AsepriteSlice slice = new AsepriteSlice(properties, sliceName, keys);
+                            Slice slice = new Slice(sliceName, isNinePatch, hasPivot, keys);
                             slices.Add(slice);
                             currentUserData = slice.UserData;
                         }
@@ -359,44 +360,87 @@ public static partial class AsepriteFileLoader
                             uint len = reader.ReadDword();
                             byte[] pixelData = reader.ReadCompressed((int)len);
                             AseColor[] pixels = PixelsToColor(pixelData, depth, palette);
-                            AsepriteTileset tileset = new AsepriteTileset(properties, tilesetName, pixels);
+                            Tileset tileset = new Tileset(properties, tilesetName, pixels);
                         }
                         break;
 
                     case ASE_CHUNK_OLD_PALETTE1:
                     case ASE_CHUNK_OLD_PALETTE2:
-                        warnings.Add($"Old Palette Chunk 0x{chunkHeader.ChunkType:X4} ignored.");
-                        goto SEEK_TO_CHUNK_END;
+                        {
+                            if (paletteRead)
+                            {
+                                break;
+                            }
+
+                            ushort packets = reader.ReadWord();
+                            int skip = 0;
+                            int size = 0;
+                            Span<byte> rgb = stackalloc byte[4];
+
+                            for (int i = 0; i < packets; i++)
+                            {
+                                skip += reader.ReadByte();
+                                size = reader.ReadByte();
+
+                                if (size == 0)
+                                {
+                                    size = 256;
+                                }
+
+                                palette.Resize(size);
+
+                                for (int c = skip; c < skip + size; c++)
+                                {
+                                    rgb.Clear();
+                                    rgb[0] = reader.ReadByte();
+                                    rgb[1] = reader.ReadByte();
+                                    rgb[2] = reader.ReadByte();
+                                    rgb[3] = byte.MaxValue;
+
+                                    if(chunkHeader.ChunkType ==  ASE_CHUNK_OLD_PALETTE2)
+                                    {
+                                        //  Old palette type 2 uses six bit values (0-63) that must be expanded to
+                                        //  eight bit values.
+                                        rgb[0] = (byte)((rgb[0] << 2) | (rgb[0] >> 4));
+                                        rgb[1] = (byte)((rgb[1] << 2) | (rgb[1] >> 4));
+                                        rgb[2] = (byte)((rgb[2] << 2) | (rgb[2] >> 4));
+                                    }
+                                    palette[c] = new AseColor(rgb);
+                                }
+                            }
+
+                            paletteRead = true;
+                        }
+                        break;
 
                     case ASE_CHUNK_CEL_EXTRA:
                         warnings.Add($"Cel Extra Chunk 0x{chunkHeader.ChunkType:X4} ignored.");
-                        goto SEEK_TO_CHUNK_END;
+                        break;
 
                     case ASE_CHUNK_COLOR_PROFILE:
                         warnings.Add($"Color Profile Chunk 0x{chunkHeader.ChunkType:X4} ignored.");
-                        goto SEEK_TO_CHUNK_END;
+                        break;
 
                     case ASE_CHUNK_EXTERNAL_FILES:
                         warnings.Add($"External Files Chunk 0x{chunkHeader.ChunkType:X4} ignored.");
-                        goto SEEK_TO_CHUNK_END;
+                        break;
 
                     case ASE_CHUNK_MASK:
                         warnings.Add($"Mask Chunk 0x{chunkHeader.ChunkType:X4} ignored.");
-                        goto SEEK_TO_CHUNK_END;
+                        break;
 
                     case ASE_CHUNK_PATH:
                         warnings.Add($"Path Chunk 0x{chunkHeader.ChunkType:X4} ignored.");
-                        goto SEEK_TO_CHUNK_END;
+                        break;
 
                     default:
                         warnings.Add($"Unknown chunk type 0x{chunkHeader.ChunkType:X4} encountered.  Ignored");
-                        goto SEEK_TO_CHUNK_END;
+                        break;
                 }
-            SEEK_TO_CHUNK_END:
                 reader.Seek(chunkEnd, SeekOrigin.Begin);
             }
 
-            AsepriteFrame frame = new AsepriteFrame($"{fileName}{frameNum}", fileHeader.CanvasWidth, fileHeader.CanvasHeight, frameHeader.Duration, cels);
+            Frame frame = new Frame($"{fileName}{frameNum}", fileHeader.CanvasWidth, fileHeader.CanvasHeight, frameHeader.Duration, cels);
             frames.Add(frame);
         }
 
@@ -405,6 +449,6 @@ public static partial class AsepriteFileLoader
             warnings.Add($"Number of colors in file header ({fileHeader.NumberOfColors}) does not match the final palette count ({palette.Colors.Length})");
         }
 
-        return new AsepriteFile(fileName, palette, fileHeader.CanvasWidth, fileHeader.CanvasHeight, depth, frames, layers, tags, slices, warnings);
+        return new AsepriteFile(fileName, palette, fileHeader.CanvasWidth, fileHeader.CanvasHeight, depth, frames, layers, tags, slices, spriteUserData, warnings);
     }
 }

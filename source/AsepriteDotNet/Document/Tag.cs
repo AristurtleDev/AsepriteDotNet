@@ -52,12 +52,12 @@ public sealed class Tag
     /// </summary>
     public UserData UserData { get; } = new UserData();
 
-    internal Tag(TagProperties properties, string name)
+    internal unsafe Tag(TagProperties properties, string name)
     {
         From = properties.From;
         To = properties.To;
         LoopDirection = (AsepriteLoopDirection)properties.Direction;
         Name = name;
-        _color = new AseColor(properties.RGB[0], properties.RGB[1], properties.RGB[2]);
+        _color = new AseColor(properties.R, properties.G, properties.B);
     }
 }

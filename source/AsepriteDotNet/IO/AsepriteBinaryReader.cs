@@ -173,7 +173,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     {
         ValidateDisposed(_isDisposed);
         _stream.ReadExactly(_buffer.AsSpan(0, sizeof(float)));
-        return BinaryPrimitives.ReadInt32LittleEndian(_buffer);
+        return BinaryPrimitives.ReadSingleLittleEndian(_buffer);
     }
 
     /// <summary>

@@ -51,7 +51,7 @@ public abstract class Layer
     /// <summary>
     /// Gets the custom user data that was set in the properties for this layer in Aseprite.
     /// </summary>
-    public UserData? UserData { get; } = new UserData();
+    public UserData UserData { get; } = new UserData();
 
     internal Layer(LayerProperties header, string name)
     {

@@ -4,20 +4,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{B63FA11D-4B29-45F2-AAD9-BF489AEE7BAA}"
+	ProjectSection(SolutionItems) = preProject
+		source\Directory.Build.props = source\Directory.Build.props
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsepriteDotNet", "source\AsepriteDotNet\AsepriteDotNet.csproj", "{18E8668C-4BF2-4F9B-8016-E1F22BD53BCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsepriteDotNet", "source\AsepriteDotNet\AsepriteDotNet.csproj", "{18E8668C-4BF2-4F9B-8016-E1F22BD53BCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5F219449-CE10-4DD9-BBE5-251720F3B5E3}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsepriteDotNet.Tests", "tests\AsepriteDotNet.Tests\AsepriteDotNet.Tests.csproj", "{A289C75E-0BCF-421F-AAE0-050F45AC4F4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsepriteDotNet.Tests", "tests\AsepriteDotNet.Tests\AsepriteDotNet.Tests.csproj", "{A289C75E-0BCF-421F-AAE0-050F45AC4F4E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2B0F6763-3C96-4753-8E12-6A2975369212}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{18E8668C-4BF2-4F9B-8016-E1F22BD53BCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -28,6 +36,9 @@ Global
 		{A289C75E-0BCF-421F-AAE0-050F45AC4F4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A289C75E-0BCF-421F-AAE0-050F45AC4F4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A289C75E-0BCF-421F-AAE0-050F45AC4F4E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{18E8668C-4BF2-4F9B-8016-E1F22BD53BCA} = {B63FA11D-4B29-45F2-AAD9-BF489AEE7BAA}

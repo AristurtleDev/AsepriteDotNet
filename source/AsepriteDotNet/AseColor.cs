@@ -73,6 +73,14 @@ public struct AseColor : IEquatable<AseColor>
     /// <param name="a">The alpha component of the <see cref="AseColor"/>.</param>
     public AseColor(byte r, byte g, byte b, byte a) => (R, G, B, A) = (r, g, b, a);
 
+    /// <summary>
+    /// Creates a new <see cref="AseColor"/> value.
+    /// </summary>
+    /// <param name="rgba">
+    /// A read-only span of 4-byte values that represent the RGBA color component values in that order.
+    /// </param>
+    public AseColor(ReadOnlySpan<byte> rgba) => (R, G, B, A) = (rgba[0], rgba[1], rgba[2], rgba[3]);
+
     /// <inheritdoc />
     public override readonly bool Equals(object? obj) => obj is AseColor other && Equals(other);
 

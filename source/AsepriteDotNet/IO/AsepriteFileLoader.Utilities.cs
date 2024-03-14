@@ -2,6 +2,8 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
+using AsepriteDotNet.Document;
+
 namespace AsepriteDotNet.IO;
 
 public static partial class AsepriteFileLoader
@@ -10,7 +12,7 @@ public static partial class AsepriteFileLoader
     private static bool DoesNotHaveFlag(uint value, uint flag) => !HasFlag(value, flag);
 
 
-    private static AseColor[] PixelsToColor(byte[] pixels, AsepriteColorDepth depth, AsepritePalette palette)
+    private static AseColor[] PixelsToColor(byte[] pixels, AsepriteColorDepth depth, Palette palette)
     {
         return depth switch
         {
@@ -55,7 +57,7 @@ public static partial class AsepriteFileLoader
         return result;
     }
 
-    private static AseColor[] IndexedPixelsToColor(byte[] pixels, AsepritePalette palette)
+    private static AseColor[] IndexedPixelsToColor(byte[] pixels, Palette palette)
     {
         int bpp = (int)AsepriteColorDepth.Indexed / 8;
         AseColor[] result = new AseColor[pixels.Length / bpp];

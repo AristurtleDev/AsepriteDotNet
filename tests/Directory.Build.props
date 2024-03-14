@@ -50,4 +50,9 @@
   <!-- Import the root prop last -->
   <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
 
+    <PropertyGroup>
+        <!-- Identifiers should not contain underscores -->
+        <NoWarn>CA1707</NoWarn>
+    </PropertyGroup>
+
 </Project>

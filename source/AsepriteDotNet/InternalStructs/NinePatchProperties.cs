@@ -17,12 +17,12 @@ internal struct NinePatchProperties
     [FieldOffset(0)]
     internal long X;
 
-    [FieldOffset(sizeof(long))]
+    [FieldOffset(8)]
     internal long Y;
 
-    [FieldOffset(sizeof(long))]
+    [FieldOffset(16)]
     internal uint Width;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(20)]
     internal uint Height;
 }

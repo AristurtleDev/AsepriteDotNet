@@ -18,15 +18,15 @@ internal struct SliceKeyProperties
     [FieldOffset(0)]
     internal uint FrameNumber;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(4)]
     internal long X;
 
-    [FieldOffset(sizeof(long))]
+    [FieldOffset(12)]
     internal long Y;
 
-    [FieldOffset(sizeof(long))]
+    [FieldOffset(20)]
     internal uint Width;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(24)]
     internal uint Height;
 }

@@ -17,13 +17,13 @@ internal struct SliceProperties
     [FieldOffset(0)]
     internal uint KeyCount;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(4)]
     internal uint Flags;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(8)]
     internal uint Reserved;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(12)]
     internal ushort NameLen;
 
 }

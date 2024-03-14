@@ -15,6 +15,6 @@ internal struct PaletteEntry
     [FieldOffset(0)]
     internal ushort Flags;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(2)]
     internal AseColor Color;
 }

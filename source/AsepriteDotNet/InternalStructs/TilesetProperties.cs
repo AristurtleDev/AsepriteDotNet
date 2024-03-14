@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace AsepriteDotNet;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct TilesetProperties
+internal unsafe struct TilesetProperties
 {
     internal const int StructSize = sizeof(uint) +          //  Id
                                     sizeof(uint) +          //  Flags
@@ -21,24 +21,24 @@ internal struct TilesetProperties
     [FieldOffset(0)]
     internal uint Id;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(4)]
     internal uint Flags;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(8)]
     internal uint NumberOfTiles;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(12)]
     internal ushort TileWidth;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(14)]
     internal ushort TileHeight;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(16)]
     internal short BaseIndex;
 
-    [FieldOffset(sizeof(short))]
-    internal byte[] Reserved;
+    //[FieldOffset(18)]
+    //internal fixed byte Reserved[14];
 
-    [FieldOffset(sizeof(byte) * 14)]
+    [FieldOffset(32)]
     internal ushort NameLen;
 }

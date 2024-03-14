@@ -16,6 +16,6 @@ internal struct ImageCelProperties
     [FieldOffset(0)]
     internal ushort Width;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(2)]
     internal ushort Height;
 }

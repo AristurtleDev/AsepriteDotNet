@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace AsepriteDotNet;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct FrameHeader
+internal unsafe struct FrameHeader
 {
     internal const int StructSize = sizeof(uint) +          //  Length
                                     sizeof(ushort) +        //  MagicNumber
@@ -18,18 +18,18 @@ internal struct FrameHeader
     [FieldOffset(0)]
     internal uint Length;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(4)]
     internal ushort MagicNumber;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(6)]
     internal ushort OldChunkCount;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(8)]
     internal ushort Duration;
 
-    [FieldOffset(sizeof(ushort))]
-    internal byte[] Reserved;
+    //[FieldOffset(10)]
+    //internal fixed byte Reserved[2];
 
-    [FieldOffset(sizeof(byte) * 2)]
+    [FieldOffset(12)]
     internal uint NewChunkCount;
 }

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace AsepriteDotNet;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct CelProperties
+internal unsafe struct CelProperties
 {
     internal const int StructSize = sizeof(ushort) +    //  LayerIndex
                                     sizeof(short) +     //  X
@@ -21,21 +21,21 @@ internal struct CelProperties
     [FieldOffset(0)]
     internal ushort LayerIndex;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(2)]
     internal short X;
 
-    [FieldOffset(sizeof(short))]
+    [FieldOffset(4)]
     internal short Y;
 
-    [FieldOffset(sizeof(short))]
+    [FieldOffset(6)]
     internal byte Opacity;
 
-    [FieldOffset(sizeof(byte))]
+    [FieldOffset(7)]
     internal ushort Type;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(9)]
     internal short ZIndex;
 
-    [FieldOffset(sizeof(short))]
-    internal byte[] Reserved;
+    //[FieldOffset(11)]
+    //internal fixed byte Reserved[5];
 }

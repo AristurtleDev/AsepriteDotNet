@@ -7,67 +7,67 @@ using System.Runtime.InteropServices;
 namespace AsepriteDotNet;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct FileHeader
+internal unsafe struct FileHeader
 {
-    internal const int StructSize = 128;
+    public const int StructSize = 128;
 
     [FieldOffset(0)]
-    internal uint FileSize;
+    public uint FileSize;
 
-    [FieldOffset(sizeof(uint))]
-    internal ushort MagicNumber;
+    [FieldOffset(4)]
+    public ushort MagicNumber;
 
-    [FieldOffset(sizeof(ushort))]
-    internal ushort FrameCount;
+    [FieldOffset(6)]
+    public ushort FrameCount;
 
-    [FieldOffset(sizeof(ushort))]
-    internal ushort CanvasWidth;
+    [FieldOffset(8)]
+    public ushort CanvasWidth;
 
-    [FieldOffset(sizeof(ushort))]
-    internal ushort CanvasHeight;
+    [FieldOffset(10)]
+    public ushort CanvasHeight;
 
-    [FieldOffset(sizeof(ushort))]
-    internal ushort Depth;
+    [FieldOffset(12)]
+    public ushort Depth;
 
-    [FieldOffset(sizeof(ushort))]
-    internal uint Flags;
+    [FieldOffset(14)]
+    public uint Flags;
 
-    [FieldOffset(sizeof(uint))]
-    internal ushort Speed;
+    [FieldOffset(18)]
+    public ushort Speed;
 
-    [FieldOffset(sizeof(ushort))]
-    internal uint Ignore1;
+    //[FieldOffset(20)]
+    //public uint Reserved1;
 
-    [FieldOffset(sizeof(uint))]
-    internal uint Ignore2;
+    //[FieldOffset(24)]
+    //public uint Reserved2;
 
-    [FieldOffset(sizeof(uint))]
-    internal byte TransparentIndex;
+    [FieldOffset(28)]
+    public byte TransparentIndex;
 
-    [FieldOffset(sizeof(byte))]
-    internal byte[] Ignore3;
+    //[FieldOffset(29)]
+    //public fixed byte IgnoredBytes[3];
 
-    [FieldOffset(sizeof(byte) * 3)]
-    internal ushort NumberOfColors;
+    [FieldOffset(32)]
+    public ushort NumberOfColors;
 
-    [FieldOffset(sizeof(ushort))]
-    internal byte PixelWidth;
+    [FieldOffset(34)]
+    public byte PixelWidth;
 
-    [FieldOffset(sizeof(byte))]
-    internal byte PixelHeight;
+    [FieldOffset(35)]
+    public byte PixelHeight;
 
-    [FieldOffset(sizeof(byte))]
-    internal short GridXPosition;
+    [FieldOffset(36)]
+    public short GridX;
 
-    [FieldOffset(sizeof(short))]
-    internal short GridYPosition;
+    [FieldOffset(38)]
+    public short GridY;
 
-    [FieldOffset(sizeof(short))]
-    internal ushort GridWidth;
+    [FieldOffset(40)]
+    public ushort GridWidth;
 
-    [FieldOffset(sizeof(ushort))]
-    internal ushort GridHeight;
+    [FieldOffset(42)]
+    public ushort GridHeight;
 
-    [FieldOffset(sizeof(ushort))]
-    internal byte[] Ignore4;
+    //[FieldOffset(44)]
+    //public fixed byte FutureBytes[84];
 }

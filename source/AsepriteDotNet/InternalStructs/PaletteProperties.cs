@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace AsepriteDotNet;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct PaletteProperties
+internal unsafe struct PaletteProperties
 {
     internal const int StructSize = sizeof(uint) +      //  NewSize
                                     sizeof(uint) +      //  FirstIndex
@@ -17,12 +17,12 @@ internal struct PaletteProperties
     [FieldOffset(0)]
     internal uint NewSize;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(4)]
     internal uint FirstIndex;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(8)]
     internal uint LastIndex;
 
-    [FieldOffset(sizeof(uint))]
-    internal byte[] Reserved;
+    //[FieldOffset(12)]
+    //internal fixed byte Reserved[8];
 }

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace AsepriteDotNet;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct LayerProperties
+internal unsafe struct LayerProperties
 {
     internal const int StructSize = sizeof(ushort) +        //  Flags
                                     sizeof(ushort) +        //  Type
@@ -23,27 +23,27 @@ internal struct LayerProperties
     [FieldOffset(0)]
     internal ushort Flags;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(2)]
     internal ushort Type;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(4)]
     internal ushort Level;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(6)]
     internal ushort DefaultWidth;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(8)]
     internal ushort DefaultHeight;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(10)]
     internal ushort BlendMode;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(12)]
     internal byte Opacity;
 
-    [FieldOffset(sizeof(byte))]
-    internal byte[] Ignore;
+    //[FieldOffset(13)]
+    //internal fixed byte Ignore[3];
 
-    [FieldOffset(sizeof(byte) * 3)]
+    [FieldOffset(16)]
     internal ushort NameLen;
 }

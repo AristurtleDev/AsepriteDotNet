@@ -15,6 +15,6 @@ internal struct PivotProperties
     [FieldOffset(0)]
     internal long X;
 
-    [FieldOffset(sizeof(long))]
+    [FieldOffset(8)]
     internal long Y;
 }

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace AsepriteDotNet;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct TilemapCelProperties
+internal unsafe struct TilemapCelProperties
 {
     internal const int StructSize = sizeof(ushort) +        //  Width
                                     sizeof(ushort) +        //  Height
@@ -22,24 +22,24 @@ internal struct TilemapCelProperties
     [FieldOffset(0)]
     internal ushort Width;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(2)]
     internal ushort Height;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(4)]
     internal ushort BitsPerTile;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(6)]
     internal uint TileIdBitmask;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(10)]
     internal uint VerticalFlipBitmask;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(14)]
     internal uint HorizontalFlipBitmask;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(18)]
     internal uint DiagonalFlipBitmask;
 
-    [FieldOffset(sizeof(uint))]
-    internal byte[] Reserved;
+    //[FieldOffset(22)]
+    //internal fixed byte Reserved[10];
 }

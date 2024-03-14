@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace AsepriteDotNet;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct TagProperties
+internal unsafe struct TagProperties
 {
     internal const int StructSize = sizeof(ushort) +        //  From
                                     sizeof(ushort) +        //  To
@@ -21,24 +21,27 @@ internal struct TagProperties
     [FieldOffset(0)]
     internal ushort From;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(2)]
     internal ushort To;
 
-    [FieldOffset(sizeof(ushort))]
+    [FieldOffset(4)]
     internal byte Direction;
 
-    [FieldOffset(sizeof(byte))]
+    [FieldOffset(5)]
     internal ushort Repeat;
 
-    [FieldOffset(sizeof(ushort))]
-    internal byte[] Reserved;
+    //[FieldOffset(7)]
+    //internal fixed byte Reserved[6];
 
-    [FieldOffset(sizeof(byte) * 6)]
-    internal byte[] RGB;
+    [FieldOffset(13)]
+    internal byte R;
 
-    [FieldOffset(sizeof(byte) * 3)]
-    internal byte Ignore;
+    [FieldOffset(14)]
+    internal byte G;
 
-    [FieldOffset(sizeof(byte))]
+    [FieldOffset(15)]
+    internal byte B;
+
+    [FieldOffset(17)]
     internal ushort NameLen;
 }

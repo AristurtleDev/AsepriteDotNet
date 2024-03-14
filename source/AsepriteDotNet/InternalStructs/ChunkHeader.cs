@@ -15,6 +15,6 @@ internal struct ChunkHeader
     [FieldOffset(0)]
     internal uint ChunkSize;
 
-    [FieldOffset(sizeof(uint))]
+    [FieldOffset(4)]
     internal ushort ChunkType;
 }

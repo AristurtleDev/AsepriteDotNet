@@ -16,6 +16,7 @@ public sealed class AsepriteFile
     private readonly Layer[] _layers;
     private readonly Tag[] _tags;
     private readonly Slice[] _slices;
+    private readonly Tileset[] _tilesets;
     private readonly string[] _warnings;
 
     /// <summary>
@@ -58,6 +59,11 @@ public sealed class AsepriteFile
     public ReadOnlySpan<Slice> Slices => _slices;
 
     /// <summary>
+    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="Tileset"/> element in this <see cref="AsepriteFile"/>.
+    /// </summary>
+    public ReadOnlySpan<Tileset> Tilesets => _tilesets;
+
+    /// <summary>
     /// Gets a <see cref="ReadOnlySpan{T}"/> of any warnings issued when the Aseprite file was parsed to create this
     /// <see cref="AsepriteFile"/> instance.  You can use this to see if there were any non-fatal errors that
     /// occurred while parsing the file.
@@ -72,14 +78,14 @@ public sealed class AsepriteFile
     /// <summary>
     /// Gets the <see cref="AsepriteDotNet.Document.UserData"/> that was set in the properties for the sprite in Aseprite.
     /// </summary>
-    public UserData? UserData { get; }
+    public UserData UserData { get; }
 
     /// <summary>
     /// Gets the name of the Aseprite file (without the extension).
     /// </summary>
     public string Name { get; }
 
-    internal AsepriteFile(string name, Palette palette, int canvasWidth, int canvasHeight, AsepriteColorDepth colorDepth, List<Frame> frames, List<Layer> layers, List<Tag> tags, List<Slice> slices, UserData? userData, List<string> warnings)
+    internal AsepriteFile(string name, Palette palette, int canvasWidth, int canvasHeight, AsepriteColorDepth colorDepth, List<Frame> frames, List<Layer> layers, List<Tag> tags, List<Slice> slices, List<Tileset> tilesets, UserData userData, List<string> warnings)
     {
         Name = name;
         CanvasWidth = canvasWidth;
@@ -88,6 +94,7 @@ public sealed class AsepriteFile
         _frames = [.. frames];
         _tags = [.. tags];
         _slices = [.. slices];
+        _tilesets = [.. tilesets];
         _warnings = [.. warnings];
         _layers = [.. layers];
         Palette = palette;

@@ -6,8 +6,24 @@ using AsepriteDotNet.Document;
 
 namespace AsepriteDotNet.IO;
 
-public static partial class AsepriteFileLoader
+public static unsafe partial class AsepriteFileLoader
 {
+    public static AsepriteFile FromFile(string fileName)
+    {
+        using (AsepriteBinaryReader reader = new AsepriteBinaryReader(File.OpenRead(fileName), false))
+        {
+            return LoadFile(Path.GetFileNameWithoutExtension(fileName), reader);
+        }
+    }
+
+    public static AsepriteFile FromStream(string fileName, Stream stream, bool leaveOpen = false)
+    {
+        using (AsepriteBinaryReader reader = new AsepriteBinaryReader(stream, leaveOpen))
+        {
+            return LoadFile(fileName, reader);
+        }
+    }
+
     internal static AsepriteFile LoadFile(string fileName, AsepriteBinaryReader reader)
     {
         //  Collection of non-fatal warnings accumulated while loading the Aseprite file. Provided to the consumer as a

@@ -5,7 +5,7 @@
 namespace AsepriteDotNet;
 
 /// <summary>
-/// Defines the blend mode used by <see cref="AsepriteLayer"/> elements when blending <see cref="AsepriteCel"/>
+/// Defines the blend mode used by <see cref="Document.Layer"/> elements when blending <see cref="Document.Cel"/>
 /// elements.
 /// </summary>
 public enum AsepriteBlendMode

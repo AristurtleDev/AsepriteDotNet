@@ -2,33 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Drawing;
-using System.Net;
 using AsepriteDotNet.Helpers;
 
 namespace AsepriteDotNet;
 
 public static class AseColorBlending
 {
-    private const byte RGBA_R_SHIFT = 0;
-    private const byte RGBA_G_SHIFT = 8;
-    private const byte RGBA_B_SHIFT = 16;
-    private const byte RGBA_A_SHIFT = 24;
-    private const uint RGBA_R_MASK = 0x000000ff;
-    private const uint RGBA_G_MASK = 0x0000ff00;
-    private const uint RGBA_B_MASK = 0x00ff0000;
-    private const uint RGBA_RGB_MASK = 0x00ffffff;
-    private const uint RGBA_A_MASK = 0xff000000;
-
-    public static AseColor Blend(this AseColor backdrop, AseColor source, int opacity, AsepriteBlendMode blendMode) =>
-        backdrop.Blend(source, opacity, blendMode, (color) => color);
-
-    public static T Blend<T>(this AseColor backdrop, AseColor source, int opacity, AsepriteBlendMode blendMode, Func<AseColor, T> converter)
+    public static AseColor Blend(this AseColor backdrop, AseColor source, int opacity, AsepriteBlendMode blendMode)
     {
         //  Exit early depending on alpha
-        if (backdrop.A == 0 && source.A == 0) { return converter(new AseColor(0, 0, 0, 0)); }
-        if (backdrop.A == 0) { return converter(source); }
-        if (source.A == 0) { return converter(backdrop); }
+        if (backdrop.A == 0 && source.A == 0) { new AseColor(0, 0, 0, 0); }
+        if (backdrop.A == 0) { return source; }
+        if (source.A == 0) { return backdrop; }
 
         AseColor blended = blendMode switch
         {
@@ -56,25 +41,24 @@ public static class AseColorBlending
             #pragma warning restore format           
         };
 
-        return converter(blended);
+        return blended;
     }
 
     private static AseColor Normal(AseColor backdrop, AseColor source, int opacity)
     {
-        if ((backdrop.PackedValue & RGBA_A_MASK) == 0)
+        if (backdrop.A == 0)
         {
-            source.A = Unsigned8Bit.Multiply(source.A, opacity);
-            source.A <<= RGBA_A_SHIFT;
+            source.A = source.A.MUL_UN8(opacity);
             return source;
         }
-        else if ((source.PackedValue & RGBA_A_MASK) == 0)
+        else if (source.A == 0)
         {
             return backdrop;
         }
 
-        opacity = Unsigned8Bit.Multiply(source.A, opacity);
+        opacity = source.A.MUL_UN8(opacity);
 
-        int a = source.A + backdrop.A - Unsigned8Bit.Multiply(backdrop.A, source.A);
+        int a = source.A + backdrop.A - backdrop.A.MUL_UN8(source.A);
         int r = backdrop.R + (source.R - backdrop.R) * opacity / a;
         int g = backdrop.G + (source.G - backdrop.G) * opacity / a;
         int b = backdrop.B + (source.B - backdrop.B) * opacity / a;
@@ -84,17 +68,17 @@ public static class AseColorBlending
 
     private static AseColor Multiply(AseColor backdrop, AseColor source, int opacity)
     {
-        source.R = Unsigned8Bit.Multiply(backdrop.R, source.R);
-        source.G = Unsigned8Bit.Multiply(backdrop.G, source.G);
-        source.B = Unsigned8Bit.Multiply(backdrop.B, source.B);
+        source.R = backdrop.R.MUL_UN8(source.R);
+        source.G = backdrop.G.MUL_UN8(source.G);
+        source.B = backdrop.B.MUL_UN8(source.B);
         return Normal(backdrop, source, opacity);
     }
 
     private static AseColor Screen(AseColor backdrop, AseColor source, int opacity)
     {
-        source.R = (byte)(backdrop.R + source.R - Unsigned8Bit.Multiply(backdrop.R, source.R));
-        source.G = (byte)(backdrop.G + source.G - Unsigned8Bit.Multiply(backdrop.G, source.G));
-        source.B = (byte)(backdrop.B + source.B - Unsigned8Bit.Multiply(backdrop.B, source.B));
+        source.R = (byte)(backdrop.R + source.R - backdrop.R.MUL_UN8(source.R));
+        source.G = (byte)(backdrop.G + source.G - backdrop.G.MUL_UN8(source.G));
+        source.B = (byte)(backdrop.B + source.B - backdrop.B.MUL_UN8(source.B));
         return Normal(backdrop, source, opacity);
     }
 
@@ -105,11 +89,11 @@ public static class AseColorBlending
             if (b < 128)
             {
                 b <<= 1;
-                return Unsigned8Bit.Multiply(s, b);
+                return s.MUL_UN8(b);
             }
 
             b = (b << 1) - 255;
-            return s + b - Unsigned8Bit.Multiply(s, b);
+            return s + b - s.MUL_UN8(b);
         }
 
         source.R = (byte)overlay(backdrop.R, source.R);
@@ -144,7 +128,7 @@ public static class AseColorBlending
 
             if (b >= s) { return 255; }
 
-            return Unsigned8Bit.Divide(b, s);
+            return b.DIV_UN8(s);
         }
 
         source.R = (byte)dodge(backdrop.R, source.R);
@@ -163,7 +147,7 @@ public static class AseColorBlending
 
             if (b >= s) { return 0; }
 
-            return 255 - Unsigned8Bit.Divide(b, s);
+            return 255 - b.DIV_UN8(s);
         }
 
         source.R = (byte)burn(backdrop.R, source.R);
@@ -179,11 +163,11 @@ public static class AseColorBlending
             if (s < 128)
             {
                 s <<= 1;
-                return Unsigned8Bit.Multiply(b, s);
+                return b.MUL_UN8(s);
             }
 
             s = (s << 1) - 255;
-            return b + s - Unsigned8Bit.Multiply(b, s);
+            return b + s - b.MUL_UN8(s);
         }
 
         source.R = (byte)hardlight(backdrop.R, source.R);
@@ -237,7 +221,7 @@ public static class AseColorBlending
 
     private static AseColor Exclusion(AseColor backdrop, AseColor source, int opacity)
     {
-        static int exclusion(int b, int s) => b + s - 2 * Unsigned8Bit.Multiply(b, s);
+        static int exclusion(int b, int s) => b + s - 2 * b.MUL_UN8(s);
 
         source.R = (byte)exclusion(backdrop.R, source.R);
         source.G = (byte)exclusion(backdrop.G, source.G);
@@ -250,15 +234,15 @@ public static class AseColorBlending
         double r = backdrop.R / 255.0;
         double g = backdrop.G / 255.0;
         double b = backdrop.B / 255.0;
-        double s = MathHelper.CalculateSaturation(r, g, b);
-        double l = MathHelper.CalculateLuminance(r, g, b);
+        double s = Calc.CalculateSaturation(r, g, b);
+        double l = Calc.CalculateLuminance(r, g, b);
 
         r = source.R / 255.0;
         g = source.G / 255.0;
         b = source.B / 255.0;
 
-        MathHelper.AdjustSaturation(ref r, ref g, ref b, s);
-        MathHelper.AdjustLumanice(ref r, ref g, ref b, l);
+        Calc.AdjustSaturation(ref r, ref g, ref b, s);
+        Calc.AdjustLumanice(ref r, ref g, ref b, l);
 
         source.R = (byte)(r * 255.0);
         source.G = (byte)(g * 255.0);
@@ -271,15 +255,15 @@ public static class AseColorBlending
         double r = source.R / 255.0;
         double g = source.G / 255.0;
         double b = source.B / 255.0;
-        double s = MathHelper.CalculateSaturation(r, g, b);
+        double s = Calc.CalculateSaturation(r, g, b);
 
         r = backdrop.R / 255.0;
         g = backdrop.G / 255.0;
         b = backdrop.B / 255.0;
-        double l = MathHelper.CalculateLuminance(r, g, b);
+        double l = Calc.CalculateLuminance(r, g, b);
 
-        MathHelper.AdjustSaturation(ref r, ref g, ref b, s);
-        MathHelper.AdjustLumanice(ref r, ref g, ref b, l);
+        Calc.AdjustSaturation(ref r, ref g, ref b, s);
+        Calc.AdjustLumanice(ref r, ref g, ref b, l);
 
         source.R = (byte)(r * 255.0);
         source.G = (byte)(g * 255.0);
@@ -292,13 +276,13 @@ public static class AseColorBlending
         double r = backdrop.R / 255.0;
         double g = backdrop.G / 255.0;
         double b = backdrop.B / 255.0;
-        double l = MathHelper.CalculateLuminance(r, g, b);
+        double l = Calc.CalculateLuminance(r, g, b);
 
         r = source.R / 255.0;
         g = source.G / 255.0;
         b = source.B / 255.0;
 
-        MathHelper.AdjustLumanice(ref r, ref g, ref b, l);
+        Calc.AdjustLumanice(ref r, ref g, ref b, l);
 
         source.R = (byte)(r * 255.0);
         source.G = (byte)(g * 255.0);
@@ -311,13 +295,13 @@ public static class AseColorBlending
         double r = source.R / 255.0;
         double g = source.G / 255.0;
         double b = source.B / 255.0;
-        double l = MathHelper.CalculateLuminance(r, g, b);
+        double l = Calc.CalculateLuminance(r, g, b);
 
         r = backdrop.R / 255.0;
         g = backdrop.G / 255.0;
         b = backdrop.B / 255.0;
 
-        MathHelper.AdjustLumanice(ref r, ref g, ref b, l);
+        Calc.AdjustLumanice(ref r, ref g, ref b, l);
 
         source.R = (byte)(r * 255.0);
         source.G = (byte)(g * 255.0);
@@ -349,7 +333,7 @@ public static class AseColorBlending
 
             if (b >= s) { return 255; }
 
-            return Unsigned8Bit.Divide(b, s);
+            return b.DIV_UN8(s);
         }
 
         source.R = (byte)(divide(backdrop.R, source.R));

@@ -4,7 +4,7 @@
 
 namespace AsepriteDotNet.Helpers
 {
-    internal static class MathHelper
+    internal static class Calc
     {
         /// <summary>
         /// Calculates the saturation value based on the given RGB color component values.
@@ -150,5 +150,41 @@ namespace AsepriteDotNet.Helpers
             if (b != min && b != max) { return ref b; }
             return ref c;
         }
+
+        /// <summary>
+        /// Returns the result of multiplying two unsigned 8-bit values.
+        /// </summary>
+        /// <param name="a">The multiplicand</param>
+        /// <param name="b">The multiplier</param>
+        /// <returns>The result of multiplying two unsigned 8-bit values.</returns>
+        public static byte MUL_UN8(this byte a, int b)
+        {
+            int v = (a * b) + 0x80;
+            return (byte)(((v >> 8) + v) >> 8);
+        }
+
+        /// <summary>
+        /// Returns the result of multiplying two unsigned 8-bit values.
+        /// </summary>
+        /// <param name="a">The multiplicand</param>
+        /// <param name="b">The multiplier</param>
+        /// <returns>The result of multiplying two unsigned 8-bit values.</returns>
+        public static byte MUL_UN8(this int a, int b) => MUL_UN8((byte)a, b);
+
+        /// <summary>
+        /// Returns the result of dividing two unsigned 8-bit values.
+        /// </summary>
+        /// <param name="a">The dividend</param>
+        /// <param name="b">The divisor</param>
+        /// <returns>The result of multiplying two unsigned 8-bit values.</returns>
+        internal static byte DIV_UN8(this byte a, int b) => (byte)(((ushort)a * 0xFF + (b / 2)) / b);
+
+        /// <summary>
+        /// Returns the result of dividing two unsigned 8-bit values.
+        /// </summary>
+        /// <param name="a">The dividend</param>
+        /// <param name="b">The divisor</param>
+        /// <returns>The result of multiplying two unsigned 8-bit values.</returns>
+        internal static byte DIV_UN8(this int a, int b) => DIV_UN8((byte)a, b);
     }
 }

@@ -379,6 +379,7 @@ public static unsafe partial class AsepriteFileLoader
                             byte[] pixelData = reader.ReadCompressed((int)len);
                             AseColor[] pixels = PixelsToColor(pixelData, depth, palette);
                             Tileset tileset = new Tileset(properties, tilesetName, pixels);
+                            tilesets.Add(tileset);
                         }
                         break;
 

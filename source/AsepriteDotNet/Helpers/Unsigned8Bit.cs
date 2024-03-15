@@ -4,7 +4,7 @@
 
 namespace AsepriteDotNet.Helpers;
 
-internal static class Usigned8Bit
+internal static class Unsigned8Bit
 {
     public static byte Multiply(int a, int b)
     {

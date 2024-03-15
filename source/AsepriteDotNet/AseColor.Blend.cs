@@ -42,16 +42,16 @@ public static class AseColorBlending
             AsepriteBlendMode.ColorDodge    => ColorDodge(backdrop, source, opacity),
             AsepriteBlendMode.ColorBurn     => ColorBurn(backdrop, source, opacity),
             AsepriteBlendMode.HardLight     => HardLight(backdrop, source, opacity),
-            //AsepriteBlendMode.SoftLight     => SoftLight(backdrop, source, opacity),
-            //AsepriteBlendMode.Difference    => Difference(backdrop, source, opacity),
-            //AsepriteBlendMode.Exclusion     => Exclusion(backdrop, source, opacity),
-            //AsepriteBlendMode.Hue           => HslHue(backdrop, source, opacity),
-            //AsepriteBlendMode.Saturation    => HslSaturation(backdrop, source, opacity),
-            //AsepriteBlendMode.Color         => HslColor(backdrop, source, opacity),
-            //AsepriteBlendMode.Luminosity    => HslLuminosity(backdrop, source, opacity),
-            //AsepriteBlendMode.Addition      => Addition(backdrop, source, opacity),
-            //AsepriteBlendMode.Subtract      => Subtract(backdrop, source, opacity),
-            //AsepriteBlendMode.Divide        => Divide(backdrop, source, opacity),
+            AsepriteBlendMode.SoftLight     => SoftLight(backdrop, source, opacity),
+            AsepriteBlendMode.Difference    => Difference(backdrop, source, opacity),
+            AsepriteBlendMode.Exclusion     => Exclusion(backdrop, source, opacity),
+            AsepriteBlendMode.Hue           => HslHue(backdrop, source, opacity),
+            AsepriteBlendMode.Saturation    => HslSaturation(backdrop, source, opacity),
+            AsepriteBlendMode.Color         => HslColor(backdrop, source, opacity),
+            AsepriteBlendMode.Luminosity    => HslLuminosity(backdrop, source, opacity),
+            AsepriteBlendMode.Addition      => Addition(backdrop, source, opacity),
+            AsepriteBlendMode.Subtract      => Subtract(backdrop, source, opacity),
+            AsepriteBlendMode.Divide        => Divide(backdrop, source, opacity),
             _                               => throw new InvalidOperationException($"Unknown blend mode '{blendMode}'")
             #pragma warning restore format           
         };
@@ -102,7 +102,7 @@ public static class AseColorBlending
     {
         static int overlay(int b, int s)
         {
-            if(b < 128)
+            if (b < 128)
             {
                 b <<= 1;
                 return Unsigned8Bit.Multiply(s, b);
@@ -138,7 +138,7 @@ public static class AseColorBlending
     {
         static int dodge(int b, int s)
         {
-            if(b == 0) { return 0; }
+            if (b == 0) { return 0; }
 
             s = 255 - s;
 
@@ -176,7 +176,7 @@ public static class AseColorBlending
     {
         static int hardlight(int b, int s)
         {
-            if(s < 128)
+            if (s < 128)
             {
                 s <<= 1;
                 return Unsigned8Bit.Multiply(b, s);
@@ -192,9 +192,169 @@ public static class AseColorBlending
         return Normal(backdrop, source, opacity);
     }
 
+    private static AseColor SoftLight(AseColor backdrop, AseColor source, int opacity)
+    {
+        static int softlight(int _b, int _s)
+        {
+            double b = _b / 255.0;
+            double s = _s / 255.0;
+            double r, d;
 
+            if (b <= 0.25)
+            {
+                d = ((16 * b - 12) * b + 4) * b;
+            }
+            else
+            {
+                d = Math.Sqrt(b);
+            }
 
+            if (s <= 0.5)
+            {
+                r = b - (1.0 - 2.0 * s) * b * (1.0 - b);
+            }
+            else
+            {
+                r = b + (2.0 * s - 1.0) * (d - b);
+            }
 
+            return (int)(r * 255 + 0.5);
+        }
 
+        source.R = (byte)softlight(backdrop.R, source.R);
+        source.G = (byte)softlight(backdrop.G, source.G);
+        source.B = (byte)softlight(backdrop.B, source.B);
+        return Normal(backdrop, source, opacity);
+    }
 
+    private static AseColor Difference(AseColor backdrop, AseColor source, int opacity)
+    {
+        source.R = (byte)Math.Abs(backdrop.R - source.R);
+        source.G = (byte)Math.Abs(backdrop.G - source.G);
+        source.B = (byte)Math.Abs(backdrop.B - source.B);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor Exclusion(AseColor backdrop, AseColor source, int opacity)
+    {
+        static int exclusion(int b, int s) => b + s - 2 * Unsigned8Bit.Multiply(b, s);
+
+        source.R = (byte)exclusion(backdrop.R, source.R);
+        source.G = (byte)exclusion(backdrop.G, source.G);
+        source.B = (byte)exclusion(backdrop.B, source.B);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor HslHue(AseColor backdrop, AseColor source, int opacity)
+    {
+        double r = backdrop.R / 255.0;
+        double g = backdrop.G / 255.0;
+        double b = backdrop.B / 255.0;
+        double s = MathHelper.CalculateSaturation(r, g, b);
+        double l = MathHelper.CalculateLuminance(r, g, b);
+
+        r = source.R / 255.0;
+        g = source.G / 255.0;
+        b = source.B / 255.0;
+
+        MathHelper.AdjustSaturation(ref r, ref g, ref b, s);
+        MathHelper.AdjustLumanice(ref r, ref g, ref b, l);
+
+        source.R = (byte)(r * 255.0);
+        source.G = (byte)(g * 255.0);
+        source.B = (byte)(b * 255.0);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor HslSaturation(AseColor backdrop, AseColor source, int opacity)
+    {
+        double r = source.R / 255.0;
+        double g = source.G / 255.0;
+        double b = source.B / 255.0;
+        double s = MathHelper.CalculateSaturation(r, g, b);
+
+        r = backdrop.R / 255.0;
+        g = backdrop.G / 255.0;
+        b = backdrop.B / 255.0;
+        double l = MathHelper.CalculateLuminance(r, g, b);
+
+        MathHelper.AdjustSaturation(ref r, ref g, ref b, s);
+        MathHelper.AdjustLumanice(ref r, ref g, ref b, l);
+
+        source.R = (byte)(r * 255.0);
+        source.G = (byte)(g * 255.0);
+        source.B = (byte)(b * 255.0);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor HslColor(AseColor backdrop, AseColor source, int opacity)
+    {
+        double r = backdrop.R / 255.0;
+        double g = backdrop.G / 255.0;
+        double b = backdrop.B / 255.0;
+        double l = MathHelper.CalculateLuminance(r, g, b);
+
+        r = source.R / 255.0;
+        g = source.G / 255.0;
+        b = source.B / 255.0;
+
+        MathHelper.AdjustLumanice(ref r, ref g, ref b, l);
+
+        source.R = (byte)(r * 255.0);
+        source.G = (byte)(g * 255.0);
+        source.B = (byte)(b * 255.0);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor HslLuminosity(AseColor backdrop, AseColor source, int opacity)
+    {
+        double r = source.R / 255.0;
+        double g = source.G / 255.0;
+        double b = source.B / 255.0;
+        double l = MathHelper.CalculateLuminance(r, g, b);
+
+        r = backdrop.R / 255.0;
+        g = backdrop.G / 255.0;
+        b = backdrop.B / 255.0;
+
+        MathHelper.AdjustLumanice(ref r, ref g, ref b, l);
+
+        source.R = (byte)(r * 255.0);
+        source.G = (byte)(g * 255.0);
+        source.B = (byte)(b * 255.0);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor Addition(AseColor backdrop, AseColor source, int opacity)
+    {
+        source.R = (byte)Math.Min(backdrop.R + source.R, 255);
+        source.G = (byte)Math.Min(backdrop.G + source.G, 255);
+        source.B = (byte)Math.Min(backdrop.B + source.B, 255);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor Subtract(AseColor backdrop, AseColor source, int opacity)
+    {
+        source.R = (byte)Math.Max(backdrop.R - source.R, 0);
+        source.G = (byte)Math.Max(backdrop.G - source.G, 0);
+        source.B = (byte)Math.Max(backdrop.B - source.B, 0);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor Divide(AseColor backdrop, AseColor source, int opacity)
+    {
+        static int divide(int b, int s)
+        {
+            if (b == 0) { return 0; }
+
+            if (b >= s) { return 255; }
+
+            return Unsigned8Bit.Divide(b, s);
+        }
+
+        source.R = (byte)(divide(backdrop.R, source.R));
+        source.G = (byte)(divide(backdrop.G, source.G));
+        source.B = (byte)(divide(backdrop.B, source.B));
+        return Normal(backdrop, source, opacity);
+    }
 }

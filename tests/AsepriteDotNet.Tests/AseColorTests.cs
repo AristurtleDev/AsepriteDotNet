@@ -33,7 +33,7 @@ namespace AsepriteDotNet.Tests
         [InlineData(AsepriteBlendMode.Addition)]
         [InlineData(AsepriteBlendMode.Subtract)]
         [InlineData(AsepriteBlendMode.Divide)]
-        public void AseColor_Blend_Color_On_Transparent(AsepriteBlendMode blendMode)
+        public void AseColor_Blend_Color_On_Transparent_Test(AsepriteBlendMode blendMode)
         {
             Assert.Equal(_orange, _transparent.Blend(_orange, 255, blendMode));
         }
@@ -58,7 +58,7 @@ namespace AsepriteDotNet.Tests
         [InlineData(AsepriteBlendMode.Addition)]
         [InlineData(AsepriteBlendMode.Subtract)]
         [InlineData(AsepriteBlendMode.Divide)]
-        public void AseColor_Blend_Transparent_On_Color(AsepriteBlendMode blendMode)
+        public void AseColor_Blend_Transparent_On_Color_Test(AsepriteBlendMode blendMode)
         {
             Assert.Equal(_green, _green.Blend(_transparent, 255, blendMode));
         }
@@ -83,20 +83,20 @@ namespace AsepriteDotNet.Tests
         [InlineData(AsepriteBlendMode.Addition)]
         [InlineData(AsepriteBlendMode.Subtract)]
         [InlineData(AsepriteBlendMode.Divide)]
-        public void AseColor_Blend_Transparent_On_Transparent(AsepriteBlendMode blendMode)
+        public void AseColor_Blend_Transparent_On_Transparent_Test(AsepriteBlendMode blendMode)
         {
             Assert.Equal(_transparent, _transparent.Blend(_transparent, 255, blendMode));
         }
 
         [Fact]
-        public void AseColor_NormalBlend_Test()
+        public void AseColor_Normal_Blend_Test()
         {
             AsepriteBlendMode mode = AsepriteBlendMode.Normal;
             Assert.Equal(_orange, _green.Blend(_orange, 255, mode));
         }
 
         [Fact]
-        public void AseColor_MultiplyBlend_Test()
+        public void AseColor_Multiply_Blend_Test()
         {
             AsepriteBlendMode mode = AsepriteBlendMode.Multiply;
             AseColor expected = new AseColor(93, 84, 7, 255);
@@ -104,7 +104,7 @@ namespace AsepriteDotNet.Tests
         }
 
         [Fact]
-        public void AseColor_ScreenBlend_Test()
+        public void AseColor_Screen_Blend_Test()
         {
             AsepriteBlendMode mode = AsepriteBlendMode.Screen;
             AseColor expected = new AseColor(236, 219, 79, 255);
@@ -112,7 +112,7 @@ namespace AsepriteDotNet.Tests
         }
 
         [Fact]
-        public void AseColor_OverlayBlend_Test()
+        public void AseColor_Overlay_Blend_Test()
         {
             AsepriteBlendMode mode = AsepriteBlendMode.Overlay;
             AseColor expected = new AseColor(185, 183, 14, 255);
@@ -120,7 +120,7 @@ namespace AsepriteDotNet.Tests
         }
 
         [Fact]
-        public void AseColor_DarkenBlend_Test()
+        public void AseColor_Darken_Blend_Test()
         {
             AsepriteBlendMode mode = AsepriteBlendMode.Darken;
             AseColor expected = new AseColor(106, 113, 38, 255);
@@ -128,7 +128,7 @@ namespace AsepriteDotNet.Tests
         }
 
         [Fact]
-        public void AseColor_LightenBlend_Test()
+        public void AseColor_Lighten_Blend_Test()
         {
             AsepriteBlendMode mode = AsepriteBlendMode.Lighten;
             AseColor expected = new AseColor(223, 190, 48, 255);
@@ -136,7 +136,7 @@ namespace AsepriteDotNet.Tests
         }
 
         [Fact]
-        public void AseColor_ColorDodgeBlend_Test()
+        public void AseColor_ColorDodge_Blend_Test()
         {
             AsepriteBlendMode mode = AsepriteBlendMode.ColorDodge;
             AseColor expected = new AseColor(255, 255, 56, 255);
@@ -156,6 +156,86 @@ namespace AsepriteDotNet.Tests
         {
             AsepriteBlendMode mode = AsepriteBlendMode.HardLight;
             AseColor expected = new AseColor(218, 168, 14, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_SoftLight_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.SoftLight;
+            AseColor expected = new AseColor(150, 184, 21, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Difference_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Difference;
+            AseColor expected = new AseColor(117, 77, 10, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Exclusion_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Exclusion;
+            AseColor expected = new AseColor(143, 135, 72, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Hue_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Hue;
+            AseColor expected = new AseColor(214, 130, 72, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Saturation_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Saturation;
+            AseColor expected = new AseColor(92, 202, 17, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Color_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Color;
+            AseColor expected = new AseColor(234, 124, 49, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Luminosity_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Luminosity;
+            AseColor expected = new AseColor(94, 178, 36, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Addition_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Addition;
+            AseColor expected = new AseColor(255, 255, 86, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Subtract_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Subtract;
+            AseColor expected = new AseColor(0, 77, 10, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_Divide_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Divide;
+            AseColor expected = new AseColor(121, 255, 255, 255);
             Assert.Equal(expected, _green.Blend(_orange, 255, mode));
         }
     }

@@ -36,8 +36,8 @@ public static class AseColorBlending
             AsepriteBlendMode.Normal        => Normal(backdrop, source, opacity),
             AsepriteBlendMode.Multiply      => Multiply(backdrop, source, opacity),
             AsepriteBlendMode.Screen        => Screen(backdrop, source, opacity),
-            //AsepriteBlendMode.Overlay       => Overlay(backdrop, source, opacity),
-            //AsepriteBlendMode.Darken        => Darken(backdrop, source, opacity),
+            AsepriteBlendMode.Overlay       => Overlay(backdrop, source, opacity),
+            AsepriteBlendMode.Darken        => Darken(backdrop, source, opacity),
             //AsepriteBlendMode.Lighten       => Lighten(backdrop, source, opacity),
             //AsepriteBlendMode.ColorDodge    => ColorDodge(backdrop, source, opacity),
             //AsepriteBlendMode.ColorBurn     => ColorBurn(backdrop, source, opacity),
@@ -95,6 +95,34 @@ public static class AseColorBlending
         source.R = (byte)(backdrop.R + source.R - Unsigned8Bit.Multiply(backdrop.R, source.R));
         source.G = (byte)(backdrop.G + source.G - Unsigned8Bit.Multiply(backdrop.G, source.G));
         source.B = (byte)(backdrop.B + source.B - Unsigned8Bit.Multiply(backdrop.B, source.B));
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor Overlay(AseColor backdrop, AseColor source, int opacity)
+    {
+        static int overlay(int b, int s)
+        {
+            if(b < 128)
+            {
+                b <<= 1;
+                return Unsigned8Bit.Multiply(s, b);
+            }
+
+            b = (b << 1) - 255;
+            return s + b - Unsigned8Bit.Multiply(s, b);
+        }
+
+        source.R = (byte)overlay(backdrop.R, source.R);
+        source.G = (byte)overlay(backdrop.G, source.G);
+        source.B = (byte)overlay(backdrop.B, source.B);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor Darken(AseColor backdrop, AseColor source, int opacity)
+    {
+        source.R = Math.Min(backdrop.R, source.R);
+        source.G = Math.Min(backdrop.G, source.G);
+        source.B = Math.Min(backdrop.B, source.B);
         return Normal(backdrop, source, opacity);
     }
 

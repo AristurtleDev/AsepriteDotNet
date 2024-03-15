@@ -245,7 +245,7 @@ public static unsafe partial class AsepriteFileLoader
                                 }
 
                                 string tagName = reader.ReadString(properties.NameLen);
-                                AseColor tagColor = new AseColor(properties.RGB[0], properties.RGB[1], properties.RGB[2]);
+                                AseColor tagColor = new AseColor(properties.R, properties.G, properties.B);
                                 AsepriteLoopDirection loopDirection = (AsepriteLoopDirection)properties.Direction;
 
                                 Tag tag = new Tag(properties, tagName);

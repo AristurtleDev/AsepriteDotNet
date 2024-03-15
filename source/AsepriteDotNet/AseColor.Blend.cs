@@ -38,7 +38,7 @@ public static class AseColorBlending
             AsepriteBlendMode.Screen        => Screen(backdrop, source, opacity),
             AsepriteBlendMode.Overlay       => Overlay(backdrop, source, opacity),
             AsepriteBlendMode.Darken        => Darken(backdrop, source, opacity),
-            //AsepriteBlendMode.Lighten       => Lighten(backdrop, source, opacity),
+            AsepriteBlendMode.Lighten       => Lighten(backdrop, source, opacity),
             //AsepriteBlendMode.ColorDodge    => ColorDodge(backdrop, source, opacity),
             //AsepriteBlendMode.ColorBurn     => ColorBurn(backdrop, source, opacity),
             //AsepriteBlendMode.HardLight     => HardLight(backdrop, source, opacity),
@@ -123,6 +123,14 @@ public static class AseColorBlending
         source.R = Math.Min(backdrop.R, source.R);
         source.G = Math.Min(backdrop.G, source.G);
         source.B = Math.Min(backdrop.B, source.B);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor Lighten(AseColor backdrop, AseColor source, int opacity)
+    {
+        source.R = Math.Max(backdrop.R, source.R);
+        source.G = Math.Max(backdrop.G, source.G);
+        source.B = Math.Max(backdrop.B, source.B);
         return Normal(backdrop, source, opacity);
     }
 

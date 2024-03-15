@@ -126,5 +126,13 @@ namespace AsepriteDotNet.Tests
             AseColor expected = new AseColor(106, 113, 38, 255);
             Assert.Equal(expected, _green.Blend(_orange, 255, mode));
         }
+
+        [Fact]
+        public void AseColor_LightenBlend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Lighten;
+            AseColor expected = new AseColor(223, 190, 48, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
     }
 }

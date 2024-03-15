@@ -134,5 +134,13 @@ namespace AsepriteDotNet.Tests
             AseColor expected = new AseColor(223, 190, 48, 255);
             Assert.Equal(expected, _green.Blend(_orange, 255, mode));
         }
+
+        [Fact]
+        public void AseColor_ColorDodgeBlend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.ColorDodge;
+            AseColor expected = new AseColor(255, 255, 56, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
     }
 }

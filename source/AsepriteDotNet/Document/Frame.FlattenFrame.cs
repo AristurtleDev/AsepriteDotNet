@@ -10,13 +10,7 @@ public static class FrameExtensions
 {
     public static AseColor[] FlattenFrame(this Frame frame, bool onlyVisibleLayers)
     {
-        return frame.FlattenFrame<AseColor>(onlyVisibleLayers, (color) => color);
-    }
-
-    public static T[] FlattenFrame<T>(this Frame frame, bool onlyVisibleLayers, Func<AseColor, T> colorProcessor) where T : struct
-    {
         ArgumentNullException.ThrowIfNull(frame);
-        ArgumentNullException.ThrowIfNull(colorProcessor);
 
         AseColor[] flattened = new AseColor[frame.Width * frame.Height];
         ReadOnlySpan<Cel> cels = frame.Cels;
@@ -53,13 +47,7 @@ public static class FrameExtensions
             }
         }
 
-        T[] result = new T[flattened.Length];
-        for (int i = 0; i < result.Length; i++)
-        {
-            result[i] = colorProcessor(flattened[i]);
-        }
-
-        return result;
+        return flattened;
     }
 }
 

@@ -78,6 +78,39 @@ namespace AsepriteDotNet.Tests
 
         #endregion Multiply
 
+        #region Screen
+
+        [Fact]
+        public void AseColor_ScreenBlend_Color_On_Color_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Screen;
+            AseColor expected = new AseColor(236, 219, 79, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_ScreenBlend_Color_On_Transparent_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Screen;
+            Assert.Equal(_orange, _transparent.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_ScreenBlend_Transparent_On_Color_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Screen;
+            Assert.Equal(_green, _green.Blend(_transparent, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_ScreenBlend_Transparent_On_Transparent_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Screen;
+            Assert.Equal(_transparent, _transparent.Blend(_transparent, 255, mode));
+        }
+
+        #endregion Screen
+
 
 
     }

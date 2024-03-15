@@ -3,6 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Drawing;
+using System.Net;
 using AsepriteDotNet.Helpers;
 
 namespace AsepriteDotNet;
@@ -34,7 +35,7 @@ public static class AseColorBlending
             #pragma warning disable format
             AsepriteBlendMode.Normal        => Normal(backdrop, source, opacity),
             AsepriteBlendMode.Multiply      => Multiply(backdrop, source, opacity),
-            //AsepriteBlendMode.Screen        => Screen(backdrop, source, opacity),
+            AsepriteBlendMode.Screen        => Screen(backdrop, source, opacity),
             //AsepriteBlendMode.Overlay       => Overlay(backdrop, source, opacity),
             //AsepriteBlendMode.Darken        => Darken(backdrop, source, opacity),
             //AsepriteBlendMode.Lighten       => Lighten(backdrop, source, opacity),
@@ -86,6 +87,14 @@ public static class AseColorBlending
         source.R = Unsigned8Bit.Multiply(backdrop.R, source.R);
         source.G = Unsigned8Bit.Multiply(backdrop.G, source.G);
         source.B = Unsigned8Bit.Multiply(backdrop.B, source.B);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor Screen(AseColor backdrop, AseColor source, int opacity)
+    {
+        source.R = (byte)(backdrop.R + source.R - Unsigned8Bit.Multiply(backdrop.R, source.R));
+        source.G = (byte)(backdrop.G + source.G - Unsigned8Bit.Multiply(backdrop.G, source.G));
+        source.B = (byte)(backdrop.B + source.B - Unsigned8Bit.Multiply(backdrop.B, source.B));
         return Normal(backdrop, source, opacity);
     }
 

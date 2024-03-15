@@ -249,6 +249,8 @@ public static unsafe partial class AsepriteFileLoader
                                 AsepriteLoopDirection loopDirection = (AsepriteLoopDirection)properties.Direction;
 
                                 Tag tag = new Tag(properties, tagName);
+                                currentUserData = tag.UserData;
+                                tags.Add(tag);
                             }
                         }
                         break;

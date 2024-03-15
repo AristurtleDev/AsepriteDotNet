@@ -83,12 +83,9 @@ public static class AseColorBlending
 
     private static AseColor Multiply(AseColor backdrop, AseColor source, int opacity)
     {
-        int r = Unsigned8Bit.Multiply(backdrop.R, source.R);
-        int g = Unsigned8Bit.Multiply(backdrop.G, source.G);
-        int b = Unsigned8Bit.Multiply(backdrop.B, source.B);
-        source.R = (byte)r;
-        source.G = (byte)g;
-        source.B = (byte)b;
+        source.R = Unsigned8Bit.Multiply(backdrop.R, source.R);
+        source.G = Unsigned8Bit.Multiply(backdrop.G, source.G);
+        source.B = Unsigned8Bit.Multiply(backdrop.B, source.B);
         return Normal(backdrop, source, opacity);
     }
 

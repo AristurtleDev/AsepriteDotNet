@@ -72,7 +72,7 @@ public static partial class AsepriteFileLoader
             }
             else
             {
-                result[i] = palette.Colors[i];
+                result[i] = palette.Colors[index];
             }
         }
 

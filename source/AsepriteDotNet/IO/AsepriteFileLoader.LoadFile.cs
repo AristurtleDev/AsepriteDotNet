@@ -468,6 +468,6 @@ public static unsafe partial class AsepriteFileLoader
             warnings.Add($"Number of colors in file header ({fileHeader.NumberOfColors}) does not match the final palette count ({palette.Colors.Length})");
         }
 
-        return new AsepriteFile(fileName, palette, fileHeader.CanvasWidth, fileHeader.CanvasHeight, depth, frames, layers, tags, slices, spriteUserData, warnings);
+        return new AsepriteFile(fileName, palette, fileHeader.CanvasWidth, fileHeader.CanvasHeight, depth, frames, layers, tags, slices, tilesets, spriteUserData, warnings);
     }
 }

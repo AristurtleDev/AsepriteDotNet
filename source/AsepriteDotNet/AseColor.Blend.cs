@@ -33,7 +33,7 @@ public static class AseColorBlending
         {
             #pragma warning disable format
             AsepriteBlendMode.Normal        => Normal(backdrop, source, opacity),
-            //AsepriteBlendMode.Multiply      => Multiply(backdrop, source, opacity),
+            AsepriteBlendMode.Multiply      => Multiply(backdrop, source, opacity),
             //AsepriteBlendMode.Screen        => Screen(backdrop, source, opacity),
             //AsepriteBlendMode.Overlay       => Overlay(backdrop, source, opacity),
             //AsepriteBlendMode.Darken        => Darken(backdrop, source, opacity),
@@ -79,6 +79,17 @@ public static class AseColorBlending
         int b = backdrop.B + (source.B - backdrop.B) * opacity / a;
 
         return new AseColor((byte)r, (byte)g, (byte)b, (byte)a);
+    }
+
+    private static AseColor Multiply(AseColor backdrop, AseColor source, int opacity)
+    {
+        int r = Unsigned8Bit.Multiply(backdrop.R, source.R);
+        int g = Unsigned8Bit.Multiply(backdrop.G, source.G);
+        int b = Unsigned8Bit.Multiply(backdrop.B, source.B);
+        source.R = (byte)r;
+        source.G = (byte)g;
+        source.B = (byte)b;
+        return Normal(backdrop, source, opacity);
     }
 
 

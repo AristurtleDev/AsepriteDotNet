@@ -45,6 +45,39 @@ namespace AsepriteDotNet.Tests
 
         #endregion Normal Blend
 
+        #region Multiply
+
+        [Fact]
+        public void AseColor_MultiplyBlend_Color_On_Color_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Multiply;
+            AseColor expected = new AseColor(93, 84, 7, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_MultiplyBlend_Color_On_Transparent_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Multiply;
+            Assert.Equal(_orange, _transparent.Blend(_orange, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_MultiplyBLend_Transparent_On_Color_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Multiply;
+            Assert.Equal(_green, _green.Blend(_transparent, 255, mode));
+        }
+
+        [Fact]
+        public void AseColor_MultiplyBlend_Transparent_On_Transparent_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.Multiply;
+            Assert.Equal(_transparent, _transparent.Blend(_transparent, 255, mode));
+        }
+
+        #endregion Multiply
+
 
 
     }

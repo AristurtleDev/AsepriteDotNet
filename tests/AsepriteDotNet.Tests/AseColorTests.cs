@@ -150,5 +150,13 @@ namespace AsepriteDotNet.Tests
             AseColor expected = new AseColor(85, 108, 0, 255);
             Assert.Equal(expected, _green.Blend(_orange, 255, mode));
         }
+
+        [Fact]
+        public void AseColor_HardLight_Blend_Test()
+        {
+            AsepriteBlendMode mode = AsepriteBlendMode.HardLight;
+            AseColor expected = new AseColor(218, 168, 14, 255);
+            Assert.Equal(expected, _green.Blend(_orange, 255, mode));
+        }
     }
 }

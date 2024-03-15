@@ -41,7 +41,7 @@ public static class AseColorBlending
             AsepriteBlendMode.Lighten       => Lighten(backdrop, source, opacity),
             AsepriteBlendMode.ColorDodge    => ColorDodge(backdrop, source, opacity),
             AsepriteBlendMode.ColorBurn     => ColorBurn(backdrop, source, opacity),
-            //AsepriteBlendMode.HardLight     => HardLight(backdrop, source, opacity),
+            AsepriteBlendMode.HardLight     => HardLight(backdrop, source, opacity),
             //AsepriteBlendMode.SoftLight     => SoftLight(backdrop, source, opacity),
             //AsepriteBlendMode.Difference    => Difference(backdrop, source, opacity),
             //AsepriteBlendMode.Exclusion     => Exclusion(backdrop, source, opacity),
@@ -169,6 +169,26 @@ public static class AseColorBlending
         source.R = (byte)burn(backdrop.R, source.R);
         source.G = (byte)burn(backdrop.G, source.G);
         source.B = (byte)burn(backdrop.B, source.B);
+        return Normal(backdrop, source, opacity);
+    }
+
+    private static AseColor HardLight(AseColor backdrop, AseColor source, int opacity)
+    {
+        static int hardlight(int b, int s)
+        {
+            if(s < 128)
+            {
+                s <<= 1;
+                return Unsigned8Bit.Multiply(b, s);
+            }
+
+            s = (s << 1) - 255;
+            return b + s - Unsigned8Bit.Multiply(b, s);
+        }
+
+        source.R = (byte)hardlight(backdrop.R, source.R);
+        source.G = (byte)hardlight(backdrop.G, source.G);
+        source.B = (byte)hardlight(backdrop.B, source.B);
         return Normal(backdrop, source, opacity);
     }
 

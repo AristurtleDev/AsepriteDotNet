@@ -6,6 +6,7 @@ using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Text;
+using AsepriteDotNet.Compression;
 
 /// <summary>
 /// A low-level binary reader designed to read data types from an Aseprite file.
@@ -287,20 +288,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     public byte[] ReadCompressed(int count)
     {
         byte[] compressed = ReadBytes(count);
-        using (MemoryStream compressedStream = new MemoryStream(compressed))
-        {
-            //  First 2-bytes are the zlib header information, skip it, we don't need it
-            compressedStream.Seek(2, SeekOrigin.Begin);
-
-            using (MemoryStream decompressedStream = new MemoryStream())
-            {
-                using (DeflateStream deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress))
-                {
-                    deflateStream.CopyTo(decompressedStream);
-                    return decompressedStream.ToArray();
-                }
-            }
-        }
+        return Zlib.Deflate(compressed);
     }
 
     /// <summary>

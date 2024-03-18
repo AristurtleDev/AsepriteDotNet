@@ -8,10 +8,28 @@ using AsepriteDotNet.Aseprite.Types;
 
 namespace AsepriteDotNet.Processors;
 
+/// <summary>
+/// Defines a processor for processing a <see cref="Tilemap"/> from an <see cref="AsepriteFile"/>.
+/// </summary>
 public static class TilemapProcessor
 {
-    public static Tilemap Process(AsepriteFile file, int frameIndex, ProcessorOptions options)
+    /// <summary>
+    /// Processes a <see cref="Tilemap"/> from an <see cref="AsepriteFile"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="AsepriteFile"/> to process.</param>
+    /// <param name="frameIndex">The index of the frame containing the tilemap to process.</param>
+    /// <param name="options">
+    /// Optional options to use when processing.  If <see langword="null"/>, then
+    /// <see cref="ProcessorOptions.Default"/> will be used.
+    /// </param>
+    /// <returns>The <see cref="Tilemap"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+    public static Tilemap Process(AsepriteFile file, int frameIndex, ProcessorOptions? options = null)
     {
+        ArgumentNullException.ThrowIfNull(file);
+        options ??= ProcessorOptions.Default;
+
         AsepriteFrame aseFrame = file.Frames[frameIndex];
 
         List<Tileset> tilesets = new List<Tileset>();
@@ -55,6 +73,6 @@ public static class TilemapProcessor
             tilemapLayers.Add(tilemapLayer);
         }
 
-        return new Tilemap(file.Name, tilesets.ToArray(), tilemapLayers.ToArray());
+        return new Tilemap(file.Name, [.. tilesets], [.. tilemapLayers]);
     }
 }

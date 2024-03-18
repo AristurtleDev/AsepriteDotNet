@@ -8,10 +8,26 @@ using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Processors;
 
+/// <summary>
+/// Defines a processor for processing a <see cref="TextureAtlas"/> from an <see cref="AsepriteFile"/>.
+/// </summary>
 public static class TextureAtlasProcessor
 {
-    public static TextureAtlas Process(AsepriteFile file, ProcessorOptions options)
+    /// <summary>
+    /// Processes a <see cref="TextureAtlas"/> from an <see cref="AsepriteFile"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="AsepriteFile"/> to process.</param>
+    /// <param name="options">
+    /// Optional options to use when processing.  If <see langword="null"/>, then
+    /// <see cref="ProcessorOptions.Default"/> will be used.
+    /// </param>
+    /// <returns>The <see cref="TextureAtlas"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+    public static TextureAtlas Process(AsepriteFile file, ProcessorOptions? options = null)
     {
+        ArgumentNullException.ThrowIfNull(file);
+        options ??= ProcessorOptions.Default;
+
         int frameWidth = file.CanvasWidth;
         int frameHeight = file.CanvasHeight;
         int frameCount = file.Frames.Length;
@@ -64,10 +80,10 @@ public static class TextureAtlasProcessor
 
         for (int i = 0; i < flattenedFrames.GetLength(0); i++)
         {
-            if (options.MergeDuplicateFrames && duplicateMap.ContainsKey(i))
+            if (options.MergeDuplicateFrames && duplicateMap.TryGetValue(i, out int value))
             {
-                TextureRegion original = originalToDuplicateLookup[duplicateMap[i]];
-                TextureRegion duplicate = original with { Name = $"{file.Name} {i}", Slices = ProcessorUtilities.GetSlicesForFrame(i, file.Slices) };
+                TextureRegion original = originalToDuplicateLookup[value];
+                TextureRegion duplicate = new TextureRegion($"{file.Name} {i}", original.Bounds, ProcessorUtilities.GetSlicesForFrame(i, file.Slices));
                 regions[i] = duplicate;
                 offset++;
                 continue;

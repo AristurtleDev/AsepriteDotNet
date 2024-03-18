@@ -8,10 +8,27 @@ using AsepriteDotNet.Aseprite.Types;
 
 namespace AsepriteDotNet.Processors;
 
+/// <summary>
+/// Defines a processor for processing a <see cref="AnimatedTilemap"/> from an <see cref="AsepriteFile"/>.
+/// </summary>
 public static class AnimatedTilemapProcessor
 {
-    public static AnimatedTilemap Process(AsepriteFile file, bool onlyVisibleLayers = true)
+    /// <summary>
+    /// Processes an <see cref="AnimatedTilemap"/> from an <see cref="AsepriteFile"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="AsepriteFile"/> to process.</param>
+    /// <param name="options">
+    /// Optional options to use when processing.  If <see langword="null"/>, then
+    /// <see cref="ProcessorOptions.Default"/> will be used.
+    /// </param>
+    /// <returns>The <see cref="AnimatedTilemap"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+    public static AnimatedTilemap Process(AsepriteFile file, ProcessorOptions? options = null)
     {
+        ArgumentNullException.ThrowIfNull(file);
+        options ??= ProcessorOptions.Default;
+
         List<Tileset> tilesets = new List<Tileset>();
         TilemapFrame[] frames = new TilemapFrame[file.Frames.Length];
         HashSet<int> tilesetIDCheck = new HashSet<int>();
@@ -28,7 +45,7 @@ public static class AnimatedTilemapProcessor
                 if (aseFrame.Cels[c] is not AsepriteTilemapCel aseTilemapCel) { continue; }
 
                 //  Only continue if layer is visible or if explicitly told to include non-visible layers
-                if (!aseTilemapCel.Layer.IsVisible && onlyVisibleLayers) { continue; }
+                if (!aseTilemapCel.Layer.IsVisible && options.OnlyVisibleLayers) { continue; }
 
                 Debug.Assert(aseTilemapCel.Layer is AsepriteTilemapLayer);
                 AsepriteTilemapLayer aseTilemapLayer = (AsepriteTilemapLayer)aseTilemapCel.Layer;

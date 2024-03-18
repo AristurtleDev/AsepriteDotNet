@@ -2,11 +2,44 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Xml.Linq;
+
 namespace AsepriteDotNet;
 
 /// <summary>
 /// Defines a frame of a tile in an animated tile map.
+/// This class cannot be inherited.
 /// </summary>
-/// <param name="Duration">The duration of this frame.</param>
-/// <param name="Layers">THe layers tilemap layers used by the tilemap during this frame.</param>
-public record TilemapFrame(TimeSpan Duration, TilemapLayer[] Layers);
+public sealed class TilemapFrame : IEquatable<TilemapFrame>
+{
+    private readonly TilemapLayer[] _layers;
+
+    /// <summary>
+    /// Gets the duration of this frame.
+    /// </summary>
+    public TimeSpan Duration { get; }
+
+    /// <summary>
+    /// Gets a read-only collection of the tilemap layers used by this tilemap during this frame.
+    /// </summary>
+    public ReadOnlySpan<TilemapLayer> Layers => _layers;
+
+    internal TilemapFrame(TimeSpan duration, TilemapLayer[] layers) =>
+        (Duration, _layers) = (duration, layers);
+
+    /// <inheritdoc/>
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is TilemapFrame other && Equals(other);
+
+    /// <inheritdoc/>
+    public bool Equals([NotNullWhen(true)] TilemapFrame? other)
+    {
+        if (ReferenceEquals(this, other)) { return true; }
+        return Duration.Equals(other?.Duration)
+            && _layers.SequenceEqual(other._layers);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => HashCode.Combine(Duration, _layers);
+
+}

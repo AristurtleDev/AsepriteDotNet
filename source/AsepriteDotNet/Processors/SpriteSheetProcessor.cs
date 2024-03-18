@@ -7,10 +7,27 @@ using AsepriteDotNet.Aseprite.Types;
 
 namespace AsepriteDotNet.Processors;
 
+/// <summary>
+/// Defines a processor for processing a <see cref="SpriteSheet"/> from an <see cref="AsepriteFile"/>.
+/// </summary>
 public static class SpriteSheetProcessor
 {
-    public static SpriteSheet Process(AsepriteFile file, ProcessorOptions options)
+    /// <summary>
+    /// Processes a <see cref="SpriteSheet"/> from an <see cref="AsepriteFile"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="AsepriteFile"/> to process.</param>
+    /// <param name="options">
+    /// Optional options to use when processing.  If <see langword="null"/>, then
+    /// <see cref="ProcessorOptions.Default"/> will be used.
+    /// </param>
+    /// <returns>The <see cref="SpriteSheet"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when duplicate tag names are found.</exception>
+    public static SpriteSheet Process(AsepriteFile file, ProcessorOptions? options = null)
     {
+        ArgumentNullException.ThrowIfNull(file);
+        options ??= ProcessorOptions.Default;
+
         TextureAtlas textureAtlas = TextureAtlasProcessor.Process(file, options);
         AnimationTag[] tags = new AnimationTag[file.Tags.Length];
         HashSet<string> tagNameCheck = new HashSet<string>();

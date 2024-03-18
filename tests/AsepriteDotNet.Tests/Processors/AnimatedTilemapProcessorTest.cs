@@ -24,7 +24,7 @@ public sealed class AnimatedTilemapProcessorTestFixture
 
     public AnimatedTilemapProcessorTestFixture()
     {
-        string fileName = "raw-animated-tilemap-processor-tests";
+        string fileName = "animated-tilemap-processor-tests";
 
         AsepritePalette palette = new AsepritePalette(0);
         AsepriteTag[] tags = Array.Empty<AsepriteTag>();
@@ -120,7 +120,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
     public AnimatedTilemapProcessorTests(AnimatedTilemapProcessorTestFixture fixture) => _fixture = fixture;
 
     [Fact]
-    public void ProcessRaw_OnlyVisibleLayers_True_Processes_Only_Visible_Layers()
+    public void Process_OnlyVisibleLayers_True_Processes_Only_Visible_Layers()
     {
         AnimatedTilemap tilemap = AnimatedTilemapProcessor.Process(_fixture.AsepriteFile, ProcessorOptions.Default);
 
@@ -148,7 +148,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
         Assert.Equal(1, tilemap.Frames[0].Layers.Length);
         Assert.Equal(1, tilemap.Frames[1].Layers.Length);
 
-        // Getting reference to the aseprite layers and cels used to construct the raw tilemap layers
+        // Getting reference to the aseprite layers and cels used to construct the  tilemap layers
         AsepriteTilemapLayer aseLayer0 = (AsepriteTilemapLayer)_fixture.AsepriteFile.Layers[0];
         AsepriteTilemapCel aseFrame0Cel = (AsepriteTilemapCel)_fixture.AsepriteFile.Frames[0].Cels[0];
         AsepriteTilemapCel aseFrame1Cel = (AsepriteTilemapCel)_fixture.AsepriteFile.Frames[1].Cels[0];
@@ -159,7 +159,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
     }
 
     [Fact]
-    public void ProcessRaw_OnlyVisibleLayers_False_Processes_All_Layers()
+    public void Process_OnlyVisibleLayers_False_Processes_All_Layers()
     {
         ProcessorOptions options = ProcessorOptions.Default with { OnlyVisibleLayers = false };
         AnimatedTilemap tilemap = AnimatedTilemapProcessor.Process(_fixture.AsepriteFile, options);
@@ -190,7 +190,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
         Assert.Equal(2, tilemap.Frames[0].Layers.Length);
         Assert.Equal(2, tilemap.Frames[1].Layers.Length);
 
-        // Getting reference to the aseprite layers and cels used to construct the raw tilemap layers
+        // Getting reference to the aseprite layers and cels used to construct the  tilemap layers
         AsepriteTilemapLayer aseLayer0 = (AsepriteTilemapLayer)_fixture.AsepriteFile.Layers[0];
         AsepriteTilemapLayer aseLayer1 = (AsepriteTilemapLayer)_fixture.AsepriteFile.Layers[1];
         AsepriteTilemapCel aseFrame0Cel0 = (AsepriteTilemapCel)_fixture.AsepriteFile.Frames[0].Cels[0];
@@ -206,7 +206,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
     }
 
     [Fact]
-    public void ProcessRaw_Duplicate_AsepriteLayer_Names_Throws_Exception()
+    public void Process_Duplicate_AsepriteLayer_Names_Throws_Exception()
     {
         AsepriteLayerProperties layerProperties = new AsepriteLayerProperties() { BlendMode = 0, Opacity = 255, Flags = 1 };
         AsepriteLayer[] layers = new AsepriteLayer[]

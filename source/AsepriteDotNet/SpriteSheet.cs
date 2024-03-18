@@ -26,7 +26,7 @@ public sealed class SpriteSheet : IEquatable<SpriteSheet>
     /// <summary>
     /// Gets a read-only collection of the animation tags for this sprite sheet.
     /// </summary>
-    public IReadOnlyCollection<AnimationTag> Tags => _tags;
+    public ReadOnlySpan<AnimationTag> Tags => _tags;
 
 
     internal SpriteSheet(string name, TextureAtlas textureAtlas, AnimationTag[] tags) =>

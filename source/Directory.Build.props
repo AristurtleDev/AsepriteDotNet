@@ -18,7 +18,7 @@
         <Authors>Christopher Whitley and contributors</Authors>
         <Company>Aristurtle</Company>
         <PackageProjectUrl>https://github.com/AristurtleDev/AsepriteDotNet</PackageProjectUrl>
-        <PackageIcon>aseprite-dotnet-nuget-icon.png</PackageIcon>
+        <PackageIcon>nuget-icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageReleaseNotes></PackageReleaseNotes>
         <PackageTags>Aseprite;reader;pixel art;png;spritesheet;tilesheet</PackageTags>

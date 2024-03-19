@@ -26,6 +26,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorProcessingBenchmark", "benchmarks\ColorProcessingBenchmark\ColorProcessingBenchmark.csproj", "{201F4F7E-C68D-400C-AB87-9A77578DDBEB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{1515BA5C-6095-4F5F-94E6-7D54D09321DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsepriteDotNet.Build", "build\AsepriteDotNet.Build.csproj", "{27B2E61B-9CA4-44D2-834F-772B7D233D9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +48,10 @@ Global
 		{201F4F7E-C68D-400C-AB87-9A77578DDBEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{201F4F7E-C68D-400C-AB87-9A77578DDBEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{201F4F7E-C68D-400C-AB87-9A77578DDBEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27B2E61B-9CA4-44D2-834F-772B7D233D9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27B2E61B-9CA4-44D2-834F-772B7D233D9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27B2E61B-9CA4-44D2-834F-772B7D233D9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27B2E61B-9CA4-44D2-834F-772B7D233D9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,5 +60,6 @@ Global
 		{18E8668C-4BF2-4F9B-8016-E1F22BD53BCA} = {B63FA11D-4B29-45F2-AAD9-BF489AEE7BAA}
 		{A289C75E-0BCF-421F-AAE0-050F45AC4F4E} = {5F219449-CE10-4DD9-BBE5-251720F3B5E3}
 		{201F4F7E-C68D-400C-AB87-9A77578DDBEB} = {C4B76AC7-83D0-4F29-BAB9-3C0EAFB31C0D}
+		{27B2E61B-9CA4-44D2-834F-772B7D233D9F} = {1515BA5C-6095-4F5F-94E6-7D54D09321DE}
 	EndGlobalSection
 EndGlobal

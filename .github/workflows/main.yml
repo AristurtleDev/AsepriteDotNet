@@ -2,10 +2,9 @@ name: Build AsepriteDotNEt
 
 on:
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ develop, main ]
   push:
-    branches:
-      - $default-branch
+    branches: [ main ]
     tags:
       - 'version*'
 
@@ -27,7 +26,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Build
-        run: dotnet run --project build/AsperiteDotNet.Build.csproj -- --target=Default
+        run: dotnet run --project build/AsepriteDotNet.Build.csproj -- --target=Default
 
       - name: Upload Artifacts
         run: dotnet run --project build/AsepriteDotNet.Build.csproj -- --target=UploadArtifacts

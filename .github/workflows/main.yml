@@ -70,18 +70,20 @@ jobs:
       packages: write
       contents: write
     steps:
-        - name: Clone Repository
-          uses: actions/checkout@v4
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v3
+        
+      - name: Clone Repository
+        uses: actions/checkout@v4
 
-        - name: Setup .NET
-          uses: actions/setup-dotnet@v4
-          with:
-            dotnet-version: '8.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-        - name: Push NuGets
-          run: dotnet run --project build/AsepriteDotNet.Build.csproj -- --target=DeployNuGets
-          env:
-            NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-
-
-
+      - name: Push NuGets
+        run: dotnet run --project build/AsepriteDotNet.Build.csproj -- --target=DeployNuGets
+        env:
+          ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
+          ACTIONS_RUNTIME_URL: "${{ env.ACTIONS_RUNTIME_URL }}"
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

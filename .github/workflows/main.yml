@@ -2,10 +2,9 @@ name: Build AsepriteDotNEt
 
 on:
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ develop, main ]
   push:
-    branches:
-      - $default-branch
+    branches: [ main ]
     tags:
       - 'version*'
 

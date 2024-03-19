@@ -1,383 +1,340 @@
-/* ----------------------------------------------------------------------------
-MIT License
+//  Copyright (c) Christopher Whitley. All rights reserved.
+//  Licensed under the MIT license.
+//  See LICENSE file in the project root for full license information
 
-Copyright (c) 2022 Christopher Whitley
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
----------------------------------------------------------------------------- */
 using System.Buffers.Binary;
-
-namespace AsepriteDotNet.IO;
+using System.IO.Compression;
+using System.Runtime.InteropServices;
+using System.Text;
+using AsepriteDotNet.Compression;
 
 /// <summary>
-///     A low-level binary reader designed to read data types from an
-///     Aseprite file.
+/// A low-level binary reader designed to read data types from an Aseprite file.
 /// </summary>
 internal sealed class AsepriteBinaryReader : IDisposable
 {
-    private Stream _stream;
-    private bool _isDisposed = false;
+    private readonly Stream _stream;
+    private readonly bool _leaveOpen;
     private readonly byte[] _buffer = new byte[16];
+    private bool _isDisposed;
 
     /// <summary>
-    ///     Gets the position of the underlying stream.
+    /// Gets the current position of the underlying stream.
     /// </summary>
     public long Position => _stream.Position;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="AsepriteBinaryReader"/>
-    ///     class.
-    /// </summary>
-    /// <param name="input">
-    ///     The input stream to read from. Must support reading and seeking.
-    /// </param>
-    /// <exception cref="NotSupportedException">
-    ///     Thrown if the specified <see cref="Stream"/> does not support
-    ///     reading or seeking.
-    /// </exception>
-    public AsepriteBinaryReader(Stream input)
+    public AsepriteBinaryReader(Stream input, bool leaveOpen = false)
     {
-        if (!input.CanRead)
-        {
-            throw new NotSupportedException("The input stream must supported reading");
-        }
-
-        if (!input.CanSeek)
-        {
-            throw new NotSupportedException("The input stream must support seeking");
-        }
-
+        ArgumentNullException.ThrowIfNull(input);
+        ValidateCanRead(input.CanRead);
+        ValidateCanSeek(input.CanSeek);
         _stream = input;
+        _leaveOpen = leaveOpen;
     }
 
     ~AsepriteBinaryReader() => Dispose(false);
 
     /// <summary>
-    ///     Reads the next byte from the underlying stream and advances the
-    ///     stream by one byte.
+    /// Reads the next byte from the underlying stream and advances the stream by one byte.
     /// </summary>
-    /// <returns>
-    ///     The next byte read from the underlying stream.
-    /// </returns>
+    /// <returns>The next byte read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
+    /// </exception>
+    /// <exception cref="EndOfStreamException">
+    /// Thrown if the end of stream is was reached when attempting to read.
     /// </exception>
     public byte ReadByte()
     {
-        ThrowIfDisposed();
+        ValidateDisposed(_isDisposed);
 
         int b = _stream.ReadByte();
-
         if (b == -1)
         {
             throw new EndOfStreamException("The end of stream was reached");
         }
-
         return (byte)b;
-
     }
 
     /// <summary>
-    ///     Reads the specified number of bytes from the underlying stream and
-    ///     advances the stream by that number of bytes.
+    /// Reads the specified number of bytes from the underlying stream and advances the stream by that number of bytes.
     /// </summary>
-    /// <param name="nBytes">
-    ///     The number of bytes to read from the underlying stream.
-    /// </param>
-    /// <returns>
-    ///     A new byte array containing the bytes read from the underlying
-    ///     stream.
-    /// </returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if the specified number of bytes to read is less than zero.
-    /// </exception>
+    /// <param name="count">The number of bytes to read from the underlying stream</param>
+    /// <returns>A new byte array containing the bytes read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Throw if <paramref name="count"/> is less than zero.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    ///     Thrown if the the end of stream is reached before reading the
-    ///     specified number of bytes.
+    /// Thrown if the end of stream is was reached when attempting to read.
     /// </exception>
-    public byte[] ReadBytes(int nBytes)
+    public byte[] ReadBytes(int count)
     {
-        if (nBytes < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(nBytes), "{nameof(count)} must be greater then 0");
-        }
+        ValidateDisposed(_isDisposed);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        ThrowIfDisposed();
-
-        if (nBytes == 0)
+        if (count == 0)
         {
             return Array.Empty<byte>();
         }
 
-        byte[] result = new byte[nBytes];
-
+        byte[] result = new byte[count];
         _stream.ReadExactly(result);
-
         return result;
     }
 
     /// <summary>
-    ///     Reads all bytes from the underlying stream from the current position
-    ///     of the underlying stream up to the specified position.
+    /// Reads a 2-byte unsigned integer from the underlying stream and advances the stream by two bytes.
     /// </summary>
-    /// <param name="pos">
-    ///     The position to read to.
-    /// </param>
-    /// <returns>
-    ///     A new byte array containing the bytes read from the underlying
-    ///     stream.
-    /// </returns>
-    public byte[] ReadToPosition(long pos)
-    {
-        int len = (int)(pos - _stream.Position);
-        return ReadBytes(len);
-    }
-
-    /// <summary>
-    ///     Reads a 2-byte unsigned integer from the underlying stream and
-    ///     advances the stream by two bytes.
-    /// </summary>
-    /// <returns>
-    ///     The 2-byte unsigned integer read from the underlying stream.
-    /// </returns>
+    /// <returns>The 2-byte unsigned integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    ///     Thrown if the end of stream is reach while attempting to read the
-    ///     data type.
+    /// Thrown if the end of stream is was reached when attempting to read.
     /// </exception>
     public ushort ReadWord()
     {
-        ThrowIfDisposed();
-        _stream.ReadExactly(_buffer.AsSpan(0, 2));
+        ValidateDisposed(_isDisposed);
+        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(ushort)));
         return BinaryPrimitives.ReadUInt16LittleEndian(_buffer);
-
     }
 
-
     /// <summary>
-    ///     Reads a 2-byte signed integer from the underlying stream and
-    ///     advances the stream by two bytes.
+    /// Reads a 2-byte signed integer from the underlying stream and advances the stream by two bytes.
     /// </summary>
-    /// <returns>
-    ///     The 2-byte signed integer read from the underlying stream.
-    /// </returns>
+    /// <returns>The 2-byte signed integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    ///     Thrown if the end of stream is reach while attempting to read the
-    ///     data type.
+    /// Thrown if the end of stream is was reached when attempting to read.
     /// </exception>
     public short ReadShort()
     {
-        ThrowIfDisposed();
-        _stream.ReadExactly(_buffer.AsSpan(0, 2));
+        ValidateDisposed(_isDisposed);
+        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(short)));
         return BinaryPrimitives.ReadInt16LittleEndian(_buffer);
     }
 
     /// <summary>
-    ///     Reads a 4-byte unsigned integer from the underlying stream and
-    ///     advances the stream by four bytes.
+    /// Reads a 4-byte unsigned integer from the underlying stream and advances the stream by four bytes.
     /// </summary>
-    /// <returns>
-    ///     The 4-byte unsigned integer read from the underlying stream.
-    /// </returns>
+    /// <returns>The 4-byte unsigned integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    ///     Thrown if the end of stream is reach while attempting to read the
-    ///     data type.
+    /// Thrown if the end of stream is was reached when attempting to read.
     /// </exception>
     public uint ReadDword()
     {
-        ThrowIfDisposed();
-        _stream.ReadExactly(_buffer.AsSpan(0, 4));
+        ValidateDisposed(_isDisposed);
+        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(uint)));
         return BinaryPrimitives.ReadUInt32LittleEndian(_buffer);
     }
 
     /// <summary>
-    ///     Reads a 4-byte signed integer from the underlying stream and
-    ///     advances the stream by four bytes.
+    /// Reads a 4-byte signed integer from the underlying stream and advances the stream by four bytes.
     /// </summary>
-    /// <returns>
-    ///     The 4-byte signed integer read from the underlying stream.
-    /// </returns>
+    /// <returns>The 4-byte signed integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    ///     Thrown if the end of stream is reach while attempting to read the
-    ///     data type.
+    /// Thrown if the end of stream is was reached when attempting to read.
     /// </exception>
     public int ReadLong()
     {
-        ThrowIfDisposed();
-        _stream.ReadExactly(_buffer.AsSpan(0, 4));
+        ValidateDisposed(_isDisposed);
+        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(int)));
         return BinaryPrimitives.ReadInt32LittleEndian(_buffer);
     }
 
     /// <summary>
-    ///     Reads a 4-byte floating point integer from the underlying stream and
-    ///     advances the stream by four bytes.
+    /// Reads a 4-byte floating point integer from the underlying stream and advances the stream by four bytes.
     /// </summary>
-    /// <returns>
-    ///     The 4-byte floating point integer read from the underlying stream.
-    /// </returns>
+    /// <returns>The 4-byte floating point integer read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    ///     Thrown if the end of stream is reach while attempting to read the
-    ///     data type.
+    /// Thrown if the end of stream is was reached when attempting to read.
     /// </exception>
     public float ReadFixed()
     {
-        ThrowIfDisposed();
-        _stream.ReadExactly(_buffer.AsSpan(0, 4));
+        ValidateDisposed(_isDisposed);
+        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(float)));
         return BinaryPrimitives.ReadSingleLittleEndian(_buffer);
     }
 
     /// <summary>
-    ///     Reads an n-length string from the underlying stream.  Strings are
-    ///     prepended by a 2-byte unsigned integer that specifies the length of
-    ///     the string to read.  When this method returns, the underlying stream
-    ///     will be advances by 2+len bytes.
+    /// Reads an n-length string from the underlying stream.  Strings are prepended by a 2-byte unsigned integer that
+    /// specifies the length of the string to read.  When this method returns, the underlying stream will be advanced by
+    /// 2+n bytes.
     /// </summary>
-    /// <returns>
-    ///     The string read from the underlying stream.
-    /// </returns>
+    /// <returns>The string read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    ///     Thrown if the end of stream is reach while attempting to read the
-    ///     data type.
+    /// Thrown if the end of stream is was reached when attempting to read.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if an exception occurs during the internal call to <see cref="Encoding.GetString(byte[])"/>.  See inner
+    /// exception for details.
     /// </exception>
     public string ReadString()
     {
-        int sLen = ReadWord();
-        byte[] sBytes = ReadBytes(sLen);
-
+        int len = ReadWord();
+        byte[] data = ReadBytes(len);
         try
         {
-            return System.Text.Encoding.UTF8.GetString(sBytes);
+            return Encoding.UTF8.GetString(data);
         }
         catch (Exception ex)
         {
-            throw new Exception("An exception occurred while encoding the data as a string. Please see inner exception for details", ex);
+            throw new InvalidOperationException("An exception occurred while encoding the data as a string.  Please see inner exception for details", ex);
         }
     }
 
     /// <summary>
-    ///     Skips the specified number of bytes by advancing the underlying
-    ///     stream by that number of bytes.
+    /// Reads a string of the given byte length from the underlying stream and advances the stream by that many bytes.
     /// </summary>
-    /// <param name="nBytes">
-    ///     The total number of bytes to skip.
-    /// </param>
+    /// <param name="len">The byte length of the string to read.</param>
+    /// <returns>The string read from the underlying stream.</returns>
+    /// <exception cref="ObjectDisposedException">
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
+    /// </exception>
+    /// <exception cref="EndOfStreamException">
+    /// Thrown if the end of stream is was reached when attempting to read.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if an exception occurs during the internal call to <see cref="Encoding.GetString(byte[])"/>.  See inner
+    /// exception for details.
+    /// </exception>
+    public string ReadString(int len)
+    {
+        byte[] data = ReadBytes(len);
+        try
+        {
+            return Encoding.UTF8.GetString(data);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An exception occurred while encoding the data as a string.  Please see inner exception for details", ex);
+        }
+    }
+
+    /// <summary>
+    /// Reads a <typeparamref name="T"/> value from the underlying stream and advances the underlying stream by a number
+    /// of bytes equal to <paramref name="structSize"/>.
+    /// </summary>
+    /// <typeparam name="T">The value type to read from the underlying stream.</typeparam>
+    /// <param name="structSize">The exact byte size of an instance of <typeparamref name="T"/></param>
+    /// <returns>the <typeparamref name="T"/> read from the underlying stream.</returns>
+    /// <exception cref="ObjectDisposedException">
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
+    /// </exception>
     /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if the specified number of bytes is a negative number.
+    /// Throw if <paramref name="structSize"/> is less than zero.
     /// </exception>
-    /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// <exception cref="EndOfStreamException">
+    /// Thrown if the end of stream is was reached when attempting to read.
     /// </exception>
-    public void Skip(int nBytes)
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if an exception occurs during the internal call to <see cref="Marshal.PtrToStructure{T}(nint)"/>.  See
+    /// inner exception for details.
+    /// </exception>
+    public T ReadUnsafe<T>(int structSize) where T : struct
     {
-        if (nBytes < 0)
+        T value;
+        Span<byte> data = ReadBytes(structSize);
+        try
         {
-            throw new ArgumentOutOfRangeException(nameof(nBytes), $"{nameof(nBytes)} must be a non-negative number");
+            unsafe
+            {
+                fixed (byte* ptr = data)
+                {
+                    value = Marshal.PtrToStructure<T>((IntPtr)ptr);
+                }
+            }
+            return value;
         }
-
-        ThrowIfDisposed();
-        _stream.Seek(_stream.Position + nBytes, SeekOrigin.Begin);
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An exception occurred while reading the type.  Please see inner exception for details", ex);
+        }
     }
 
     /// <summary>
-    ///     Sets the position of the underlying stream to the specified
-    ///     position.
+    /// Reads the specified number of compressed bytes from the underlying stream and advances the stream by that
+    /// number of bytes.
     /// </summary>
-    /// <param name="position">
-    ///     The position to set the underlying stream to.
+    /// <param name="count">The number of compressed bytes to read from the underlying stream.</param>
+    /// <returns>The bytes read and decompressed from the underlying stream.</returns>
+    public byte[] ReadCompressed(int count)
+    {
+        byte[] compressed = ReadBytes(count);
+        return Zlib.Deflate(compressed);
+    }
+
+    /// <summary>
+    /// Ignores the specified number of bytes by advancing the underlying stream by that number of bytes.
+    /// </summary>
+    /// <param name="count">The number of bytes to ignore.</param>
+    /// <exception cref="ObjectDisposedException">
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if an exception occurs during the internal call to <see cref="Stream.Seek(long, SeekOrigin)"/>.  See
+    /// inner exception for details.
+    /// </exception>
+    public void Ignore(int count) => Seek(count, SeekOrigin.Current);
+
+    /// <summary>
+    /// Sets the position of the underlying stream.
+    /// </summary>
+    /// <param name="offset">A byte offset relative to the <paramref name="origin"/> parameter</param>
+    /// <param name="origin">
+    /// A value of type <see cref="SeekOrigin"/> indicating the reference point used to obtain the new position
     /// </param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    ///     Thrown if the specified position is a negative number.
-    /// </exception>
     /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/> 
-    ///     class, or the underlying stream, has been disposed of prior to 
-    ///     calling this method.
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
     /// </exception>
-    public void Seek(long position)
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if an exception occurs during the internal call to <see cref="Stream.Seek(long, SeekOrigin)"/>.  See
+    /// inner exception for details.
+    /// </exception>
+    public void Seek(long offset, SeekOrigin origin)
     {
-        if (position < 0)
+        ValidateDisposed(_isDisposed);
+        try
         {
-            throw new ArgumentOutOfRangeException(nameof(position), $"{nameof(position)} must be a non-negative number");
+            _stream.Seek(offset, origin);
         }
-
-        ThrowIfDisposed();
-        _stream.Position = position;
-    }
-
-    /// <summary>
-    ///     Throws a new instance of the <see cref="ObjectDisposedException"/>
-    ///     class if this instance of the <see cref="AsepriteBinaryReader"/>
-    ///     class has been disposed of.
-    /// </summary>
-    /// <exception cref="ObjectDisposedException">
-    ///     Thrown if this instance of the <see cref="AsepriteBinaryReader"/>
-    ///     class has been disposed of.
-    /// </exception>
-    private void ThrowIfDisposed()
-    {
-        if (_isDisposed)
+        catch (Exception ex)
         {
-            throw new ObjectDisposedException(null, $"Cannot access {nameof(AsepriteBinaryReader)}, it has already been disposed of");
+            throw new InvalidOperationException("An exception occurred while attempting to seek the stream.  Please see inner exception for details", ex);
         }
     }
 
     /// <summary>
-    ///     Disposes of resources managed by this instance of the 
-    ///     <see cref="AsepriteBinaryReader"/> class.
+    /// Disposes of resources managed by this instance of the <see cref="AsepriteBinaryReader"/> class.
     /// </summary>
     public void Dispose()
     {
@@ -387,16 +344,37 @@ internal sealed class AsepriteBinaryReader : IDisposable
 
     private void Dispose(bool isDisposing)
     {
-        if (_isDisposed)
-        {
-            return;
-        }
+        if (_isDisposed) { return; }
 
-        if (isDisposing)
+        if (isDisposing && !_leaveOpen)
         {
             _stream.Close();
         }
 
         _isDisposed = true;
+    }
+
+    private static void ValidateCanRead(bool canRead)
+    {
+        if (!canRead)
+        {
+            throw new NotSupportedException("The input stream must support reading");
+        }
+    }
+
+    private static void ValidateCanSeek(bool canSeek)
+    {
+        if (!canSeek)
+        {
+            throw new NotSupportedException("The input stream must support seeking");
+        }
+    }
+
+    private static void ValidateDisposed(bool disposed)
+    {
+        if (disposed)
+        {
+            throw new ObjectDisposedException(nameof(AsepriteBinaryReader), $"The {nameof(AsepriteBinaryReader)} has been disposed previously.");
+        }
     }
 }

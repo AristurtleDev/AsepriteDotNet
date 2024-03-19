@@ -1,241 +1,103 @@
-/* -----------------------------------------------------------------------------
-Copyright 2022 Christopher Whitley
+﻿// Copyright[MethodImpl(MethodImplOptions.AggressiveInlining)] (c) Christopher Whitley. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
------------------------------------------------------------------------------ */
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace AsepriteDotNet.Common;
 
 /// <summary>
-///     Represents the width and height of something.
+/// Defines an ordered pair of 32-bit signed integer values that represents the width and height of a two dimensional
+/// object.
 /// </summary>
+[StructLayout(LayoutKind.Sequential)]
 public struct Size : IEquatable<Size>
 {
     /// <summary>
-    ///     Represents a <see cref="Size"/> value who's width and height
-    ///     elements are initialized to zero.
+    /// A <see cref="Size"/> who's <see cref="Size.Width"/> and <see cref="Size.Height"/> component values are both zero.
     /// </summary>
-    public static readonly Size Empty = new Size(0, 0);
-
-    private int _w;
-    private int _h;
+    public static readonly Size Empty;
 
     /// <summary>
-    ///     Gets the width element of this <see cref="Size"/>.
+    /// The width, in pixels.
     /// </summary>
-    public int Width
+    public int Width;
+
+    /// <summary>
+    /// The height, in pixels.
+    /// </summary>
+    public int Height;
+
+    /// <summary>
+    /// Gets a value that indicates if this is an empty size.
+    /// </summary>
+    public readonly bool IsEmpty => Equals(Empty);
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Size"/> value.
+    /// </summary>
+    /// <param name="width">The width, in pixels.</param>
+    /// <param name="height">The height, in pixels.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Size(int width, int height) => (Width, Height) = (width, height);
+
+    /// <summary>
+    /// Returns this <see cref="Size"/> value as a <see cref="Vector2"/> value.
+    /// </summary>
+    /// <returns>This <see cref="Size"/> value as a <see cref="Vector2"/> value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Vector2 ToVector2() => new Vector2(Width, Height);
+
+    /// <summary>
+    /// Returns  this <see cref="Size"/> value as a <typeparamref name="T"/> value.
+    /// </summary>
+    /// <typeparam name="T">The type to convert this <see cref="Size"/> to.</typeparam>
+    /// <param name="converter">A function that defines how to perform the conversion.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly T To<T>(Func<Size, T> converter)
     {
-        readonly get => _w;
-        set => _w = value;
+        ArgumentNullException.ThrowIfNull(converter);
+        return converter(this);
     }
 
     /// <summary>
-    ///     Gets the height element of this <see cref="Size"/>.
+    /// Returns a value that indicates if two <see cref="Size"/> values are equal.
     /// </summary>
-    public int Height
-    {
-        readonly get => _h;
-        set => _h = value;
-    }
-
-    /// <summary>
-    ///     Gets a value that indicates whether this <see cref="Size"/> is
-    ///     empty, meaning that its width and height elements are set to zero.
-    /// </summary>
-    public readonly bool IsEmpty => _w == 0 && _h == 0;
-
-    /// <summary>
-    ///     Initializes a new <see cref="Size"/> value.
-    /// </summary>
-    /// <param name="w">
-    ///     The width element of this <see cref="Size"/>.
-    /// </param>
-    /// <param name="h">
-    ///     The height element of this <see cref="Size"/>.
-    /// </param>
-    public Size(int w, int h) => (_w, _h) = (w, h);
-
-    /// <summary>
-    ///     Returns a value that indicates whether the specified 
-    ///     <see cref="object"/> is equal to this <see cref="Size"/>.
-    /// </summary>
-    /// <param name="obj">
-    ///     The <see cref="object"/> to check for equality with this 
-    ///     <see cref="Size"/>.
-    /// </param>
+    /// <param name="left">The <see cref="Size"/> value on the left of the equality operator.</param>
+    /// <param name="right">The <see cref="Size"/> value on the right of the equality operator.</param>
     /// <returns>
-    ///     <see langword="true"/> if the specified <see cref="object"/> is
-    ///     equal to this <see cref="Size"/>; otherwise, 
-    ///     <see langword="false"/>.
+    /// <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are equal; otherwise,
+    /// <see langword="false"/>.
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(Size left, Size right) => left.Equals(right);
+
+    /// <summary>
+    /// Returns a value that indicates if two <see cref="Size"/> values are not equal.
+    /// </summary>
+    /// <param name="left">The <see cref="Size"/> value on the left of the inequality operator.</param>
+    /// <param name="right">The <see cref="Size"/> value on the right of the inequality operator.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="left"/> and <paramref name="right"/> are not equal; otherwise,
+    /// <see langword="false"/>.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(Size left, Size right) => !left.Equals(right);
+
+    /// <inheritdoc/>
     public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Size other && Equals(other);
 
-    /// <summary>
-    ///     Returns a value that indicates whether the specified 
-    ///     <see cref="Size"/> is equal to this <see cref="Size"/>.
-    /// </summary>
-    /// <param name="other">
-    ///     The other <see cref="Size"/> to check for equality
-    /// </param>
-    /// <returns>
-    ///     <see langword="true"/> if the specified <see cref="Size"/> value
-    ///     is equal to this <see cref="Size"/> value; otherwise,
-    ///     <see langword="false"/>.
-    /// </returns>
-    public readonly bool Equals(Size other) => this == other;
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool Equals(Size other) => Width.Equals(other.Width) && Height.Equals(other.Height);
 
-    /// <summary>   
-    ///     Returns the hash code for this <see cref="Size"/> value.
-    /// </summary>
-    /// <returns>
-    ///     A 32-bit signed integer that is the hash code for this
-    ///     <see cref="Size"/> value.
-    /// </returns>
-    public override readonly int GetHashCode() => HashCode.Combine(_w, _h);
+    /// <inheritdoc/>
+    public override readonly int GetHashCode() => HashCode.Combine(Width, Height);
 
-    /// <summary>
-    ///     Adds the width and height elements of two <see cref="Size"/>
-    ///     values.
-    /// </summary>
-    /// <param name="left">
-    ///     The <see cref="Size"/> value on the left side of the addition
-    ///     operator.
-    /// </param>
-    /// <param name="right">
-    ///     The <see cref="Size"/> value on the right side fo the addition
-    ///     operator.
-    /// </param>
-    /// <returns>
-    ///     A new <see cref="Size"/> value who's width and height elements are
-    ///     the sum of the two <see cref="Size"/> values given.
-    /// </returns>
-    public static Size operator +(Size left, Size right) => Add(left, right);
-
-    /// <summary>
-    ///     Subtracts the width and height elements of one <see cref="Size"/> 
-    ///     value from another.
-    /// </summary>
-    /// <param name="left">
-    ///     The <see cref="Size"/> value on the left side of the subtraction
-    ///     operator.
-    /// </param>
-    /// <param name="right">
-    ///     The <see cref="Size"/> value on the right side fo the subtraction
-    ///     operator.
-    /// </param>
-    /// <returns>
-    ///     A new <see cref="Size"/> value who's width and height  elements are 
-    ///     the result of subtracting the width and height elements of the
-    ///     <paramref name="right"/> <see cref="Size"/> from the width and
-    ///     height elements of the <paramref name="left"/> <see cref="Size"/>.
-    /// </returns>
-    public static Size operator -(Size left, Size right) => Subtract(left, right);
-
-    /// <summary>
-    ///     Compares two <see cref="Size"/> values for equality.
-    /// </summary>
-    /// <param name="left">
-    ///     The <see cref="Size"/> value on the left side of the equality
-    ///     operator.
-    /// </param>
-    /// <param name="right">
-    ///     The <see cref="Size"/> value on the right side of the equality
-    ///     operator.
-    /// </param>
-    /// <returns>
-    ///     <see langword="true"/> if the two <see cref="Size"/> values are
-    ///     equal; otherwise, <see langword="false"/>.
-    /// </returns>
-    public static bool operator ==(Size left, Size right) => left._w == right._w && left._h == right._h;
-
-    /// <summary>
-    ///     Compares two <see cref="Size"/> values for inequality.
-    /// </summary>
-    /// <param name="left">
-    ///     The <see cref="Size"/> value on the left side of the inequality
-    ///     operator.
-    /// </param>
-    /// <param name="right">
-    ///     The <see cref="Size"/> value on the right side of the inequality
-    ///     operator.
-    /// </param>
-    /// <returns>
-    ///     <see langword="true"/> if the two <see cref="Size"/> values are
-    ///     unequal; otherwise, <see langword="false"/>.
-    /// </returns>
-    public static bool operator !=(Size left, Size right) => !(left == right);
-
-    /// <summary>
-    ///     Adds the width and height elements of <paramref name="size2"/> to
-    ///     the width and height elements of <paramref name="size1"/>. The
-    ///     result is a new <see cref="Size"/> value where the width and height
-    ///     elements are the result of the addition.
-    ///     (size1 + size2)
-    /// </summary>
-    /// <param name="size1">
-    ///     The <see cref="Size"/> value that will have the width and height
-    ///     elements of <paramref name="size2"/> added to its width and height
-    ///     elements.
-    /// </param>
-    /// <param name="size2">
-    ///     The <see cref="Size"/> value who's width and height elements will
-    ///     be added to the width and height elements of 
-    ///     <paramref name="size1"/>.
-    /// </param>
-    /// <returns>
-    ///     A new <see cref="Size"/> value who's width and height elements are 
-    ///     the result of adding the width and height elements of
-    ///     <paramref name="size2"/> to the width and height elements of
-    ///     <paramref name="size1"/>.
-    /// </returns>
-    public static Size Add(Size size1, Size size2) => new Size(unchecked(size1._w + size2._w), unchecked(size1._h + size2._h));
-
-    /// <summary>
-    ///     Subtracts the width and height elements of <paramref name="size2"/>
-    ///     from the width and height elements of <paramref name="size1"/>.  The
-    ///     result is a new <see cref="Size"/> value where the width and height
-    ///     elements are the result of the subtraction.
-    ///     (size1 - size2)
-    /// </summary>
-    /// <param name="size1">
-    ///     The <see cref="Size"/> value that will have the width and height
-    ///     elements of <paramref name="size2"/> subtracted from it's width and
-    ///     height elements.
-    /// </param>
-    /// <param name="size2">
-    ///     The <see cref="Size"/> value who's width and height elements will
-    ///     be subtracted from the width and height elements of
-    ///     <paramref name="size1"/>.
-    /// </param>
-    /// <returns>
-    ///     A new <see cref="Size"/> value who's width and height elements are 
-    ///     the result of subtracting the width and height elements of
-    ///     <paramref name="size2"/> from the width and height elements of 
-    ///     <paramref name="size1"/>.
-    /// </returns>
-    public static Size Subtract(Size size1, Size size2) => new Size(unchecked(size1._w - size2._w), unchecked(size1._h - size2._h));
-
-    /// <summary>
-    ///     Returns a string representation of this <see cref="Size"/>.
-    /// </summary>
-    /// <returns>
-    ///     A new string representation of this <see cref="Size"/>.
-    /// </returns>
-    public override readonly string ToString() => $"{{Width={Width}, Height={Height}}}";
+    /// <inheritdoc/>
+    public override readonly string ToString() => $"{nameof(Size)}: ({Width}, {Height})";
 }

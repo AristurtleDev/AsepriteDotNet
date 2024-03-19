@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+    <!-- Set the project category used by the root Directory.Build.props -->
+    <PropertyGroup>
+        <ProjectCategory>source</ProjectCategory>
+    </PropertyGroup>
+
+    <!-- We're a library, always generate a documentation file -->
+    <!-- (suck it prime) -->
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <!-- Common Nuget Package Settings -->
+    <PropertyGroup>
+        <Copyright>Copyright © 2024 Christopher Whitley</Copyright>
+        <Authors>Christopher Whitley and contributors</Authors>
+        <Company>Aristurtle</Company>
+        <PackageProjectUrl>https://github.com/AristurtleDev/AsepriteDotNet</PackageProjectUrl>
+        <PackageIcon>nuget-icon.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReleaseNotes></PackageReleaseNotes>
+        <PackageTags>Aseprite;reader;pixel art;png;spritesheet;tilesheet</PackageTags>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryBranch>main</RepositoryBranch>
+        <RepositoryUrl>https://github.com/AristurtleDev/AsepriteDotNet</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <!-- Import the root prop last -->
+    <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
+</Project>

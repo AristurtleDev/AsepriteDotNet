@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="https://raw.githubusercontent.com/AristurtleDev/AsepriteDotNet/main/.github/.images/banner.png" alt="AsepriteDotNet Logo">
+<img src="https://raw.githubusercontent.com/AristurtleDev/AsepriteDotNet/main/.images/banner.png" alt="AsepriteDotNet Logo">
 <br/>
 A Cross Platform C# Library for Reading Aseprite Files
 

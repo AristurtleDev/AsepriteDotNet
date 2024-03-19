@@ -113,6 +113,7 @@ AnimatedTilemap animatedTilemap = AnimatedTilemapProcessor.Process(aseFile, opti
 # License
 **AsepriteDotNet** is licensed under the **MIT License**.  Please refer to the [LICENSE](LICENSE) file for full license text.
 
+# Contributors
 <a href="https://github.com/aristurtledev/asepritedotnet/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=aristurtledev/asepritedotnet" />
 </a>

@@ -6,7 +6,7 @@ on:
   push:
     branches: [ main ]
     tags:
-      - 'version*'
+      - 'v*'
 
 jobs:
   build:
@@ -65,7 +65,7 @@ jobs:
     name: Deploy To NuGet
     needs: [ build ]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/version') }}
+    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
     permissions:
       packages: write
       contents: write

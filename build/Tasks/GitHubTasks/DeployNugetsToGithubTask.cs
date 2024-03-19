@@ -9,6 +9,7 @@ using Cake.Frosting;
 namespace AsepriteDotNet.Build;
 
 [TaskName("DeployNugetsToGithub")]
+[IsDependentOn(typeof(DownloadArtifactsTask))]
 public sealed class DeployNugetsToGitHubTask : FrostingTask<BuildContext>
 {
     public override bool ShouldRun(BuildContext context) => context.BuildSystem().IsRunningOnGitHubActions;

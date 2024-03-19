@@ -24,11 +24,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{C4B76AC7-83D0-4F29-BAB9-3C0EAFB31C0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorProcessingBenchmark", "benchmarks\ColorProcessingBenchmark\ColorProcessingBenchmark.csproj", "{201F4F7E-C68D-400C-AB87-9A77578DDBEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorProcessingBenchmark", "benchmarks\ColorProcessingBenchmark\ColorProcessingBenchmark.csproj", "{201F4F7E-C68D-400C-AB87-9A77578DDBEB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{1515BA5C-6095-4F5F-94E6-7D54D09321DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsepriteDotNet.Build", "build\AsepriteDotNet.Build.csproj", "{27B2E61B-9CA4-44D2-834F-772B7D233D9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsepriteDotNet.Build", "build\AsepriteDotNet.Build.csproj", "{27B2E61B-9CA4-44D2-834F-772B7D233D9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{BC452291-6909-42FE-9343-7FD2F4F4F0E5}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main.yml = .github\workflows\main.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,5 +66,6 @@ Global
 		{A289C75E-0BCF-421F-AAE0-050F45AC4F4E} = {5F219449-CE10-4DD9-BBE5-251720F3B5E3}
 		{201F4F7E-C68D-400C-AB87-9A77578DDBEB} = {C4B76AC7-83D0-4F29-BAB9-3C0EAFB31C0D}
 		{27B2E61B-9CA4-44D2-834F-772B7D233D9F} = {1515BA5C-6095-4F5F-94E6-7D54D09321DE}
+		{BC452291-6909-42FE-9343-7FD2F4F4F0E5} = {2B0F6763-3C96-4753-8E12-6A2975369212}
 	EndGlobalSection
 EndGlobal

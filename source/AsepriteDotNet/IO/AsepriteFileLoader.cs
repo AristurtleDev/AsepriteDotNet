@@ -9,6 +9,9 @@ using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.IO;
 
+/// <summary>
+/// Utility class for loading an Aseprite (.ase/.aseprite) file from disk or a stream.
+/// </summary>
 public static partial class AsepriteFileLoader
 {
     /// <summary>
@@ -16,14 +19,14 @@ public static partial class AsepriteFileLoader
     /// </summary>
     /// <param name="path">The absolute file path to the Aseprite file to load.</param>
     /// <returns>
-    /// A new instance of the <see cref="AsepriteFile"/> class containing the contents of the Aseprite file that was
+    /// A new instance of the <see cref="AsepriteFile{T}"/> class containing the contents of the Aseprite file that was
     /// loaded.
     /// </returns>
-    public static AsepriteFile FromFile(string path)
+    public static AsepriteFile<TColor> FromFile<TColor>(string path) where TColor : struct, IColor<TColor>
     {
         string fileName = Path.GetFileNameWithoutExtension(path);
         using FileStream stream = File.OpenRead(path);
-        return FromStream(fileName, stream, true);
+        return FromStream<TColor>(fileName, stream, true);
     }
 
     /// <summary>
@@ -36,23 +39,25 @@ public static partial class AsepriteFileLoader
     /// otherwise, <see langword="false"/>.
     /// </param>
     /// <returns>
-    /// A new instance of the <see cref="AsepriteFile"/> class containing the contents for the Aseprite file that was
+    /// A new instance of the <see cref="AsepriteFile{T}"/> class containing the contents of the Aseprite file that was
     /// loaded.
     /// </returns>
-    public static AsepriteFile FromStream(string fileName, Stream stream, bool leaveOpen = false)
+    public static AsepriteFile<TColor> FromStream<TColor>(string fileName, Stream stream, bool leaveOpen = false)
+        where TColor : struct, IColor<TColor>
     {
         using AsepriteBinaryReader reader = new AsepriteBinaryReader(stream, leaveOpen);
-        return LoadFile(fileName, reader);
+        return LoadFile<TColor>(fileName, reader);
     }
 
-    private static AsepriteFile LoadFile(string fileName, AsepriteBinaryReader reader)
+    private static AsepriteFile<TColor> LoadFile<TColor>(string fileName, AsepriteBinaryReader reader)
+        where TColor : struct, IColor<TColor>
     {
         //  Collection of non-fatal warnings accumulated while loading the Aseprite file. Provided to the consumer as a
         //  means of seeing why some data may not be what they expect it to be.
         List<string> warnings = new List<string>();
 
         //  Reference to the last group layer that was read so that subsequent child layers can be added to it.
-        AsepriteGroupLayer? lastGroupLayer = null;
+        AsepriteGroupLayer<TColor>? lastGroupLayer = null;
 
         //  Flag to determine if the palette has been read.  This is used to flag that a user data chunk is for the
         //  sprite due to changes in Aseprite 1.3
@@ -95,24 +100,24 @@ public static partial class AsepriteFileLoader
             warnings.Add("Transparent index only valid for Indexed Color Depth mode.  Defaulting to 0");
         }
 
-        AsepritePalette palette = new AsepritePalette(fileHeader.TransparentIndex);
-        List<AsepriteFrame> frames = new List<AsepriteFrame>();
-        List<AsepriteLayer> layers = new List<AsepriteLayer>();
-        List<AsepriteTag> tags = new List<AsepriteTag>();
-        List<AsepriteSlice> slices = new List<AsepriteSlice>();
-        List<AsepriteTileset> tilesets = new List<AsepriteTileset>();
-        AsepriteUserData spriteUserData = new AsepriteUserData();
+        AsepritePalette<TColor> palette = new AsepritePalette<TColor>(fileHeader.TransparentIndex);
+        List<AsepriteFrame<TColor>> frames = new List<AsepriteFrame<TColor>>();
+        List<AsepriteLayer<TColor>> layers = new List<AsepriteLayer<TColor>>();
+        List<AsepriteTag<TColor>> tags = new List<AsepriteTag<TColor>>();
+        List<AsepriteSlice<TColor>> slices = new List<AsepriteSlice<TColor>>();
+        List<AsepriteTileset<TColor>> tilesets = new List<AsepriteTileset<TColor>>();
+        AsepriteUserData<TColor> spriteUserData = new AsepriteUserData<TColor>();
 
         //  Read frame-by-frame until all frames are read.
         for (int frameNum = 0; frameNum < fileHeader.FrameCount; frameNum++)
         {
-            List<AsepriteCel> cels = new List<AsepriteCel>();
+            List<AsepriteCel<TColor>> cels = new List<AsepriteCel<TColor>>();
 
             uint? lastReadChunkType = null;
 
             //  Reference to the user data object to apply user data to from the last chunk that was read that
             //  could have had user data
-            AsepriteUserData? currentUserData = null;
+            AsepriteUserData<TColor>? currentUserData = null;
 
             //  Tracks the iteration of the tags when reading user data for tags chunk.
             int tagIterator = 0;
@@ -145,19 +150,19 @@ public static partial class AsepriteFileLoader
                         {
                             AsepriteLayerProperties properties = reader.ReadUnsafe<AsepriteLayerProperties>(AsepriteLayerProperties.StructSize);
                             string layerName = reader.ReadString(properties.NameLen);
-                            AsepriteLayer layer;
+                            AsepriteLayer<TColor> layer;
                             switch (properties.Type)
                             {
                                 case ASE_LAYER_TYPE_NORMAL:
-                                    layer = new AsepriteImageLayer(properties, layerName);
+                                    layer = new AsepriteImageLayer<TColor>(properties, layerName);
                                     break;
                                 case ASE_LAYER_TYPE_GROUP:
-                                    layer = new AsepriteGroupLayer(properties, layerName);
+                                    layer = new AsepriteGroupLayer<TColor>(properties, layerName);
                                     break;
                                 case ASE_LAYER_TYPE_TILEMAP:
                                     uint tilesetIndex = reader.ReadDword();
-                                    AsepriteTileset tileset = tilesets[(int)tilesetIndex];
-                                    layer = new AsepriteTilemapLayer(properties, layerName, tileset);
+                                    AsepriteTileset<TColor> tileset = tilesets[(int)tilesetIndex];
+                                    layer = new AsepriteTilemapLayer<TColor>(properties, layerName, tileset);
                                     break;
                                 default:
                                     reader.Dispose();
@@ -169,7 +174,7 @@ public static partial class AsepriteFileLoader
                                 lastGroupLayer.AddChild(layer);
                             }
 
-                            if (layer is AsepriteGroupLayer groupLayer)
+                            if (layer is AsepriteGroupLayer<TColor> groupLayer)
                             {
                                 lastGroupLayer = groupLayer;
                             }
@@ -183,8 +188,8 @@ public static partial class AsepriteFileLoader
                     case ASE_CHUNK_CEL:
                         {
                             AsepriteCelProperties properties = reader.ReadUnsafe<AsepriteCelProperties>(AsepriteCelProperties.StructSize);
-                            AsepriteCel cel;
-                            AsepriteLayer celLayer = layers[properties.LayerIndex];
+                            AsepriteCel<TColor> cel;
+                            AsepriteLayer<TColor> celLayer = layers[properties.LayerIndex];
 
                             switch (properties.Type)
                             {
@@ -194,16 +199,16 @@ public static partial class AsepriteFileLoader
                                         AsepriteImageCelProperties imageCelProperties = reader.ReadUnsafe<AsepriteImageCelProperties>(AsepriteImageCelProperties.StructSize);
                                         int len = (int)(chunkEnd - reader.Position);
                                         byte[] data = properties.Type == ASE_CEL_TYPE_COMPRESSED_IMAGE ? reader.ReadCompressed(len) : reader.ReadBytes(len);
-                                        Rgba32[] pixels = AsepriteColorUtilities.PixelsToColor(data, depth, palette);
-                                        cel = new AsepriteImageCel(properties, celLayer, imageCelProperties, pixels);
+                                        TColor[] pixels = AsepriteColorUtilities.PixelsToColor<TColor>(data, depth, palette);
+                                        cel = new AsepriteImageCel<TColor>(properties, celLayer, imageCelProperties, pixels);
                                     }
                                     break;
 
                                 case ASE_CEL_TYPE_LINKED:
                                     {
                                         ushort frameIndex = reader.ReadWord();
-                                        AsepriteCel otherCel = frames[frameIndex].Cels[cels.Count];
-                                        cel = new AsepriteLinkedCel(properties, otherCel);
+                                        AsepriteCel<TColor> otherCel = frames[frameIndex].Cels[cels.Count];
+                                        cel = new AsepriteLinkedCel<TColor>(properties, otherCel);
                                     }
                                     break;
 
@@ -236,7 +241,7 @@ public static partial class AsepriteFileLoader
                                                 }
                                             }
                                         }
-                                        cel = new AsepriteTilemapCel(properties, celLayer, tilemapCelProperties, tiles);
+                                        cel = new AsepriteTilemapCel<TColor>(properties, celLayer, tilemapCelProperties, tiles);
                                     }
                                     break;
 
@@ -269,7 +274,7 @@ public static partial class AsepriteFileLoader
 
                                 string tagName = reader.ReadString(properties.NameLen);
 
-                                AsepriteTag tag = new AsepriteTag(properties, tagName);
+                                AsepriteTag<TColor> tag = new AsepriteTag<TColor>(properties, tagName);
                                 currentUserData = tag.UserData;
                                 lastReadChunkType = chunkHeader.ChunkType;
                                 tags.Add(tag);
@@ -294,7 +299,12 @@ public static partial class AsepriteFileLoader
                                     //  Ignore color name
                                     reader.Ignore(reader.ReadWord());
                                 }
-                                palette[i] = entry.Color;
+                                TColor color = default(TColor);
+                                color.R = entry.R;
+                                color.G = entry.G;
+                                color.B = entry.B;
+                                color.A = entry.A;
+                                palette[i] = color;
                             }
 
                             paletteRead = true;
@@ -306,7 +316,7 @@ public static partial class AsepriteFileLoader
                         {
                             uint flags = reader.ReadDword();
                             string? text = null;
-                            Rgba32? color = null;
+                            TColor? color = null;
 
                             if (Calc.HasFlag(flags, ASE_USER_DATA_FLAG_HAS_TEXT))
                             {
@@ -315,7 +325,8 @@ public static partial class AsepriteFileLoader
 
                             if (Calc.HasFlag(flags, ASE_USER_DATA_FLAG_HAS_COLOR))
                             {
-                                color = reader.ReadUnsafe<Rgba32>(Rgba32.StructSize);
+                                byte[] rgba = reader.ReadBytes(4);
+                                color = rgba.IPackedColorFromBytes<TColor>();
                             }
 
                             if (currentUserData is null && paletteRead)
@@ -372,7 +383,7 @@ public static partial class AsepriteFileLoader
                                 keys[i] = new AsepriteSliceKey(sliceKeyProperties, ninePatchProperties, pivotProperties);
                             }
 
-                            AsepriteSlice slice = new AsepriteSlice(sliceName, isNinePatch, hasPivot, keys);
+                            AsepriteSlice<TColor> slice = new AsepriteSlice<TColor>(sliceName, isNinePatch, hasPivot, keys);
                             currentUserData = slice.UserData;
                             lastReadChunkType = chunkHeader.ChunkType;
                             slices.Add(slice);
@@ -401,8 +412,8 @@ public static partial class AsepriteFileLoader
 
                             uint len = reader.ReadDword();
                             byte[] pixelData = reader.ReadCompressed((int)len);
-                            Rgba32[] pixels = AsepriteColorUtilities.PixelsToColor(pixelData, depth, palette);
-                            AsepriteTileset tileset = new AsepriteTileset(properties, tilesetName, pixels);
+                            TColor[] pixels = AsepriteColorUtilities.PixelsToColor(pixelData, depth, palette);
+                            AsepriteTileset<TColor> tileset = new AsepriteTileset<TColor>(properties, tilesetName, pixels);
                             tilesets.Add(tileset);
                             lastReadChunkType = chunkHeader.ChunkType;
                         }
@@ -439,7 +450,7 @@ public static partial class AsepriteFileLoader
                                     byte b = reader.ReadByte();
                                     byte a = byte.MaxValue;
 
-                                    if(chunkHeader.ChunkType ==  ASE_CHUNK_OLD_PALETTE2)
+                                    if (chunkHeader.ChunkType == ASE_CHUNK_OLD_PALETTE2)
                                     {
                                         //  Old palette type 2 uses six bit values (0-63) that must be expanded to
                                         //  eight bit values.
@@ -447,7 +458,12 @@ public static partial class AsepriteFileLoader
                                         g = (byte)((g << 2) | (g >> 4));
                                         b = (byte)((b << 2) | (b >> 4));
                                     }
-                                    palette[c] = new Rgba32(r, g, b, a);
+                                    TColor color = default(TColor);
+                                    color.R = r;
+                                    color.G = g;
+                                    color.B = b;
+                                    color.A = a;
+                                    palette[c] = color;
                                 }
                             }
 
@@ -489,7 +505,7 @@ public static partial class AsepriteFileLoader
                 reader.Seek(chunkEnd, SeekOrigin.Begin);
             }
 
-            AsepriteFrame frame = new AsepriteFrame($"{fileName}{frameNum}", fileHeader.CanvasWidth, fileHeader.CanvasHeight, frameHeader.Duration, cels);
+            AsepriteFrame<TColor> frame = new AsepriteFrame<TColor>($"{fileName}{frameNum}", fileHeader.CanvasWidth, fileHeader.CanvasHeight, frameHeader.Duration, cels);
             frames.Add(frame);
         }
 
@@ -498,6 +514,6 @@ public static partial class AsepriteFileLoader
             warnings.Add($"Number of colors in file header ({fileHeader.NumberOfColors}) does not match the final palette count ({palette.Colors.Length})");
         }
 
-        return new AsepriteFile(fileName, palette, fileHeader.CanvasWidth, fileHeader.CanvasHeight, depth, frames, layers, tags, slices, tilesets, spriteUserData, warnings);
+        return new AsepriteFile<TColor>(fileName, palette, fileHeader.CanvasWidth, fileHeader.CanvasHeight, depth, frames, layers, tags, slices, tilesets, spriteUserData, warnings);
     }
 }

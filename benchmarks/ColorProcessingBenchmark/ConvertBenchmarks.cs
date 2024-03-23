@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Drawing;
-using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Common;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
@@ -32,9 +30,9 @@ namespace ColorProcessingBenchmark
         }
 
         [Benchmark(Baseline = true)]
-        public Color[] PLINQ_With_Func_AsT()
+        public Rgba32[] PLINQWithFuncAsT()
         {
-            return _colors.As<Color>(aseColor => Color.FromArgb(aseColor.A, aseColor.R, aseColor.G, aseColor.B));
+            return _colors.As<Rgba32, Rgba32>();
         }
     }
 }

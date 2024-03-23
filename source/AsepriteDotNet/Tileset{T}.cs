@@ -11,7 +11,7 @@ namespace AsepriteDotNet;
 /// Defines a tileset composed of source texture.
 /// This class cannot be inherited.
 /// </summary>
-public sealed class Tileset : IEquatable<Tileset>
+public sealed class Tileset<TColor> : IEquatable<Tileset<TColor>> where TColor : struct, IColor<TColor>
 {
     /// <summary>
     /// Gets the unique ID assigned to this tileset.
@@ -26,21 +26,21 @@ public sealed class Tileset : IEquatable<Tileset>
     /// <summary>
     /// Gets the source texture of this tileset.
     /// </summary>
-    public Texture Texture { get; }
+    public Texture<TColor> Texture { get; }
 
     /// <summary>
     /// Gets the size of each tile in the tileset.
     /// </summary>
     public Size TileSize { get; }
 
-    internal Tileset(int id, string name, Texture texture, Size tileSize) =>
+    internal Tileset(int id, string name, Texture<TColor> texture, Size tileSize) =>
         (ID, Name, Texture, TileSize) = (id, name, texture, tileSize);
 
     /// <inheritdoc/>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Tileset other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Tileset<TColor> other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals([NotNullWhen(true)] Tileset? other)
+    public bool Equals([NotNullWhen(true)] Tileset<TColor>? other)
     {
         if (ReferenceEquals(this, other)) { return true; }
         return ID.Equals(other?.ID)

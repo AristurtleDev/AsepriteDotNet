@@ -5,7 +5,6 @@
 using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Text;
-using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Common;
 using AsepriteDotNet.Compression;
 
@@ -18,14 +17,7 @@ internal class PngWriter
     //  8Kib for this project.
     private const int MAX_IDAT_LEN = 8192;
 
-    /// <summary>
-    /// Saves the given color data to disk at the specified path as a PNG image file.
-    /// </summary>
-    /// <param name="path">The absolute path to where the file should be saved.</param>
-    /// <param name="width">The width of the image, in pixels.</param>
-    /// <param name="height">The height of the image, in pixels.</param>
-    /// <param name="data">The color data of the image.</param>
-    public static void SaveTo(string path, int width, int height, Rgba32[] data)
+    public static void SaveTo<T>(string path, int width, int height, T[] data) where T : struct, IColor<T>
     {
         try
         {
@@ -33,7 +25,7 @@ internal class PngWriter
             using BinaryWriter writer = new(fs, Encoding.UTF8);
             WriteSignature(writer);
             WriteIHDR(writer, width, height);
-            WriteIDAT(writer, width, height, data);
+            WriteIDAT<T>(writer, width, height, data);
             WriteIEND(writer);
         }
         catch (Exception ex)
@@ -171,7 +163,7 @@ internal class PngWriter
     //             https://www.w3.org/TR/png-3/#10Compression
     //             https://www.w3.org/TR/png-3/#7Scanline
     //             https://www.w3.org/TR/png-3/#7Filtering
-    private static void WriteIDAT(BinaryWriter writer, int width, int height, Rgba32[] data)
+    private static void WriteIDAT<TColor>(BinaryWriter writer, int width, int height, TColor[] data) where TColor : struct, IColor<TColor>
     {
         void Flush(MemoryStream stream)
         {
@@ -226,7 +218,7 @@ internal class PngWriter
                 deflate.Write(filter);
                 adler.Update(filter);
 
-                Rgba32[] scanline = data[(i)..(i + width)];
+                TColor[] scanline = data[(i)..(i + width)];
                 for (int c = 0; c < scanline.Length; c++)
                 {
                     ReadOnlySpan<byte> pixel = new byte[4]

@@ -10,7 +10,7 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines the properties of custom user data of an element in an Aseprite file.  This class cannot be inherited.
 /// </summary>
-public sealed class AsepriteUserData
+public sealed class AsepriteUserData<TColor> where TColor : struct, IColor<TColor>
 {
     /// <summary>
     /// Gets a value that indicates whether this user data contains a value for the <see cref="Text"/> property.
@@ -32,7 +32,7 @@ public sealed class AsepriteUserData
     /// <summary>
     /// Gets the color that was set for this user data in Aseprite.
     /// </summary>
-    public Rgba32? Color { get; internal set; }
+    public TColor? Color { get; internal set; }
 
     internal AsepriteUserData()
     {

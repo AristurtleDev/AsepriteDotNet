@@ -16,4 +16,8 @@ public class PngException : Exception
 {
     internal PngException(string message, Exception innerException)
         : base(message, innerException) { }
+
+    internal PngException() { }
+
+    internal PngException(string message) : base(message) { }
 }

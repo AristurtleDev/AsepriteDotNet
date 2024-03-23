@@ -12,7 +12,7 @@ namespace AsepriteDotNet.Tests.Processors;
 
 public sealed class TilesetProcessorTestFixture
 {
-    public AsepriteFile AsepriteFile { get; }
+    public AsepriteFile<Rgba32> AsepriteFile { get; }
     public Rgba32 Red { get; } = new Rgba32(255, 0, 0, 255);
     public Rgba32 Green { get; } = new Rgba32(0, 255, 0, 255);
     public Rgba32 Blue { get; } = new Rgba32(0, 0, 255, 255);
@@ -23,14 +23,14 @@ public sealed class TilesetProcessorTestFixture
 
     public TilesetProcessorTestFixture()
     {
-        AsepritePalette palette = new AsepritePalette(0);
-        List<AsepriteTileset> tilesets = new List<AsepriteTileset>()
+        AsepritePalette<Rgba32> palette = new AsepritePalette<Rgba32>(0);
+        List<AsepriteTileset<Rgba32>> tilesets = new List<AsepriteTileset<Rgba32>>()
         {
-            new AsepriteTileset(new AsepriteTilesetProperties(){Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] {Transparent, Red, Green, Blue}),
-            new AsepriteTileset(new AsepriteTilesetProperties(){Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-1", new Rgba32[] {Transparent, White, Gray, Black}),
+            new AsepriteTileset<Rgba32>(new AsepriteTilesetProperties(){Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] {Transparent, Red, Green, Blue}),
+            new AsepriteTileset<Rgba32>(new AsepriteTilesetProperties(){Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-1", new Rgba32[] {Transparent, White, Gray, Black}),
         };
 
-        AsepriteFile = new("file", palette, 0, 0, AsepriteColorDepth.RGBA, [], [], [], [], tilesets, new AsepriteUserData(), []);
+        AsepriteFile = new("file", palette, 0, 0, AsepriteColorDepth.RGBA, [], [], [], [], tilesets, new AsepriteUserData<Rgba32>(), []);
     }
 }
 
@@ -44,9 +44,9 @@ public sealed class TilesetProcessorTests : IClassFixture<TilesetProcessorTestFi
     public void Process_By_Index()
     {
         int index = 0;
-        AsepriteTileset aseTileset = _fixture.AsepriteFile.Tilesets[index];
+        AsepriteTileset<Rgba32> aseTileset = _fixture.AsepriteFile.Tilesets[index];
 
-        Tileset tileset = TilesetProcessor.Process(_fixture.AsepriteFile, index);
+        Tileset<Rgba32> tileset = TilesetProcessor.Process(_fixture.AsepriteFile, index);
 
         Assert.Equal(aseTileset.ID, tileset.ID);
         Assert.Equal(aseTileset.Name, tileset.Name);
@@ -61,9 +61,9 @@ public sealed class TilesetProcessorTests : IClassFixture<TilesetProcessorTestFi
     [Fact]
     public void Process_By_Name()
     {
-        AsepriteTileset aseTileset = _fixture.AsepriteFile.Tilesets[0];
+        AsepriteTileset<Rgba32> aseTileset = _fixture.AsepriteFile.Tilesets[0];
 
-        Tileset tileset = TilesetProcessor.Process(_fixture.AsepriteFile, aseTileset.Name);
+        Tileset<Rgba32> tileset = TilesetProcessor.Process(_fixture.AsepriteFile, aseTileset.Name);
 
         Assert.Equal(aseTileset.ID, tileset.ID);
         Assert.Equal(aseTileset.Name, tileset.Name);

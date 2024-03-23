@@ -11,7 +11,7 @@ namespace AsepriteDotNet.Tests.IO
 {
     public class AsepriteFileLoaderTests
     {
-        private string GetPath(string name)
+        private static string GetPath(string name)
         {
             return Path.Combine(Environment.CurrentDirectory, "Files", name);
         }
@@ -20,7 +20,7 @@ namespace AsepriteDotNet.Tests.IO
         public void AsepriteFileReader_ReadFileTest()
         {
             string path = GetPath("read-test.aseprite");
-            AsepriteFile doc = AsepriteFileLoader.FromFile(path);
+            AsepriteFile<Rgba32> doc = AsepriteFileLoader.FromFile<Rgba32>(path);
 
             //  Expected palette colors
             Rgba32 pal0 = new Rgba32(223, 7, 114, 255);
@@ -49,7 +49,7 @@ namespace AsepriteDotNet.Tests.IO
 
             //  Validate Layers
             Assert.Equal(11, doc.Layers.Length);
-            Assert.IsType<AsepriteImageLayer>(doc.Layers[0]);
+            Assert.IsType<AsepriteImageLayer<Rgba32>>(doc.Layers[0]);
             Assert.True(doc.Layers[0].IsBackgroundLayer);
             Assert.Equal("background", doc.Layers[0].Name);
             Assert.True(doc.Layers[0].IsVisible);
@@ -65,8 +65,8 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal("blendmode-difference", doc.Layers[5].Name);
             Assert.Equal(AsepriteBlendMode.Difference, doc.Layers[5].BlendMode);
             Assert.Equal("tilemap", doc.Layers[6].Name);
-            Assert.Equal(0, Assert.IsType<AsepriteTilemapLayer>(doc.Layers[6]).Tileset.ID);
-            Assert.Equal(2, Assert.IsType<AsepriteGroupLayer>(doc.Layers[7]).Children.Length);
+            Assert.Equal(0, Assert.IsType<AsepriteTilemapLayer<Rgba32>>(doc.Layers[6]).Tileset.ID);
+            Assert.Equal(2, Assert.IsType<AsepriteGroupLayer<Rgba32>>(doc.Layers[7]).Children.Length);
             Assert.Equal(1, doc.Layers[8].ChildLevel);
             Assert.Equal(1, doc.Layers[9].ChildLevel);
 
@@ -92,7 +92,7 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal(2, doc.Frames[0].Cels.Length);  //  Background and Reference Layer cels
 
             //  Validate Cels
-            AsepriteImageCel fgCel = Assert.IsType<AsepriteImageCel>(doc.Frames[2].Cels[1]);
+            AsepriteImageCel<Rgba32> fgCel = Assert.IsType<AsepriteImageCel<Rgba32>>(doc.Frames[2].Cels[1]);
             Assert.Equal("foreground", fgCel.Layer.Name);
             Assert.Equal(16, fgCel.Size.Width);
             Assert.Equal(16, fgCel.Size.Height);
@@ -105,7 +105,7 @@ namespace AsepriteDotNet.Tests.IO
         public void AsepriteFileReader_ColorModeRGBA_PixelsTest()
         {
             string path = GetPath("rgba-pixel-test.aseprite");
-            AsepriteFile doc = AsepriteFileLoader.FromFile(path);
+            AsepriteFile<Rgba32> doc = AsepriteFileLoader.FromFile<Rgba32>(path);
 
             Assert.Equal(10, doc.Palette.Count);
 
@@ -141,7 +141,7 @@ namespace AsepriteDotNet.Tests.IO
             pal0, pal9, pal1, pal8, pal2, pal7, pal3, pal6, tran, tran, tran, tran, tran, tran, tran, tran
             };
 
-            AsepriteImageCel cel = Assert.IsType<AsepriteImageCel>(doc.Frames[0].Cels[0]);
+            AsepriteImageCel<Rgba32> cel = Assert.IsType<AsepriteImageCel<Rgba32>>(doc.Frames[0].Cels[0]);
             Assert.Equal(expected, cel.Pixels);
         }
 
@@ -149,7 +149,7 @@ namespace AsepriteDotNet.Tests.IO
         public void AsepriteFileReader_ColorModeIndexed_PixelsTest()
         {
             string path = GetPath("indexed-pixel-test.aseprite");
-            AsepriteFile doc = AsepriteFileLoader.FromFile(path);
+            AsepriteFile<Rgba32> doc = AsepriteFileLoader.FromFile<Rgba32>(path);
 
             Assert.Equal(11, doc.Palette.Count);
 
@@ -185,7 +185,7 @@ namespace AsepriteDotNet.Tests.IO
             pal1, pal10, pal2, pal9, pal3, pal8, pal4, pal7, pal0, pal0, pal0, pal0, pal0, pal0, pal0, pal0
             };
 
-            AsepriteImageCel cel = Assert.IsType<AsepriteImageCel>(doc.Frames[0].Cels[0]);
+            AsepriteImageCel<Rgba32> cel = Assert.IsType<AsepriteImageCel<Rgba32>>(doc.Frames[0].Cels[0]);
             Assert.Equal(expected, cel.Pixels);
         }
 
@@ -193,7 +193,7 @@ namespace AsepriteDotNet.Tests.IO
         public void AsepriteFileReader_GrayscaleModeRGBA_PixelsTest()
         {
             string path = GetPath("grayscale-pixel-test.aseprite");
-            AsepriteFile doc = AsepriteFileLoader.FromFile(path);
+            AsepriteFile<Rgba32> doc = AsepriteFileLoader.FromFile<Rgba32>(path);
 
             Assert.Equal(8, doc.Palette.Count);
 
@@ -227,7 +227,7 @@ namespace AsepriteDotNet.Tests.IO
             pal7, pal6, pal5, pal4, pal3, pal2, pal1, pal0, tran, tran, tran, tran, tran, tran, tran, tran
             };
 
-            AsepriteImageCel cel = Assert.IsType<AsepriteImageCel>(doc.Frames[0].Cels[0]);
+            AsepriteImageCel<Rgba32> cel = Assert.IsType<AsepriteImageCel<Rgba32>>(doc.Frames[0].Cels[0]);
             Assert.Equal(expected, cel.Pixels);
         }
 
@@ -235,7 +235,7 @@ namespace AsepriteDotNet.Tests.IO
         public void AsepriteFileReader_TilemapTest()
         {
             string path = GetPath("tilemap-test.aseprite");
-            AsepriteFile doc = AsepriteFileLoader.FromFile(path);
+            AsepriteFile<Rgba32> doc = AsepriteFileLoader.FromFile<Rgba32>(path);
 
             Rgba32 tran = new Rgba32(0, 0, 0, 0);
             Rgba32 pal0 = doc.Palette[0];
@@ -250,7 +250,7 @@ namespace AsepriteDotNet.Tests.IO
             Rgba32 pal9 = doc.Palette[9];
 
             Assert.Equal(1, doc.Tilesets.Length);
-            AsepriteTileset tileset = doc.Tilesets[0];
+            AsepriteTileset<Rgba32> tileset = doc.Tilesets[0];
             Assert.Equal("test-tileset", tileset.Name);
 
             Assert.Equal(0, tileset.ID);
@@ -363,10 +363,10 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal(expectedTilesetPixels, tileset.Pixels);
 
 
-            AsepriteTilemapLayer tilesLayer = Assert.IsType<AsepriteTilemapLayer>(doc.Layers[1]);
+            AsepriteTilemapLayer<Rgba32> tilesLayer = Assert.IsType<AsepriteTilemapLayer<Rgba32>>(doc.Layers[1]);
             Assert.Equal(tileset, tilesLayer.Tileset);
 
-            AsepriteTilemapCel tilesCel = Assert.IsType<AsepriteTilemapCel>(doc.Frames[0].Cels[1]);
+            AsepriteTilemapCel<Rgba32> tilesCel = Assert.IsType<AsepriteTilemapCel<Rgba32>>(doc.Frames[0].Cels[1]);
             Assert.Equal(16, tilesCel.Tiles.Length);
 
             int[] ids = new int[]
@@ -391,7 +391,7 @@ namespace AsepriteDotNet.Tests.IO
         public void AsepriteFileReader_SpriteUserDataTest()
         {
             string path = GetPath("sprite-userdata-test.aseprite");
-            AsepriteFile doc = AsepriteFileLoader.FromFile(path);
+            AsepriteFile<Rgba32> doc = AsepriteFileLoader.FromFile<Rgba32>(path);
             Assert.Equal("Test Sprite UserData", doc.UserData.Text);
             Assert.Equal(new Rgba32(1, 2, 3, 4), doc.UserData.Color);
         }

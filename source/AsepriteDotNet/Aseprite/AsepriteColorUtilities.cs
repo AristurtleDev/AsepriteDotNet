@@ -11,7 +11,7 @@ namespace AsepriteDotNet;
 internal static class AsepriteColorUtilities
 {
     /// <summary>
-    /// Converts an array of <see cref="byte"/> data to an array of <see cref="Rgba32"/> values based on the
+    /// Converts an array of <see cref="byte"/> data to an array of <see cref="IColor{T}"/> values based on the
     /// specified <see cref="AsepriteColorDepth"/>.
     /// </summary>
     /// <param name="pixels">The array of <see cref="byte"/> data that represents the color data.</param>
@@ -20,55 +20,52 @@ internal static class AsepriteColorUtilities
     /// The palette used for <see cref="AsepriteColorDepth.Indexed">ColorDepth.Index</see>.  Optional, only required when
     /// <paramref name="depth"/> is equal to <see cref="AsepriteColorDepth.Indexed">ColorDepth.Indexed</see>.
     /// </param>
-    /// <returns>An array of <see cref="Rgba32"/> values converted from the data.</returns>
+    /// <returns>An array of <see cref="IColor{T}"/> values converted from the data.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="pixels"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">
     /// <paramref name="depth"/> is an unknown <see cref="AsepriteColorDepth"/> value.
     /// </exception>
-    internal static Rgba32[] PixelsToColor(byte[] pixels, AsepriteColorDepth depth, AsepritePalette? palette = null)
+    internal static TColor[] PixelsToColor<TColor>(byte[] pixels, AsepriteColorDepth depth, AsepritePalette<TColor>? palette = null) where TColor : struct, IColor<TColor>
     {
         ArgumentNullException.ThrowIfNull(pixels);
 
         int bpp = (int)depth / 8;
-        Rgba32[] result = new Rgba32[pixels.Length / bpp];
+        TColor[] result = new TColor[pixels.Length / bpp];
 
         for (int i = 0, b = 0; i < result.Length; i++, b += bpp)
         {
-            byte red, green, blue, alpha;
+            TColor value = default(TColor);
 
             switch (depth)
             {
                 case AsepriteColorDepth.RGBA:
-                    red = pixels[b];
-                    green = pixels[b + 1];
-                    blue = pixels[b + 2];
-                    alpha = pixels[b + 3];
-                    result[i] = new Rgba32(red, green, blue, alpha);
+                    value.R = pixels[b];
+                    value.G = pixels[b + 1];
+                    value.B = pixels[b + 2];
+                    value.A = pixels[b + 3];
                     break;
 
                 case AsepriteColorDepth.Grayscale:
-                    red = pixels[b];
-                    green = pixels[b];
-                    blue = pixels[b];
-                    alpha = pixels[b + 1];
-                    result[i] = new Rgba32(red, green, blue, alpha);
+                    value.R = value.G = value.B = pixels[b];
+                    value.A = pixels[b + 1];
                     break;
 
                 case AsepriteColorDepth.Indexed:
                     int index = pixels[i];
-                    if (index == palette?.TransparentIndex)
+                    value.R = value.G = value.B = value.G = 0;
+                    if (index != palette?.TransparentIndex)
                     {
-                        result[i] = new Rgba32(0, 0, 0, 0);
-                    }
-                    else
-                    {
-                        result[i] = palette?.Colors[index] ?? new Rgba32(0, 0, 0, 0);
+                        if (palette is not null)
+                        {
+                            value = palette.Colors[index];
+                        }
                     }
                     break;
 
                 default:
                     throw new InvalidOperationException($"Unknown Color Depth: {depth}");
             }
+            result[i] = value;
         }
 
         return result;
@@ -184,24 +181,26 @@ internal static class AsepriteColorUtilities
     }
 
     /// <summary>
-    /// Blends two <see cref="Rgba32"/> values using the specified <see cref="AsepriteBlendMode"/> and opacity.
+    /// Blends two <see cref="IColor{T}"/> values using the specified <see cref="AsepriteBlendMode"/> and opacity.
     /// </summary>
     /// <param name="backdrop">The backdrop color.</param>
     /// <param name="source">The source color to be blended onto the <paramref name="backdrop"/>.</param>
     /// <param name="opacity">The opacity of the blending operation.</param>
     /// <param name="blendMode">The <see cref="AsepriteBlendMode"/> to use for the blending operation.</param>
-    /// <returns>The resulting <see cref="Rgba32"/> value created from the blending.</returns>
+    /// <returns>The resulting <see cref="IColor{T}"/> value created from the blending.</returns>
     /// <exception cref="InvalidOperationException">
     /// <paramref name="blendMode"/> is an unknown <see cref="AsepriteBlendMode"/> value.
     /// </exception>
-    internal static Rgba32 Blend(Rgba32 backdrop, Rgba32 source, int opacity, AsepriteBlendMode blendMode)
+    internal static TColor Blend<TColor>(TColor backdrop, TColor source, int opacity, AsepriteBlendMode blendMode) where TColor : struct, IColor<TColor>
     {
+        TColor blended = default(TColor);
+        blended.R = blended.G = blended.B = blended.A = 0;
         //  Exit early depending on alpha
-        if (backdrop.A == 0 && source.A == 0) { return new Rgba32(0, 0, 0, 0); }
+        if (backdrop.A == 0 && source.A == 0) { return blended; }
         if (backdrop.A == 0) { return source; }
         if (source.A == 0) { return backdrop; }
 
-        Rgba32 blended = blendMode switch
+        blended = blendMode switch
         {
             #pragma warning disable format
             AsepriteBlendMode.Normal        => Normal(backdrop, source, opacity),
@@ -230,7 +229,7 @@ internal static class AsepriteColorUtilities
         return blended;
     }
 
-    private static Rgba32 Normal(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Normal<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         if (backdrop.A == 0)
         {
@@ -244,15 +243,21 @@ internal static class AsepriteColorUtilities
 
         opacity = Calc.MultiplyUnsigned8Bit(source.A, opacity);
 
+        TColor result = default(TColor);
+
         int a = source.A + backdrop.A - Calc.MultiplyUnsigned8Bit(backdrop.A, source.A);
         int r = backdrop.R + (source.R - backdrop.R) * opacity / a;
         int g = backdrop.G + (source.G - backdrop.G) * opacity / a;
         int b = backdrop.B + (source.B - backdrop.B) * opacity / a;
 
-        return new Rgba32((byte)r, (byte)g, (byte)b, (byte)a);
+        result.A = (byte)a;
+        result.R = (byte)r;
+        result.G = (byte)g;
+        result.B = (byte)b;
+        return result;
     }
 
-    private static Rgba32 Multiply(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Multiply<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         source.R = Calc.MultiplyUnsigned8Bit(backdrop.R, source.R);
         source.G = Calc.MultiplyUnsigned8Bit(backdrop.G, source.G);
@@ -260,7 +265,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Screen(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Screen<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         source.R = (byte)(backdrop.R + source.R - Calc.MultiplyUnsigned8Bit(backdrop.R, source.R));
         source.G = (byte)(backdrop.G + source.G - Calc.MultiplyUnsigned8Bit(backdrop.G, source.G));
@@ -268,7 +273,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Overlay(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Overlay<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         static int overlay(int b, int s)
         {
@@ -288,7 +293,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Darken(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Darken<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         source.R = Math.Min(backdrop.R, source.R);
         source.G = Math.Min(backdrop.G, source.G);
@@ -296,7 +301,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Lighten(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Lighten<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         source.R = Math.Max(backdrop.R, source.R);
         source.G = Math.Max(backdrop.G, source.G);
@@ -304,7 +309,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 ColorDodge(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor ColorDodge<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         static int dodge(int b, int s)
         {
@@ -323,7 +328,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 ColorBurn(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor ColorBurn<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         static int burn(int b, int s)
         {
@@ -342,7 +347,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 HardLight(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor HardLight<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         static int hardlight(int b, int s)
         {
@@ -362,11 +367,11 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 SoftLight(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor SoftLight<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
-        static int softlight(int _b, int _s)
+        static int softlight(int B, int _s)
         {
-            double b = _b / 255.0;
+            double b = B / 255.0;
             double s = _s / 255.0;
             double r, d;
 
@@ -397,7 +402,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Difference(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Difference<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         source.R = (byte)Math.Abs(backdrop.R - source.R);
         source.G = (byte)Math.Abs(backdrop.G - source.G);
@@ -405,7 +410,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Exclusion(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Exclusion<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         static int exclusion(int b, int s) => b + s - 2 * Calc.MultiplyUnsigned8Bit(b, s);
 
@@ -415,7 +420,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 HslHue(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor HslHue<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         double r = backdrop.R / 255.0;
         double g = backdrop.G / 255.0;
@@ -436,7 +441,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 HslSaturation(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor HslSaturation<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         double r = source.R / 255.0;
         double g = source.G / 255.0;
@@ -457,7 +462,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 HslColor(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor HslColor<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         double r = backdrop.R / 255.0;
         double g = backdrop.G / 255.0;
@@ -476,7 +481,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 HslLuminosity(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor HslLuminosity<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         double r = source.R / 255.0;
         double g = source.G / 255.0;
@@ -495,7 +500,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Addition(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Addition<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         source.R = (byte)Math.Min(backdrop.R + source.R, 255);
         source.G = (byte)Math.Min(backdrop.G + source.G, 255);
@@ -503,7 +508,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Subtract(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Subtract<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         source.R = (byte)Math.Max(backdrop.R - source.R, 0);
         source.G = (byte)Math.Max(backdrop.G - source.G, 0);
@@ -511,7 +516,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static Rgba32 Divide(Rgba32 backdrop, Rgba32 source, int opacity)
+    private static TColor Divide<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
     {
         static int divide(int b, int s)
         {

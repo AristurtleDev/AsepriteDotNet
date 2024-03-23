@@ -10,7 +10,7 @@ namespace AsepriteDotNet;
 /// <summary>
 /// Represents a slice defined by it's xy-coordinate position, width, height, and origin.rgskds
 /// </summary>
-public class Slice : IEquatable<Slice>
+public class Slice<TColor> : IEquatable<Slice<TColor>> where TColor : struct, IColor<TColor>
 {
     /// <summary>
     /// Gets the name of this slice.
@@ -30,16 +30,16 @@ public class Slice : IEquatable<Slice>
     /// <summary>
     /// Gets the color of this slice.
     /// </summary>
-    public Rgba32 Color { get; }
+    public TColor Color { get; }
 
-    internal Slice(string name, Rectangle bounds, Point origin, Rgba32 color) =>
+    internal Slice(string name, Rectangle bounds, Point origin, TColor color) =>
         (Name, Bounds, Origin, Color) = (name, bounds, origin, color);
 
     /// <inheritdoc/>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Slice other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Slice<TColor> other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals([NotNullWhen(true)] Slice? other)
+    public bool Equals([NotNullWhen(true)] Slice<TColor>? other)
     {
         if (ReferenceEquals(this, other)) { return true; }
         return Name.Equals(other?.Name, StringComparison.OrdinalIgnoreCase)

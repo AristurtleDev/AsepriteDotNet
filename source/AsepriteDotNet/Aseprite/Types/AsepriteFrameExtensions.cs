@@ -9,30 +9,32 @@ using AsepriteDotNet.Common;
 namespace AsepriteDotNet.Aseprite.Types;
 
 /// <summary>
-/// Defines extension methods for the <see cref="AsepriteFrame"/> type.
+/// Defines extension methods for the <see cref="AsepriteFrame{TColor}"/> type.
 /// </summary>
 public static class AsepriteFrameExtensions
 {
     /// <summary>
-    /// Flattens the a <see cref="AsepriteFrame"/> into an array of <see cref="Rgba32"/> values.
+    /// Flattens the a <see cref="AsepriteFrame{TColor}"/> into an array of <typeparamref name="TColor"/> values.
     /// </summary>
-    /// <param name="frame">The <see cref="AsepriteFrame"/> to flatten.</param>
-    /// <param name="onlyVisibleLayers">
-    /// Indicates whether only cels on visible layers should be included.
-    /// </param>
-    /// <returns>A array of <see cref="Rgba32"/> value representing the flattened frame.</returns>
+    /// <param name="frame">The <see cref="AsepriteFrame{TColor}"/> to flatten.</param>
+    /// <param name="onlyVisibleLayers">Indicates whether only cels on visible layers should be included.</param>
+    /// <param name="includeBackgroundLayer">Indicates if the layer marked background should be included.</param>
+    /// <param name="includeTilemapCels">Indicates if tile map cels should be included.</param>
+    /// <typeparam name="TColor">The color type.</typeparam>
+    /// <returns>A array of <typeparamref name="TColor"/> value representing the flattened frame.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="frame"/> is <see langword="null"/>.</exception>
-    public static Rgba32[] FlattenFrame(this AsepriteFrame frame, bool onlyVisibleLayers, bool includeBackgroundLayer, bool includeTilemapCels = true)
+    public static TColor[] FlattenFrame<TColor>(this AsepriteFrame<TColor> frame, bool onlyVisibleLayers = true, bool includeBackgroundLayer = false, bool includeTilemapCels = true)
+        where TColor : struct, IColor<TColor>
     {
         ArgumentNullException.ThrowIfNull(frame);
 
-        Rgba32[] result = new Rgba32[frame.Size.Width * frame.Size.Height];
-        ReadOnlySpan<AsepriteCel> cels = frame.Cels;
+        TColor[] result = new TColor[frame.Size.Width * frame.Size.Height];
+        ReadOnlySpan<AsepriteCel<TColor>> cels = frame.Cels;
 
         for (int celNum = 0; celNum < cels.Length; celNum++)
         {
-            AsepriteCel cel = cels[celNum];
-            if (cel is AsepriteLinkedCel linkedCel)
+            AsepriteCel<TColor> cel = cels[celNum];
+            if (cel is AsepriteLinkedCel<TColor> linkedCel)
             {
                 cel = linkedCel.Cel;
             }
@@ -40,20 +42,21 @@ public static class AsepriteFrameExtensions
             if (onlyVisibleLayers && !cel.Layer.IsVisible) { continue; }
             if (cel.Layer.IsBackgroundLayer && !includeBackgroundLayer) { continue; }
 
-            if (cel is AsepriteImageCel imageCel)
+            if (cel is AsepriteImageCel<TColor> imageCel)
             {
-                BlendCel(result, imageCel.Pixels, imageCel.Layer.BlendMode, new Rectangle(imageCel.Location, imageCel.Size), imageCel.Opacity, imageCel.Layer.Opacity);
+                BlendCel<TColor>(result, imageCel.Pixels, imageCel.Layer.BlendMode, new Rectangle(imageCel.Location, imageCel.Size), imageCel.Opacity, imageCel.Layer.Opacity);
             }
-            else if (includeTilemapCels && cel is AsepriteTilemapCel tilemapCel)
+            else if (includeTilemapCels && cel is AsepriteTilemapCel<TColor> tilemapCel)
             {
-                BlendTilemapCel(result, tilemapCel);
+                BlendTilemapCel<TColor>(result, tilemapCel);
             }
         }
 
         return result;
     }
 
-    private static void BlendCel(Span<Rgba32> backdrop, ReadOnlySpan<Rgba32> source, AsepriteBlendMode blendMode, Rectangle bounds, int celOpacity, int layerOpacity)
+    private static void BlendCel<TColor>(Span<TColor> backdrop, ReadOnlySpan<TColor> source, AsepriteBlendMode blendMode, Rectangle bounds, int celOpacity, int layerOpacity)
+            where TColor : struct, IColor<TColor>
     {
         byte opacity = Calc.MultiplyUnsigned8Bit(celOpacity, layerOpacity);
 
@@ -69,34 +72,36 @@ public static class AsepriteFrameExtensions
             //  discard them
             if (index < 0 || index > backdrop.Length) { continue; }
 
-            Rgba32 b = backdrop[index];
-            Rgba32 s = source[i];
-            backdrop[index] = AsepriteColorUtilities.Blend(b, s, opacity, blendMode);
+            TColor b = backdrop[index];
+            TColor s = source[i];
+            TColor blended = AsepriteColorUtilities.Blend(b, s, opacity, blendMode);
+            backdrop[index] = blended;
         }
     }
 
-    private static void BlendTilemapCel(Span<Rgba32> backdrop, AsepriteTilemapCel cel)
+    private static void BlendTilemapCel<TColor>(Span<TColor> backdrop, AsepriteTilemapCel<TColor> cel)
+            where TColor : struct, IColor<TColor>
     {
         byte opacity = Calc.MultiplyUnsigned8Bit(cel.Opacity, cel.Layer.Opacity);
 
-        Debug.Assert(cel.Layer is AsepriteTilemapLayer);
-        AsepriteTilemapLayer aseTilemapLayer = (AsepriteTilemapLayer)cel.Layer;
+        Debug.Assert(cel.Layer is AsepriteTilemapLayer<TColor>);
+        AsepriteTilemapLayer<TColor> aseTilemapLayer = (AsepriteTilemapLayer<TColor>)cel.Layer;
 
-        AsepriteTileset tileset = aseTilemapLayer.Tileset;
+        AsepriteTileset<TColor> tileset = aseTilemapLayer.Tileset;
         Rectangle bounds;
         bounds.Width = cel.Size.Width * tileset.Size.Width;
         bounds.Height = cel.Size.Height * tileset.Size.Height;
         bounds.X = cel.Location.X;
         bounds.Y = cel.Location.Y;
 
-        Span<Rgba32> pixels = new Rgba32[bounds.Width * bounds.Height];
+        Span<TColor> pixels = new TColor[bounds.Width * bounds.Height];
         ReadOnlySpan<AsepriteTile> tiles = cel.Tiles;
         for (int i = 0; i < tiles.Length; i++)
         {
             AsepriteTile tile = tiles[i];
             int column = i % cel.Size.Width;
             int row = i / cel.Size.Width;
-            ReadOnlySpan<Rgba32> tilePixels = tileset.Pixels;
+            ReadOnlySpan<TColor> tilePixels = tileset.Pixels;
 
             for (int j = 0; j < tilePixels.Length; j++)
             {

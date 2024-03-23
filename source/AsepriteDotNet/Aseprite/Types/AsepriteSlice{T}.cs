@@ -2,12 +2,14 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
+using AsepriteDotNet.Common;
+
 namespace AsepriteDotNet.Aseprite.Types;
 
 /// <summary>
 /// Defines a slice element in an Aseprite file.
 /// </summary>
-public sealed class AsepriteSlice
+public sealed class AsepriteSlice<TColor> where TColor : struct, IColor<TColor>
 {
     private readonly AsepriteSliceKey[] _keys;
 
@@ -37,7 +39,7 @@ public sealed class AsepriteSlice
     /// <summary>
     /// Gets the custom user data that was set in the properties for this slice in Aseprite.
     /// </summary>
-    public AsepriteUserData UserData { get; } = new AsepriteUserData();
+    public AsepriteUserData<TColor> UserData { get; } = new AsepriteUserData<TColor>();
 
     internal AsepriteSlice(string name, bool isNinePatch, bool hasPivot, AsepriteSliceKey[] keys)
     {

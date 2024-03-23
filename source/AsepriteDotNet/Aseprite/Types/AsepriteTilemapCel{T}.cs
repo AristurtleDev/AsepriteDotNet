@@ -15,7 +15,7 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines the properties of a cel in an Aseprite file that contains tilemap data.  This class cannot be inherited.
 /// </summary>
-public sealed class AsepriteTilemapCel : AsepriteCel
+public sealed class AsepriteTilemapCel<TColor> : AsepriteCel<TColor> where TColor : struct, IColor<TColor>
 {
     private readonly AsepriteTile[] _tiles;
 
@@ -30,7 +30,7 @@ public sealed class AsepriteTilemapCel : AsepriteCel
     /// </summary>
     public ReadOnlySpan<AsepriteTile> Tiles => _tiles;
 
-    internal AsepriteTilemapCel(AsepriteCelProperties celProperties, AsepriteLayer layer, AsepriteTilemapCelProperties tilemapCelProperties, AsepriteTile[] tiles)
+    internal AsepriteTilemapCel(AsepriteCelProperties celProperties, AsepriteLayer<TColor> layer, AsepriteTilemapCelProperties tilemapCelProperties, AsepriteTile[] tiles)
         : base(celProperties, layer)
     {
         Size = new Size(tilemapCelProperties.Width, tilemapCelProperties.Height);

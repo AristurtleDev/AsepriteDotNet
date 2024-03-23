@@ -3,13 +3,14 @@
 //  See LICENSE file in the project root for full license information.
 
 using AsepriteDotNet.Aseprite.Document;
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Aseprite.Types;
 
 /// <summary>
 /// Defines core properties of an Aseprite layer.
 /// </summary>
-public abstract class AsepriteLayer
+public abstract class AsepriteLayer<TColor> where TColor : struct, IColor<TColor>
 {
     /// <summary>
     /// Gets a value that indicates whether this layer is visible.
@@ -53,7 +54,7 @@ public abstract class AsepriteLayer
     /// <summary>
     /// Gets the custom user data that was set in the properties for this layer in Aseprite.
     /// </summary>
-    public AsepriteUserData UserData { get; } = new AsepriteUserData();
+    public AsepriteUserData<TColor> UserData { get; } = new AsepriteUserData<TColor>();
 
     internal AsepriteLayer(AsepriteLayerProperties header, string name)
     {

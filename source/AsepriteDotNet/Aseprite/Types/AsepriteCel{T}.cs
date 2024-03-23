@@ -10,12 +10,12 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines the core properties of a cel in an Aseprite file.
 /// </summary>
-public abstract class AsepriteCel
+public abstract class AsepriteCel<TColor> where TColor : struct, IColor<TColor>
 {
     /// <summary>
     /// Gets the layer that this cel exists on.
     /// </summary>
-    public AsepriteLayer Layer { get; }
+    public AsepriteLayer<TColor> Layer { get; }
 
     /// <summary>
     /// Gets the top-left xy-coordinate position of this el relative to the bounds of the frame it is in.
@@ -30,13 +30,13 @@ public abstract class AsepriteCel
     /// <summary>
     /// Gets the custom user data that was set in the properties for this cel in Aseprite.
     /// </summary>
-    public AsepriteUserData UserData { get; }
+    public AsepriteUserData<TColor> UserData { get; }
 
-    internal AsepriteCel(AsepriteCelProperties celProperties, AsepriteLayer layer)
+    internal AsepriteCel(AsepriteCelProperties celProperties, AsepriteLayer<TColor> layer)
     {
         Layer = layer;
         Location = new Point(celProperties.X, celProperties.Y);
         Opacity = celProperties.Opacity;
-        UserData = new AsepriteUserData();
+        UserData = new AsepriteUserData<TColor>();
     }
 }

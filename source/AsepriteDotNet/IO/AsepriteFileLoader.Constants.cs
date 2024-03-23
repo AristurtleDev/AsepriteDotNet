@@ -4,6 +4,7 @@
 
 namespace AsepriteDotNet.IO;
 
+#pragma warning disable CA1823 // Avoid unused private fields
 public static partial class AsepriteFileLoader
 {
     private const ushort ASE_HEADER_MAGIC = 0xA5E0;
@@ -63,3 +64,4 @@ public static partial class AsepriteFileLoader
     private const uint TILE_FLIP_Y_MASK = 0x40000000;
     private const uint TILE_90CW_ROTATION_MASK = 0x80000000;
 }
+#pragma warning restore CA1823 // Avoid unused private fields

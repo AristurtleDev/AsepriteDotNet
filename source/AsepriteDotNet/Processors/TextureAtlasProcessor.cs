@@ -9,30 +9,37 @@ using AsepriteDotNet.Common;
 namespace AsepriteDotNet.Processors;
 
 /// <summary>
-/// Defines a processor for processing a <see cref="TextureAtlas"/> from an <see cref="AsepriteFile"/>.
+/// Defines a processor for processing a <see cref="TextureAtlas{TColor}"/> from an <see cref="AsepriteFile{TColor}"/>.
 /// </summary>
 public static class TextureAtlasProcessor
 {
     /// <summary>
-    /// Processes a <see cref="TextureAtlas"/> from an <see cref="AsepriteFile"/>.
+    /// Processes a <see cref="TextureAtlas{TColor}"/> from an <see cref="AsepriteFile{TColor}"/> using the
+    /// <see cref="ProcessorOptions.Default"/> options.
     /// </summary>
-    /// <param name="file">The <see cref="AsepriteFile"/> to process.</param>
-    /// <param name="options">
-    /// Optional options to use when processing.  If <see langword="null"/>, then
-    /// <see cref="ProcessorOptions.Default"/> will be used.
-    /// </param>
-    /// <returns>The <see cref="TextureAtlas"/>.</returns>
+    /// <param name="file">The <see cref="AsepriteFile{TColor}"/> to process.</param>
+    /// <returns>The <see cref="TextureAtlas{TColor}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
-    public static TextureAtlas Process(AsepriteFile file, ProcessorOptions? options = null)
+    public static TextureAtlas<TColor> Process<TColor>(AsepriteFile<TColor> file)
+        where TColor : struct, IColor<TColor> => Process(file, ProcessorOptions.Default);
+
+    /// <summary>
+    /// Processes a <see cref="TextureAtlas{TColor}"/> from an <see cref="AsepriteFile{TColor}"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="AsepriteFile{TColor}"/> to process.</param>
+    /// <param name="options">The <see cref="ProcessorOptions"/> to use when processing</param>
+    /// <returns>The <see cref="TextureAtlas{TColor}"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+    public static TextureAtlas<TColor> Process<TColor>(AsepriteFile<TColor> file, ProcessorOptions options)
+        where TColor : struct, IColor<TColor>
     {
         ArgumentNullException.ThrowIfNull(file);
-        options ??= ProcessorOptions.Default;
 
         int frameWidth = file.CanvasWidth;
         int frameHeight = file.CanvasHeight;
         int frameCount = file.Frames.Length;
 
-        Rgba32[][] flattenedFrames = new Rgba32[frameCount][];
+        TColor[][] flattenedFrames = new TColor[frameCount][];
 
         for (int i = 0; i < frameCount; i++)
         {
@@ -40,7 +47,7 @@ public static class TextureAtlasProcessor
         }
 
         Dictionary<int, int> duplicateMap = new Dictionary<int, int>();
-        Dictionary<int, TextureRegion> originalToDuplicateLookup = new Dictionary<int, TextureRegion>();
+        Dictionary<int, TextureRegion<TColor>> originalToDuplicateLookup = new Dictionary<int, TextureRegion<TColor>>();
 
         for (int i = 0; i < flattenedFrames.GetLength(0); i++)
         {
@@ -73,8 +80,8 @@ public static class TextureAtlasProcessor
                         + (options.Spacing * (rows - 1))
                         + (options.InnerPadding * 2 * rows);
 
-        Rgba32[] imagePixels = new Rgba32[imageWidth * imageHeight];
-        TextureRegion[] regions = new TextureRegion[file.Frames.Length];
+        TColor[] imagePixels = new TColor[imageWidth * imageHeight];
+        TextureRegion<TColor>[] regions = new TextureRegion<TColor>[file.Frames.Length];
 
         int offset = 0;
 
@@ -82,8 +89,8 @@ public static class TextureAtlasProcessor
         {
             if (options.MergeDuplicateFrames && duplicateMap.TryGetValue(i, out int value))
             {
-                TextureRegion original = originalToDuplicateLookup[value];
-                TextureRegion duplicate = new TextureRegion($"{file.Name} {i}", original.Bounds, ProcessorUtilities.GetSlicesForFrame(i, file.Slices));
+                TextureRegion<TColor> original = originalToDuplicateLookup[value];
+                TextureRegion<TColor> duplicate = new TextureRegion<TColor>($"{file.Name} {i}", original.Bounds, ProcessorUtilities.GetSlicesForFrame(i, file.Slices));
                 regions[i] = duplicate;
                 offset++;
                 continue;
@@ -91,7 +98,7 @@ public static class TextureAtlasProcessor
 
             int column = (i - offset) % columns;
             int row = (i - offset) / columns;
-            Rgba32[] frame = flattenedFrames[i];
+            TColor[] frame = flattenedFrames[i];
 
             int x = (column * frameWidth)
                   + options.BorderPadding
@@ -112,12 +119,12 @@ public static class TextureAtlasProcessor
             }
 
             Rectangle bounds = new Rectangle(x, y, frameWidth, frameHeight);
-            TextureRegion textureRegion = new TextureRegion($"{file.Name} {i}", bounds, ProcessorUtilities.GetSlicesForFrame(i, file.Slices));
+            TextureRegion<TColor> textureRegion = new TextureRegion<TColor>($"{file.Name} {i}", bounds, ProcessorUtilities.GetSlicesForFrame<TColor>(i, file.Slices));
             regions[i] = textureRegion;
             originalToDuplicateLookup.Add(i, textureRegion);
         }
 
-        Texture texture = new Texture(file.Name, new Size(imageWidth, imageHeight), imagePixels);
-        return new TextureAtlas(file.Name, texture, regions);
+        Texture<TColor> texture = new Texture<TColor>(file.Name, new Size(imageWidth, imageHeight), imagePixels);
+        return new TextureAtlas<TColor>(file.Name, texture, regions);
     }
 }

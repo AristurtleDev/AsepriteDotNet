@@ -6,51 +6,37 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
 
 namespace AsepriteDotNet.Common;
 
+
 /// <summary>
-/// Represents a color value defined by four 8-bit component values, each representing the red, green, blue, and alpha
-/// component values of the color.
+/// Represents an RGBA color value, where each component (red, green, blue, and alpha) is stored in a separate byte.
 /// </summary>
+/// <remarks>
+/// The <see cref="Rgba32"/> struct provides properties to get and set the individual component values of the color,
+/// as well as methods to convert the color to and from other representations, such as packed 32-bit values or
+/// <see cref="Vector4"/> instances.
+/// </remarks>
 [StructLayout(LayoutKind.Sequential)]
-public struct Rgba32 : IEquatable<Rgba32>
+public struct Rgba32 : IEquatable<Rgba32>, IColor<Rgba32>
 {
-    private static readonly Vector4 s_maxBytes = Vector128.Create(255.0f).AsVector4();
-    private static readonly Vector4 s_half = Vector128.Create(0.5f).AsVector4();
-    internal const int StructSize = sizeof(uint);
+    /// <inheritdoc/>
+    public byte R { readonly get; set; }
 
-    /// <summary>
-    /// The red color component.
-    /// </summary>
-    public byte R;
+    /// <inheritdoc/>
+    public byte G { readonly get; set; }
 
-    /// <summary>
-    /// The green color component.
-    /// </summary>
-    public byte G;
+    /// <inheritdoc/>
+    public byte B { readonly get; set; }
 
-    /// <summary>
-    /// The blue color component.
-    /// </summary>
-    public byte B;
+    /// <inheritdoc/>
+    public byte A { readonly get; set; }
 
-    /// <summary>
-    /// The alpha color component.
-    /// </summary>
-    public byte A;
-
-    /// <summary>
-    /// Gets or Sets the packed value of this <see cref="Rgba32"/> represented as a 32-bit unsigned integer in the
-    /// least to most significant bit order of red, green, blue, alpha.
-    /// </summary>
+    /// <inheritdoc/>
     public uint PackedValue
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         readonly get => Unsafe.As<Rgba32, uint>(ref Unsafe.AsRef(in this));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => Unsafe.As<Rgba32, uint>(ref this) = value;
     }
 
@@ -78,27 +64,22 @@ public struct Rgba32 : IEquatable<Rgba32>
     /// </summary>
     /// <param name="vector">The vector containing the red, green, blue, and alpha components.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Rgba32(Vector4 vector) : this() => this = Pack(vector);
+    public Rgba32(Vector4 vector) : this() => FromVector4(vector);
 
-    /// <summary>
-    /// Returns this <see cref="Rgba32"/> value as a <see cref="Vector4"/> value.
-    /// </summary>
-    /// <returns>This <see cref="Rgba32"/> value as a <see cref="Vector4"/> value.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly Vector4 ToVector4() => new Vector4(R, G, B, A) / s_maxBytes;
+    /// <inheritdoc/>
+    public void FromVector4(Vector4 vector) => this = Calc.UnpackColor<Rgba32>(vector);
+    
 
-    /// <summary>
-    /// Returns  this <see cref="Rgba32"/> value as a <typeparamref name="T"/> value.
-    /// </summary>
-    /// <typeparam name="T">The type to convert this <see cref="Rgba32"/> to.</typeparam>
-    /// <param name="converter">A function that defines how to perform the conversion.</param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly T To<T>(Func<Rgba32, T> converter)
+    /// <inheritdoc/>
+    public TIn To<TIn>() where TIn : struct, IColor<TIn>
     {
-        ArgumentNullException.ThrowIfNull(converter);
-        return converter(this);
+        TIn result = default(TIn);
+        result.FromVector4(ToVector4());
+        return result;
     }
+
+    /// <inheritdoc/>
+    public Vector4 ToVector4() => Calc.PackColor(R, G, B, A);
 
     /// <summary>
     /// Returns a value that indicates if two <see cref="Rgba32"/> values are equal.
@@ -136,19 +117,4 @@ public struct Rgba32 : IEquatable<Rgba32>
 
     /// <inheritdoc/>
     public override readonly int GetHashCode() => PackedValue.GetHashCode();
-
-    /// <summary>
-    /// Packs a <see cref="Vector4"/> value into a new <see cref="Rgba32"/> value.
-    /// </summary>
-    /// <param name="vector">The vector to pack.</param>
-    /// <returns>The <see cref="Rgba32"/> value created by this method.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Rgba32 Pack(Vector4 vector)
-    {
-        vector *= s_maxBytes;
-        vector += s_half;
-        vector = Vector4.Min(Vector4.Max(vector, Vector4.Zero), s_maxBytes);
-        Vector128<byte> result = Vector128.ConvertToInt32(vector.AsVector128()).AsByte();
-        return new Rgba32(result.GetElement(0), result.GetElement(4), result.GetElement(8), result.GetElement(12));
-    }
 }

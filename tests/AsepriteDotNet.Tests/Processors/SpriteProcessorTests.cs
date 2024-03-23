@@ -13,63 +13,63 @@ namespace AsepriteDotNet.Tests.Processors;
 public sealed class SpriteProcessorTestsFixture
 {
     public string Name { get; } = "sprite-processor-test";
-    public AsepriteFile AsepriteFile { get; }
-    public Rgba32 Black { get; } =  new Rgba32(0, 0, 0, 255);
+    public AsepriteFile<Rgba32> AsepriteFile { get; }
+    public Rgba32 Black { get; } = new Rgba32(0, 0, 0, 255);
     public Rgba32 White { get; } = new Rgba32(255, 255, 255, 255);
 
     public SpriteProcessorTestsFixture()
     {
-        AsepritePalette palette = new AsepritePalette(0);
+        AsepritePalette<Rgba32> palette = new AsepritePalette<Rgba32>(0);
         palette.Resize(2);
         palette[0] = Black;
         palette[1] = White;
-        
 
-        AsepriteTileset[] tilesets = Array.Empty<AsepriteTileset>();
+
+        AsepriteTileset<Rgba32>[] tilesets = Array.Empty<AsepriteTileset<Rgba32>>();
 
         AsepriteLayerProperties layerProperties = new AsepriteLayerProperties() { Flags = 1, BlendMode = 0, Opacity = 255 };
-        AsepriteLayer[] layers = new AsepriteLayer[]
+        AsepriteLayer<Rgba32>[] layers = new AsepriteLayer<Rgba32>[]
         {
-            new AsepriteImageLayer(layerProperties, "layer")
+            new AsepriteImageLayer<Rgba32>(layerProperties, "layer")
         };
 
         AsepriteCelProperties celProperties1 = new AsepriteCelProperties() { LayerIndex = 0, Opacity = 255, Type = 3, X = 0, Y = 0, ZIndex = 0 };
         AsepriteCelProperties celProperties2 = new AsepriteCelProperties() { LayerIndex = 1, Opacity = 255, Type = 3, X = 0, Y = 1, ZIndex = 0 };
         AsepriteImageCelProperties imageCelProperties = new AsepriteImageCelProperties() { Width = 2, Height = 2 };
-        AsepriteCel[] frame0Cels = new AsepriteCel[]
+        AsepriteCel<Rgba32>[] frame0Cels = new AsepriteCel<Rgba32>[]
         {
-            new AsepriteImageCel(celProperties1, layers[0], imageCelProperties, new Rgba32[] {Black, Black, Black, Black })
+            new AsepriteImageCel<Rgba32>(celProperties1, layers[0], imageCelProperties, new Rgba32[] {Black, Black, Black, Black })
         };
 
-        AsepriteCel[] frame1Cels = new AsepriteCel[]
+        AsepriteCel<Rgba32>[] frame1Cels = new AsepriteCel<Rgba32>[]
         {
-            new AsepriteImageCel(celProperties1, layers[0], imageCelProperties, new Rgba32[] {White, White, White, White })
+            new AsepriteImageCel<Rgba32>(celProperties1, layers[0], imageCelProperties, new Rgba32[] {White, White, White, White })
         };
 
 
-        AsepriteFrame[] frames = new AsepriteFrame[]
+        AsepriteFrame<Rgba32>[] frames = new AsepriteFrame<Rgba32>[]
         {
-            new($"{Name} 0", 2, 2, 100, new List<AsepriteCel>(frame0Cels)),
-            new($"{Name} 1", 2, 2, 100, new List<AsepriteCel>(frame1Cels))
+            new($"{Name} 0", 2, 2, 100, new List<AsepriteCel<Rgba32>>(frame0Cels)),
+            new($"{Name} 1", 2, 2, 100, new List<AsepriteCel<Rgba32>>(frame1Cels))
         };
 
-        AsepriteTag[] tags = Array.Empty<AsepriteTag>();
-        AsepriteSlice[] slices = Array.Empty<AsepriteSlice>();
+        AsepriteTag<Rgba32>[] tags = Array.Empty<AsepriteTag<Rgba32>>();
+        AsepriteSlice<Rgba32>[] slices = Array.Empty<AsepriteSlice<Rgba32>>();
 
 
-        AsepriteUserData userData = new();
-        AsepriteFile = new AsepriteFile(Name,
-                                        palette,
-                                        2,
-                                        3,
-                                        AsepriteColorDepth.RGBA,
-                                        new List<AsepriteFrame>(frames),
-                                        new List<AsepriteLayer>(layers),
-                                        new List<AsepriteTag>(tags),
-                                        new List<AsepriteSlice>(slices),
-                                        new List<AsepriteTileset>(tilesets),
-                                        userData,
-                                        new List<string>());
+        AsepriteUserData<Rgba32> userData = new();
+        AsepriteFile = new AsepriteFile<Rgba32>(Name,
+                                                palette,
+                                                2,
+                                                3,
+                                                AsepriteColorDepth.RGBA,
+                                                new List<AsepriteFrame<Rgba32>>(frames),
+                                                new List<AsepriteLayer<Rgba32>>(layers),
+                                                new List<AsepriteTag<Rgba32>>(tags),
+                                                new List<AsepriteSlice<Rgba32>>(slices),
+                                                new List<AsepriteTileset<Rgba32>>(tilesets),
+                                                userData,
+                                                new List<string>());
     }
 }
 
@@ -85,7 +85,7 @@ public sealed class SpriteProcessorTests : IClassFixture<SpriteProcessorTestsFix
     [InlineData(1)]
     public void Process_Sprite_And_Texture_Name_Include_Correct_Index(int frame)
     {
-        Sprite sprite = SpriteProcessor.Process(_fixture.AsepriteFile, frame);
+        Sprite<Rgba32> sprite = SpriteProcessor.Process(_fixture.AsepriteFile, frame);
 
         string name = $"{_fixture.Name} {frame}";
 
@@ -104,8 +104,8 @@ public sealed class SpriteProcessorTests : IClassFixture<SpriteProcessorTestsFix
     [Fact]
     public void Process_Processes_Given_Frame()
     {
-        Sprite frame0Sprite = SpriteProcessor.Process(_fixture.AsepriteFile, 0);
-        Sprite frame1Sprite = SpriteProcessor.Process(_fixture.AsepriteFile, 1);
+        Sprite<Rgba32> frame0Sprite = SpriteProcessor.Process(_fixture.AsepriteFile, 0);
+        Sprite<Rgba32> frame1Sprite = SpriteProcessor.Process(_fixture.AsepriteFile, 1);
 
         Rgba32[] frame0Expected = new Rgba32[] { _fixture.Black, _fixture.Black, _fixture.Black, _fixture.Black };
         Rgba32[] frame1Expected = new Rgba32[] { _fixture.White, _fixture.White, _fixture.White, _fixture.White };

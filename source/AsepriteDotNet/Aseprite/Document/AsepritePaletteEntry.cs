@@ -3,20 +3,30 @@
 //  See LICENSE file in the project root for full license information
 
 using System.Runtime.InteropServices;
-using AsepriteDotNet.Aseprite;
-using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Aseprite.Document;
 
 [StructLayout(LayoutKind.Explicit)]
 internal struct AsepritePaletteEntry
 {
-    internal const int StructSize = sizeof(ushort) +        //  NewSize
-                                    Rgba32.StructSize;    //  FirstIndex
+    internal const int StructSize = sizeof(ushort) +    //  NewSize
+                                    sizeof(byte) +      //  R
+                                    sizeof(byte) +      //  G
+                                    sizeof(byte) +      //  B
+                                    sizeof(byte);       //  A
 
     [FieldOffset(0)]
     internal ushort Flags;
 
     [FieldOffset(2)]
-    internal Rgba32 Color;
+    internal byte R;
+
+    [FieldOffset(3)]
+    internal byte G;
+
+    [FieldOffset(4)]
+    internal byte B;
+
+    [FieldOffset(5)]
+    internal byte A;
 }

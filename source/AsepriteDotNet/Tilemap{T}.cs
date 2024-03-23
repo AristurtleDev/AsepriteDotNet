@@ -3,6 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet;
 
@@ -10,9 +11,9 @@ namespace AsepriteDotNet;
 /// Defines a tilemap composed of tile map layers.
 /// This class cannot be inherited.
 /// </summary>
-public sealed class Tilemap : IEquatable<Tilemap>
+public sealed class Tilemap<TColor> : IEquatable<Tilemap<TColor>> where TColor : struct, IColor<TColor>
 {
-    private readonly Tileset[] _tilesets;
+    private readonly Tileset<TColor>[] _tilesets;
     private readonly TilemapLayer[] _layers;
 
     /// <summary>
@@ -23,21 +24,21 @@ public sealed class Tilemap : IEquatable<Tilemap>
     /// <summary>
     /// Gets a read-only collection of the tilesets used by the layers of this tilemap.
     /// </summary>
-    public ReadOnlySpan<Tileset> Tilesets => _tilesets;
+    public ReadOnlySpan<Tileset<TColor>> Tilesets => _tilesets;
 
     /// <summary>
     /// Gets a read-only collection of the layers that compose this tilemap.
     /// </summary>
     public ReadOnlySpan<TilemapLayer> Layers => _layers;
 
-    internal Tilemap(string name, Tileset[] tilesets, TilemapLayer[] layers) =>
+    internal Tilemap(string name, Tileset<TColor>[] tilesets, TilemapLayer[] layers) =>
         (Name, _tilesets, _layers) = (name, tilesets, layers);
 
     /// <inheritdoc/>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Tilemap other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Tilemap<TColor> other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals([NotNullWhen(true)] Tilemap? other)
+    public bool Equals([NotNullWhen(true)] Tilemap<TColor>? other)
     {
         if (ReferenceEquals(this, other)) { return true; }
         return Name.Equals(other?.Name, StringComparison.OrdinalIgnoreCase)

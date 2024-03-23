@@ -4,54 +4,62 @@
 
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Processors;
 
 /// <summary>
-/// Defines a processor for processing a <see cref="SpriteSheet"/> from an <see cref="AsepriteFile"/>.
+/// Defines a processor for processing a <see cref="SpriteSheet{TColor}"/> from an <see cref="AsepriteFile{TColor}"/>.
 /// </summary>
 public static class SpriteSheetProcessor
 {
     /// <summary>
-    /// Processes a <see cref="SpriteSheet"/> from an <see cref="AsepriteFile"/>.
+    /// Processes a <see cref="SpriteSheet{TColor}"/> from an <see cref="AsepriteFile{TColor}"/> using the
+    /// <see cref="ProcessorOptions.Default"/> options.
     /// </summary>
-    /// <param name="file">The <see cref="AsepriteFile"/> to process.</param>
-    /// <param name="options">
-    /// Optional options to use when processing.  If <see langword="null"/>, then
-    /// <see cref="ProcessorOptions.Default"/> will be used.
-    /// </param>
-    /// <returns>The <see cref="SpriteSheet"/>.</returns>
+    /// <param name="file">The <see cref="AsepriteFile{TColor}"/> to process.</param>
+    /// <returns>The <see cref="SpriteSheet{TColor}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">Thrown when duplicate tag names are found.</exception>
-    public static SpriteSheet Process(AsepriteFile file, ProcessorOptions? options = null)
+    public static SpriteSheet<TColor> Process<TColor>(AsepriteFile<TColor> file)
+        where TColor : struct, IColor<TColor> => Process(file, ProcessorOptions.Default);
+
+    /// <summary>
+    /// Processes a <see cref="SpriteSheet{TColor}"/> from an <see cref="AsepriteFile{TColor}"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="AsepriteFile{TColor}"/> to process.</param>
+    /// <param name="options">The <see cref="ProcessorOptions"/> to use when processing</param>>
+    /// <returns>The <see cref="SpriteSheet{TColor}"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when duplicate tag names are found.</exception>
+    public static SpriteSheet<TColor> Process<TColor>(AsepriteFile<TColor> file, ProcessorOptions options)
+        where TColor : struct, IColor<TColor>
     {
         ArgumentNullException.ThrowIfNull(file);
-        options ??= ProcessorOptions.Default;
 
-        TextureAtlas textureAtlas = TextureAtlasProcessor.Process(file, options);
+        TextureAtlas<TColor> textureAtlas = TextureAtlasProcessor.Process<TColor>(file, options);
         AnimationTag[] tags = new AnimationTag[file.Tags.Length];
         HashSet<string> tagNameCheck = new HashSet<string>();
 
         for (int i = 0; i < file.Tags.Length; i++)
         {
-            AsepriteTag aseTag = file.Tags[i];
+            AsepriteTag<TColor> aseTag = file.Tags[i];
             if (!tagNameCheck.Add(aseTag.Name))
             {
                 throw new InvalidOperationException($"Duplicate tag name '{aseTag.Name}' found.  Tags must have unique names for a sprite sheet");
             }
 
-            tags[i] = ProcessTag(aseTag, file.Frames);
+            tags[i] = ProcessTag<TColor>(aseTag, file.Frames);
         }
 
-        return new SpriteSheet(file.Name, textureAtlas, tags);
+        return new SpriteSheet<TColor>(file.Name, textureAtlas, tags);
     }
 
-    private static AnimationTag ProcessTag(AsepriteTag aseTag, ReadOnlySpan<AsepriteFrame> aseFrames)
+    private static AnimationTag ProcessTag<TColor>(AsepriteTag<TColor> aseTag, ReadOnlySpan<AsepriteFrame<TColor>> aseFrames)
+        where TColor : struct, IColor<TColor>
     {
         int frameCount = aseTag.To - aseTag.From + 1;
         AnimationFrame[] animationFrames = new AnimationFrame[frameCount];
-        int[] frames = new int[frameCount];
-        int[] durations = new int[frameCount];
 
         for (int i = 0; i < frameCount; i++)
         {

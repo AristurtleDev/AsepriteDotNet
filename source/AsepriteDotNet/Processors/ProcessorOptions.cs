@@ -2,6 +2,8 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace AsepriteDotNet.Processors;
 
 /// <summary>
@@ -14,13 +16,13 @@ namespace AsepriteDotNet.Processors;
 /// <param name="BorderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
 /// <param name="Spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
 /// <param name="InnerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
-public record ProcessorOptions(bool OnlyVisibleLayers,
-                                           bool IncludeBackgroundLayer,
-                                           bool IncludeTilemapLayers,
-                                           bool MergeDuplicateFrames,
-                                           int BorderPadding,
-                                           int Spacing,
-                                           int InnerPadding)
+public readonly record struct ProcessorOptions(bool OnlyVisibleLayers,
+                                               bool IncludeBackgroundLayer,
+                                               bool IncludeTilemapLayers,
+                                               bool MergeDuplicateFrames,
+                                               int BorderPadding,
+                                               int Spacing,
+                                               int InnerPadding)
 {
     /// <summary>
     /// Provides a default set of options for the <see cref="ProcessorOptions"/>.

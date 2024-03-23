@@ -10,9 +10,9 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines the properties of a tileset in an Aseprite file.
 /// </summary>
-public sealed class AsepriteTileset
+public sealed class AsepriteTileset<TColor> where TColor : struct, IColor<TColor>
 {
-    private readonly Rgba32[] _pixels;
+    private readonly TColor[] _pixels;
 
     /// <summary>
     /// Gets the ID of this tileset.
@@ -38,9 +38,9 @@ public sealed class AsepriteTileset
     /// Gets the collection of color value that represents the pixel data of the image of this tileset.  Order of color
     /// elements is from top-left pixel read left-to-right top-to-bottom.
     /// </summary>
-    public ReadOnlySpan<Rgba32> Pixels => _pixels;
+    public ReadOnlySpan<TColor> Pixels => _pixels;
 
-    internal AsepriteTileset(AsepriteTilesetProperties tilesetProperties, string name, Rgba32[] pixels)
+    internal AsepriteTileset(AsepriteTilesetProperties tilesetProperties, string name, TColor[] pixels)
     {
         ID = (int)tilesetProperties.Id;
         TileCount = (int)tilesetProperties.NumberOfTiles;

@@ -11,7 +11,6 @@ namespace AsepriteDotNet.Tests.Common
     {
         [Theory]
         [InlineData(byte.MinValue, byte.MinValue, byte.MinValue, byte.MinValue)]
-        [InlineData(0, 0, 0, 0)]
         [InlineData(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue)]
         public void Rgba32_Vector4_Test(byte r, byte g, byte b, byte a)
         {
@@ -23,7 +22,6 @@ namespace AsepriteDotNet.Tests.Common
 
         [Theory]
         [InlineData(byte.MinValue, byte.MinValue, byte.MinValue, byte.MinValue)]
-        [InlineData(0, 0, 0, 0)]
         [InlineData(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue)]
         public void Rgba32_Equality_Test(byte r, byte g, byte b, byte a)
         {

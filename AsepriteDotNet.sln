@@ -19,7 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsepriteDotNet.Tests", "tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{2B0F6763-3C96-4753-8E12-6A2975369212}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{C4B76AC7-83D0-4F29-BAB9-3C0EAFB31C0D}"
@@ -67,5 +71,8 @@ Global
 		{201F4F7E-C68D-400C-AB87-9A77578DDBEB} = {C4B76AC7-83D0-4F29-BAB9-3C0EAFB31C0D}
 		{27B2E61B-9CA4-44D2-834F-772B7D233D9F} = {1515BA5C-6095-4F5F-94E6-7D54D09321DE}
 		{BC452291-6909-42FE-9343-7FD2F4F4F0E5} = {2B0F6763-3C96-4753-8E12-6A2975369212}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ABE689B5-F304-403F-A1E4-9973EB2F5FBD}
 	EndGlobalSection
 EndGlobal

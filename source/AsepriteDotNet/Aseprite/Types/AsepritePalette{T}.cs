@@ -9,9 +9,9 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines the properties of the palette in an Aseprite file.
 /// </summary>
-public sealed class AsepritePalette<TColor> where TColor : struct, IColor<TColor>
+public sealed class AsepritePalette<T> where T: IColor, new()
 {
-    private TColor[] _colors = Array.Empty<TColor>();
+    private T[] _colors = Array.Empty<T>();
 
     /// <summary>
     /// Gets the color value at the specified index from this palette.
@@ -21,7 +21,7 @@ public sealed class AsepritePalette<TColor> where TColor : struct, IColor<TColor
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown if the <paramref name="index"/> is less than zero or greater than or equal to <see cref="Count"/>.
     /// </exception>
-    public TColor this[int index]
+    public T this[int index]
     {
         get => _colors[index];
         internal set => _colors[index] = value;
@@ -38,16 +38,16 @@ public sealed class AsepritePalette<TColor> where TColor : struct, IColor<TColor
     public int Count => _colors.Length;
 
     /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of the <see cref="IColor{T}"/> elements in this
+    /// Gets a <see cref="ReadOnlySpan{T}"/> of the <see cref="IColor"/> elements in this
     /// <see cref="AsepritePalette{T}"/>.  Order of elements is the same as the order of colors in the palette in Aseprite.
     /// </summary>
-    public ReadOnlySpan<TColor> Colors => _colors;
+    public ReadOnlySpan<T> Colors => _colors;
 
     internal AsepritePalette(int transparentIndex) => TransparentIndex = transparentIndex;
 
     internal void Resize(int newSize)
     {
-        TColor[] newColors = new TColor[newSize];
+        T[] newColors = new T[newSize];
         Array.Copy(_colors, newColors, _colors.Length);
         _colors = newColors;
     }

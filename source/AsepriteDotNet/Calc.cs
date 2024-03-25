@@ -5,7 +5,6 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
-using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet
 {
@@ -137,19 +136,18 @@ namespace AsepriteDotNet
         /// further processing or storage.
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TColor UnpackColor<TColor>(Vector4 vector)
-            where TColor : struct, IColor<TColor>
+        public static byte[] UnpackColor(Vector4 vector)
         {
             vector *= s_maxBytes;
             vector += s_half;
             vector = Vector4.Min(Vector4.Max(vector, Vector4.Zero), s_maxBytes);
             Vector128<byte> result = Vector128.ConvertToInt32(vector.AsVector128()).AsByte();
-            TColor color = default(TColor);
-            color.R = result.GetElement(0);
-            color.G = result.GetElement(4);
-            color.B = result.GetElement(8);
-            color.A = result.GetElement(12);
-            return color;
+            byte[] rgba = new byte[4];
+            rgba[0] = result.GetElement(0);
+            rgba[1] = result.GetElement(4);
+            rgba[2] = result.GetElement(8);
+            rgba[3] = result.GetElement(12);
+            return rgba;
         }
 
         /// <summary>

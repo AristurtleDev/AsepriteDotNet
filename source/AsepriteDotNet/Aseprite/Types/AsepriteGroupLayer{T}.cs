@@ -11,17 +11,17 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines the properties of a layer in an Aseprite file that contains child layers.  This class cannot be inherited.
 /// </summary>
-public sealed class AsepriteGroupLayer<TColor> : AsepriteLayer<TColor> where TColor : struct, IColor<TColor>
+public sealed class AsepriteGroupLayer<T> : AsepriteLayer<T> where T: IColor, new()
 {
-    private readonly List<AsepriteLayer<TColor>> _children = new List<AsepriteLayer<TColor>>();
+    private readonly List<AsepriteLayer<T>> _children = new List<AsepriteLayer<T>>();
 
     /// <summary>
     /// Gets the child layers that were grouped inside this group layer.
     /// The order of layer elements is from bottom most to top most layer in the group.
     /// </summary>
-    public ReadOnlySpan<AsepriteLayer<TColor>> Children => CollectionsMarshal.AsSpan(_children);
+    public ReadOnlySpan<AsepriteLayer<T>> Children => CollectionsMarshal.AsSpan(_children);
 
     internal AsepriteGroupLayer(AsepriteLayerProperties header, string name) : base(header, name) { }
 
-    internal void AddChild(AsepriteLayer<TColor> layer) => _children.Add(layer);
+    internal void AddChild(AsepriteLayer<T> layer) => _children.Add(layer);
 }

@@ -11,9 +11,9 @@ namespace AsepriteDotNet;
 /// Defines a texture atlas that is composed of a texture with defined texture regions.
 /// This class cannot be inherited.
 /// </summary>
-public sealed class TextureAtlas<TColor> : IEquatable<TextureAtlas<TColor>> where TColor : struct, IColor<TColor>
+public sealed class TextureAtlas<T> : IEquatable<TextureAtlas<T>> where T: IColor, new()
 {
-    private readonly TextureRegion<TColor>[] _regions;
+    private readonly TextureRegion<T>[] _regions;
 
     /// <summary>
     /// Gets the name of this texture atlas.
@@ -23,21 +23,21 @@ public sealed class TextureAtlas<TColor> : IEquatable<TextureAtlas<TColor>> wher
     /// <summary>
     /// Gets the source texture of this texture atlas.
     /// </summary>
-    public Texture<TColor> Texture { get; }
+    public Texture<T> Texture { get; }
 
     /// <summary>
     /// Gets a read-only collection of the texture regions within this atlas.
     /// </summary>
-    public ReadOnlySpan<TextureRegion<TColor>> Regions => _regions;
+    public ReadOnlySpan<TextureRegion<T>> Regions => _regions;
 
-    internal TextureAtlas(string name, Texture<TColor> texture, TextureRegion<TColor>[] regions) =>
+    internal TextureAtlas(string name, Texture<T> texture, TextureRegion<T>[] regions) =>
         (Name, Texture, _regions) = (name, texture, regions);
 
     /// <inheritdoc/>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is TextureAtlas<TColor> other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is TextureAtlas<T> other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals([NotNullWhen(true)] TextureAtlas<TColor>? other)
+    public bool Equals([NotNullWhen(true)] TextureAtlas<T>? other)
     {
         if (ReferenceEquals(this, other)) { return true; }
         return Name.Equals(other?.Name, StringComparison.OrdinalIgnoreCase)

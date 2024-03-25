@@ -10,9 +10,9 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines the properties of a cel in an Aseprite file that contains image data.  This class cannot be inherited.
 /// </summary>
-public class AsepriteImageCel<TColor> : AsepriteCel<TColor> where TColor : struct, IColor<TColor>
+public class AsepriteImageCel<T> : AsepriteCel<T> where T: IColor, new()
 {
-    private readonly TColor[] _pixels;
+    private readonly T[] _pixels;
 
     /// <summary>
     /// Gets the size of this image cel.
@@ -24,9 +24,9 @@ public class AsepriteImageCel<TColor> : AsepriteCel<TColor> where TColor : struc
     /// image cel. The order of color elements start with the top-left most pixel in the image and is read from
     /// left-to-right, top-to-bottom.
     /// </summary>
-    public ReadOnlySpan<TColor> Pixels => _pixels;
+    public ReadOnlySpan<T> Pixels => _pixels;
 
-    internal AsepriteImageCel(AsepriteCelProperties celProperties, AsepriteLayer<TColor> layer, AsepriteImageCelProperties imageCelProperties, TColor[] pixels)
+    internal AsepriteImageCel(AsepriteCelProperties celProperties, AsepriteLayer<T> layer, AsepriteImageCelProperties imageCelProperties, T[] pixels)
     : base(celProperties, layer)
     {
         Size = new Size(imageCelProperties.Width, imageCelProperties.Height);

@@ -13,11 +13,11 @@ namespace AsepriteDotNet.Tests.Processors;
 public sealed class SpriteSheetProcessorTestFixture
 {
     public string Name { get; } = "sprite-processor-test";
-    public AsepriteFile<Rgba32> AsepriteFile { get; }
-    public Rgba32 Red { get; } = new Rgba32(255, 0, 0, 255);
-    public Rgba32 Green { get; } = new Rgba32(0, 255, 0, 255);
-    public Rgba32 Blue { get; } = new Rgba32(0, 0, 255, 255);
-    public Rgba32 Yellow { get; } = new Rgba32(255, 255, 0, 255);
+    public AsepriteFile<SystemColor> AsepriteFile { get; }
+    public SystemColor Red { get; } = new SystemColor(255, 0, 0, 255);
+    public SystemColor Green { get; } = new SystemColor(0, 255, 0, 255);
+    public SystemColor Blue { get; } = new SystemColor(0, 0, 255, 255);
+    public SystemColor Yellow { get; } = new SystemColor(255, 255, 0, 255);
 
 
     public SpriteSheetProcessorTestFixture()
@@ -25,7 +25,7 @@ public sealed class SpriteSheetProcessorTestFixture
         int width = 2;
         int height = 2;
 
-        AsepritePalette<Rgba32> palette = new AsepritePalette<Rgba32>(0);
+        AsepritePalette<SystemColor> palette = new AsepritePalette<SystemColor>(0);
         palette.Resize(4);
         palette[0] = Red;
         palette[1] = Green;
@@ -33,34 +33,34 @@ public sealed class SpriteSheetProcessorTestFixture
         palette[3] = Yellow;
 
         AsepriteLayerProperties layerProperties = new AsepriteLayerProperties() { Flags = 1, Opacity = 255, BlendMode = 0 };
-        List<AsepriteLayer<Rgba32>> layers = new List<AsepriteLayer<Rgba32>>()
+        List<AsepriteLayer<SystemColor>> layers = new List<AsepriteLayer<SystemColor>>()
         {
-            new AsepriteImageLayer<Rgba32>(layerProperties, "layer")
+            new AsepriteImageLayer<SystemColor>(layerProperties, "layer")
         };
 
         AsepriteCelProperties celProperties = new AsepriteCelProperties() { Opacity = 255, };
         AsepriteImageCelProperties imageCelPropertes = new AsepriteImageCelProperties() { Width = 2, Height = 2 };
-        List<AsepriteCel<Rgba32>> frame0Cels = new List<AsepriteCel<Rgba32>>()
+        List<AsepriteCel<SystemColor>> frame0Cels = new List<AsepriteCel<SystemColor>>()
         {
-            new AsepriteImageCel<Rgba32>(celProperties, layers[0], imageCelPropertes, new Rgba32[] {Red, Red, Red, Red })
+            new AsepriteImageCel<SystemColor>(celProperties, layers[0], imageCelPropertes, new SystemColor[] {Red, Red, Red, Red })
         };
 
-        List<AsepriteCel<Rgba32>> frame1Cels = new List<AsepriteCel<Rgba32>>()
+        List<AsepriteCel<SystemColor>> frame1Cels = new List<AsepriteCel<SystemColor>>()
         {
-            new AsepriteImageCel<Rgba32>(celProperties, layers[0], imageCelPropertes, new Rgba32[] {Green, Green, Green, Green})
+            new AsepriteImageCel<SystemColor>(celProperties, layers[0], imageCelPropertes, new SystemColor[] {Green, Green, Green, Green})
         };
 
-        List<AsepriteCel<Rgba32>> frame2Cels = new List<AsepriteCel<Rgba32>>()
+        List<AsepriteCel<SystemColor>> frame2Cels = new List<AsepriteCel<SystemColor>>()
         {
-            new AsepriteImageCel<Rgba32>(celProperties, layers[0], imageCelPropertes, new Rgba32[] { Blue, Blue, Blue, Blue})
+            new AsepriteImageCel<SystemColor>(celProperties, layers[0], imageCelPropertes, new SystemColor[] { Blue, Blue, Blue, Blue})
         };
 
-        List<AsepriteCel<Rgba32>> frame3Cels = new List<AsepriteCel<Rgba32>>()
+        List<AsepriteCel<SystemColor>> frame3Cels = new List<AsepriteCel<SystemColor>>()
         {
-            new AsepriteImageCel<Rgba32>(celProperties, layers[0], imageCelPropertes, new Rgba32[] { Red, Red, Red, Red})
+            new AsepriteImageCel<SystemColor>(celProperties, layers[0], imageCelPropertes, new SystemColor[] { Red, Red, Red, Red})
         };
 
-        List<AsepriteFrame<Rgba32>> frames = new List<AsepriteFrame<Rgba32>>()
+        List<AsepriteFrame<SystemColor>> frames = new List<AsepriteFrame<SystemColor>>()
         {
             new($"{Name} 0", width, height, 100, frame0Cels),
             new($"{Name} 1", width, height, 100, frame1Cels),
@@ -68,14 +68,14 @@ public sealed class SpriteSheetProcessorTestFixture
             new($"{Name} 3", width, height, 100, frame3Cels),
         };
 
-        List<AsepriteTag<Rgba32>> tags = new List<AsepriteTag<Rgba32>>()
+        List<AsepriteTag<SystemColor>> tags = new List<AsepriteTag<SystemColor>>()
         {
-            new AsepriteTag<Rgba32>(new AsepriteTagProperties() {Direction = 0, From = 0, To = 0}, "tag-0"),
-            new AsepriteTag<Rgba32>(new AsepriteTagProperties() {Direction = 0, From = 0, To = 1}, "tag-1"),
-            new AsepriteTag<Rgba32>(new AsepriteTagProperties() {Direction = 2, From = 1, To = 2}, "tag-2"),
+            new AsepriteTag<SystemColor>(new AsepriteTagProperties() {Direction = 0, From = 0, To = 0}, "tag-0"),
+            new AsepriteTag<SystemColor>(new AsepriteTagProperties() {Direction = 0, From = 0, To = 1}, "tag-1"),
+            new AsepriteTag<SystemColor>(new AsepriteTagProperties() {Direction = 2, From = 1, To = 2}, "tag-2"),
         };
 
-        AsepriteFile = new AsepriteFile<Rgba32>(Name, palette, width, height, AsepriteColorDepth.RGBA, frames, layers, tags, [], [], new AsepriteUserData<Rgba32>(), []);
+        AsepriteFile = new AsepriteFile<SystemColor>(Name, palette, width, height, AsepriteColorDepth.RGBA, frames, layers, tags, [], [], new AsepriteUserData<SystemColor>(), []);
     }
 }
 
@@ -100,8 +100,8 @@ public sealed class SpriteSheetProcessorTests : IClassFixture<SpriteSheetProcess
     public void Process_Parameters_To_TextureAtlasProcess_Correctly(bool onlyVisible, bool includeBackground, bool includeTilemap, bool mergeDuplicates, int borderPadding, int spacing, int innerPadding)
     {
         ProcessorOptions options = new ProcessorOptions(onlyVisible, includeBackground, includeTilemap, mergeDuplicates, borderPadding, spacing, innerPadding);
-        SpriteSheet<Rgba32> sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile, options);
-        TextureAtlas<Rgba32> expected = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
+        SpriteSheet<SystemColor> sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile, options);
+        TextureAtlas<SystemColor> expected = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
 
         Assert.Equal(expected, sheet.TextureAtlas);
     }
@@ -109,7 +109,7 @@ public sealed class SpriteSheetProcessorTests : IClassFixture<SpriteSheetProcess
     [Fact]
     public void Process_SpriteSheet_Atlas_and_Texture_Names_Same_As_File_Name()
     {
-        SpriteSheet<Rgba32> sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile);
+        SpriteSheet<SystemColor> sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile);
         Assert.Equal(_fixture.Name, sheet.Name);
         Assert.Equal(_fixture.Name, sheet.TextureAtlas.Name);
         Assert.Equal(_fixture.Name, sheet.TextureAtlas.Texture.Name);
@@ -118,31 +118,31 @@ public sealed class SpriteSheetProcessorTests : IClassFixture<SpriteSheetProcess
     [Fact]
     public void Processes_All_Tags()
     {
-        SpriteSheet<Rgba32> sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile);
+        SpriteSheet<SystemColor> sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile);
         Assert.Equal(_fixture.AsepriteFile.Tags.Length, sheet.Tags.Length);
     }
 
     [Fact]
     public void Process_Duplicate_AsepriteTag_Names_Throws_Exception()
     {
-        List<AsepriteTag<Rgba32>> tags = new List<AsepriteTag<Rgba32>>()
+        List<AsepriteTag<SystemColor>> tags = new List<AsepriteTag<SystemColor>>()
         {
-            new AsepriteTag<Rgba32>(new AsepriteTagProperties(), "tag-0"),
-            new AsepriteTag<Rgba32>(new AsepriteTagProperties(), "tag-1"),
-            new AsepriteTag<Rgba32>(new AsepriteTagProperties(), "tag-0"),
+            new AsepriteTag<SystemColor>(new AsepriteTagProperties(), "tag-0"),
+            new AsepriteTag<SystemColor>(new AsepriteTagProperties(), "tag-1"),
+            new AsepriteTag<SystemColor>(new AsepriteTagProperties(), "tag-0"),
         };
 
         //  Reuse the fixture, but use the tags array from above with duplicate tag names
-        AsepriteFile<Rgba32> aseFile = new(_fixture.Name,
+        AsepriteFile<SystemColor> aseFile = new(_fixture.Name,
                                            _fixture.AsepriteFile.Palette,
                                            _fixture.AsepriteFile.CanvasWidth,
                                            _fixture.AsepriteFile.CanvasHeight,
                                            _fixture.AsepriteFile.ColorDepth,
-                                           new List<AsepriteFrame<Rgba32>>(_fixture.AsepriteFile.Frames.ToArray()),
-                                           new List<AsepriteLayer<Rgba32>>(_fixture.AsepriteFile.Layers.ToArray()),
+                                           new List<AsepriteFrame<SystemColor>>(_fixture.AsepriteFile.Frames.ToArray()),
+                                           new List<AsepriteLayer<SystemColor>>(_fixture.AsepriteFile.Layers.ToArray()),
                                            tags,
-                                           new List<AsepriteSlice<Rgba32>>(_fixture.AsepriteFile.Slices.ToArray()),
-                                           new List<AsepriteTileset<Rgba32>>(_fixture.AsepriteFile.Tilesets.ToArray()),
+                                           new List<AsepriteSlice<SystemColor>>(_fixture.AsepriteFile.Slices.ToArray()),
+                                           new List<AsepriteTileset<SystemColor>>(_fixture.AsepriteFile.Tilesets.ToArray()),
                                            _fixture.AsepriteFile.UserData,
                                            new List<string>());
 

@@ -11,9 +11,9 @@ namespace AsepriteDotNet;
 /// A tile map that contains animation frames.
 /// This class cannot be inherited.
 /// </summary>
-public sealed class AnimatedTilemap<TColor> : IEquatable<AnimatedTilemap<TColor>> where TColor : struct, IColor<TColor>
+public sealed class AnimatedTilemap<T> : IEquatable<AnimatedTilemap<T>> where T: IColor, new()
 {
-    private readonly Tileset<TColor>[] _tilests;
+    private readonly Tileset<T>[] _tilests;
     private readonly TilemapFrame[] _frames;
 
     /// <summary>
@@ -24,22 +24,22 @@ public sealed class AnimatedTilemap<TColor> : IEquatable<AnimatedTilemap<TColor>
     /// <summary>
     /// Gets a read-only collection of the tilesets used by the layers of this animated tilemap.
     /// </summary>
-    public ReadOnlySpan<Tileset<TColor>> Tilesets => _tilests;
+    public ReadOnlySpan<Tileset<T>> Tilesets => _tilests;
 
     /// <summary>
     /// Gets a read-only collection of the frames of animation for this animated tilemap.
     /// </summary>
     public ReadOnlySpan<TilemapFrame> Frames => _frames;
 
-    internal AnimatedTilemap(string name, Tileset<TColor>[] tilesets, TilemapFrame[] frames) =>
+    internal AnimatedTilemap(string name, Tileset<T>[] tilesets, TilemapFrame[] frames) =>
         (Name, _tilests, _frames) = (name, tilesets, frames);
 
 
     /// <inheritdoc/>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is AnimatedTilemap<TColor> other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is AnimatedTilemap<T> other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals([NotNullWhen(true)] AnimatedTilemap<TColor>? other)
+    public bool Equals([NotNullWhen(true)] AnimatedTilemap<T>? other)
     {
         if (ReferenceEquals(this, other)) { return true; }
         return Name.Equals(other?.Name, StringComparison.Ordinal)

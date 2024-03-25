@@ -9,60 +9,60 @@ using AsepriteDotNet.Common;
 namespace AsepriteDotNet.Processors;
 
 /// <summary>
-/// Defines a processor for processing a <see cref="Tileset{TColor}"/> from an <see cref="AsepriteFile{TColor}"/>.
+/// Defines a processor for processing a <see cref="Tileset{T}"/> from an <see cref="AsepriteFile{T}"/>.
 /// </summary>
 public static class TilesetProcessor
 {
     /// <summary>
-    /// Processes an <see cref="Tileset{TColor}"/> from an <see cref="AsepriteFile{TColor}"/> by index.
+    /// Processes an <see cref="Tileset{T}"/> from an <see cref="AsepriteFile{T}"/> by index.
     /// </summary>
-    /// <param name="file">The <see cref="AsepriteFile{TColor}"/> to process.</param>
+    /// <param name="file">The <see cref="AsepriteFile{T}"/> to process.</param>
     /// <param name="tilesetIndex">The index of the tileset to process.</param>
-    /// <returns>The <see cref="Tileset{TColor}"/>.</returns>
+    /// <returns>The <see cref="Tileset{T}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="tilesetIndex"/> is less than zero or is greater than or equal to the total number
     /// of tilesets in the file.
     /// </exception>
-    public static Tileset<TColor> Process<TColor>(AsepriteFile<TColor> file, int tilesetIndex)
-        where TColor : struct, IColor<TColor>
+    public static Tileset<T> Process<T>(AsepriteFile<T> file, int tilesetIndex)
+        where T: IColor, new()
     {
         ArgumentNullException.ThrowIfNull(file);
-        AsepriteTileset<TColor> aseTileset = file.Tilesets[tilesetIndex];
+        AsepriteTileset<T> aseTileset = file.Tilesets[tilesetIndex];
         return Process(aseTileset);
     }
 
     /// <summary>
-    /// Processes an <see cref="Tileset{TColor}"/> from an <see cref="AsepriteFile{TColor}"/> by name.
+    /// Processes an <see cref="Tileset{T}"/> from an <see cref="AsepriteFile{T}"/> by name.
     /// </summary>
-    /// <param name="file">The <see cref="AsepriteFile{TColor}"/> to process.</param>
+    /// <param name="file">The <see cref="AsepriteFile{T}"/> to process.</param>
     /// <param name="tilesetName">The name of the tileset to process.</param>
-    /// <returns>The <see cref="Tileset{TColor}"/>.</returns>
+    /// <returns>The <see cref="Tileset{T}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">
     /// Thrown if the file does not contain a tileset with the specified name.
     /// </exception>
-    public static Tileset<TColor> Process<TColor>(AsepriteFile<TColor> file, string tilesetName)
-        where TColor : struct, IColor<TColor>
+    public static Tileset<T> Process<T>(AsepriteFile<T> file, string tilesetName)
+        where T: IColor, new()
     {
         ArgumentNullException.ThrowIfNull(file);
-        AsepriteTileset<TColor> aseTileset = file.GetTileset(tilesetName);
+        AsepriteTileset<T> aseTileset = file.GetTileset(tilesetName);
         return Process(aseTileset);
     }
 
     /// <summary>
-    /// Processes a <see cref="Tileset{TColor}"/> from an <see cref="AsepriteTileset{TColor}"/>.
+    /// Processes a <see cref="Tileset{T}"/> from an <see cref="AsepriteTileset{T}"/>.
     /// </summary>
-    /// <param name="aseTileset">The <see cref="AsepriteTileset{TColor}"/> to process.</param>
-    /// <returns>The <see cref="Tileset{TColor}"/>.</returns>
+    /// <param name="aseTileset">The <see cref="AsepriteTileset{T}"/> to process.</param>
+    /// <returns>The <see cref="Tileset{T}"/>.</returns>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="aseTileset"/> is <see langword="null"/>.
     /// </exception>
-    public static Tileset<TColor> Process<TColor>(AsepriteTileset<TColor> aseTileset)
-        where TColor : struct, IColor<TColor>
+    public static Tileset<T> Process<T>(AsepriteTileset<T> aseTileset)
+        where T: IColor, new()
     {
         ArgumentNullException.ThrowIfNull(aseTileset);
-        Texture<TColor> texture = new Texture<TColor>(aseTileset.Name, aseTileset.Size, aseTileset.Pixels.ToArray());
-        return new Tileset<TColor>(aseTileset.ID, aseTileset.Name, texture, aseTileset.Size);
+        Texture<T> texture = new Texture<T>(aseTileset.Name, aseTileset.Size, aseTileset.Pixels.ToArray());
+        return new Tileset<T>(aseTileset.ID, aseTileset.Name, texture, aseTileset.Size);
     }
 }

@@ -9,7 +9,7 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines a slice element in an Aseprite file.
 /// </summary>
-public sealed class AsepriteSlice<TColor> where TColor : struct, IColor<TColor>
+public sealed class AsepriteSlice<T> where T: IColor, new()
 {
     private readonly AsepriteSliceKey[] _keys;
 
@@ -39,7 +39,7 @@ public sealed class AsepriteSlice<TColor> where TColor : struct, IColor<TColor>
     /// <summary>
     /// Gets the custom user data that was set in the properties for this slice in Aseprite.
     /// </summary>
-    public AsepriteUserData<TColor> UserData { get; } = new AsepriteUserData<TColor>();
+    public AsepriteUserData<T> UserData { get; } = new AsepriteUserData<T>();
 
     internal AsepriteSlice(string name, bool isNinePatch, bool hasPivot, AsepriteSliceKey[] keys)
     {

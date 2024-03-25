@@ -10,7 +10,7 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines core properties of an Aseprite layer.
 /// </summary>
-public abstract class AsepriteLayer<TColor> where TColor : struct, IColor<TColor>
+public abstract class AsepriteLayer<T> where T: IColor, new()
 {
     /// <summary>
     /// Gets a value that indicates whether this layer is visible.
@@ -54,7 +54,7 @@ public abstract class AsepriteLayer<TColor> where TColor : struct, IColor<TColor
     /// <summary>
     /// Gets the custom user data that was set in the properties for this layer in Aseprite.
     /// </summary>
-    public AsepriteUserData<TColor> UserData { get; } = new AsepriteUserData<TColor>();
+    public AsepriteUserData<T> UserData { get; } = new AsepriteUserData<T>();
 
     internal AsepriteLayer(AsepriteLayerProperties header, string name)
     {

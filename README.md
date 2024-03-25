@@ -4,7 +4,7 @@
 A Cross Platform C# Library for Reading Aseprite Files
 
 [![main](https://github.com/AristurtleDev/AsepriteDotNet/actions/workflows/main.yml/badge.svg)](https://github.com/AristurtleDev/AsepriteDotNet/actions/workflows/main.yml)
-[![Nuget 1.0.0.9](https://img.shields.io/nuget/v/AsepriteDotNet?color=blue&style=flat-square)](https://www.nuget.org/packages/AsepriteDotNet/1.0.0.9)
+[![NuGet 1.0.0.9](https://img.shields.io/nuget/v/AsepriteDotNet?color=blue&style=flat-square)](https://www.nuget.org/packages/AsepriteDotNet/1.0.0.9)
 [![License: MIT](https://img.shields.io/badge/📃%20license-MIT-blue?style=flat)](LICENSE)
 [![Twitter](https://img.shields.io/badge/%20-Share%20On%20Twitter-555?style=flat&logo=twitter)](https://twitter.com/intent/tweet?text=AsepriteDotNet%20by%20%40aristurtledev%0A%0AA%20new%20cross-platform%20library%20in%20C%23%20for%20reading%20Aseprite%20.ase%2F.aseprite%20files.%20https%3A%2F%2Fgithub.com%2FAristurtleDev%2FAsepriteDotNet%0A%0A%23aseprite%20%23dotnet%20%23csharp%20%23oss%0A)
 </h1>
@@ -23,12 +23,18 @@ A Cross Platform C# Library for Reading Aseprite Files
     * Tileset
     * Tilemap
     * AnimatedTilemap
+* Supports whatever color type your project uses through the `IColor<T>` interface.  
 
 # Installation
 Install via NuGet
 ```
 dotnet add package AsepriteDotNet --version 1.0.0.9
 ```
+
+# `IColor<T>` Information (**Important, Please Read**)
+One of the main goals of this library is to allow consumers to load an Aseprite file within their project and use the color type that their project is using.  For some, this may just be `System.Drawing.Color`.  In other scenarios, you may be using something like `Microsoft.Xna.Framework.Color`.  To allow this library to remain agnostic to the underlying color type being used, the `IColor<T>` interface has been created.
+
+Out-of-the-box, this library provides the `SystemColor` implementation of `IColor<T>` for use with the standard `System.Drawing.Color`.  This struct can also be used as an example of how to create your own based on the color type your project is using.  
 
 # Usage
 ## Load Aseprite file
@@ -37,16 +43,17 @@ The following example demonstrates how to load an Aseprite file from disk.
 ```csharp
 //  Import namespaces
 using AsepriteDotNet.Aseprite;
+using AsepriteDotNet.Common;
 using AsepriteDotNet.IO;
 
-//  Load the Aseprite file from disk.
-AsepriteFile aseFile = AsepriteFileLoader.FromFile("file.aseprite");
+//  Load the Aseprite file from disk.  This example uses the built in 'SystemColor` struct.
+AsepriteFile<SystemColor> aseFile = AsepriteFileLoader.FromFile<SystemColor>("file.aseprite");
 ```
 
 ## Get Frame Color Data
-In Aseprite, each frame is a collection of cels, with each cel on a different layer and each layer having its own blending mode.  To get the full image of a single frame, the frame needs to be flattened.  Flatting a frame blends all cel elements, starting with the bottom most layer and blending the layer above it until all layers have blended producing a single iamge.
+In Aseprite, each frame is a collection of cels, with each cel on a different layer and each layer having its own blending mode.  To get the full image of a single frame, the frame needs to be flattened.  Flatting a frame blends all cel elements, starting with the bottom most layer and blending the layer above it until all layers have blended producing a single image.
 
-Doing this in `AsepriteDotNet` will produce a `Rgba32[]` containing the pixel data from flattening the frame. You can specify if only cel elements that are on a visible layer should be included, if cels on the background layer should be included, and if tilemap cels should be included.
+Doing this in `AsepriteDotNet` will produce an array of containing the pixel data from flattening the frame. You can specify if only cel elements that are on a visible layer should be included, if cels on the background layer should be included, and if tilemap cels should be included.  The type of the pixel data in the array is based on the `IColor<T>` implementation used when the `AsepriteFIle<T>` was created.
 
 ```csharp
 //  Import namespaces
@@ -55,10 +62,10 @@ using AsepriteDotNet.Common;
 using AsepriteDotNet.IO;
 
 //  Load the Aseprite file from disk.
-AsepriteFile file = AsepriteFileLoader.FromFile("file.aseprite");
+AsepriteFile<SystemColor> file = AsepriteFileLoader.FromFile<SystemColor>("file.aseprite");
 
 //  Flatten the frame to get the pixel data
-Rgba32[] framePixels = file.Frames[0].FlattenFrame(onlyVisibleLayers: true, includeBackgroundLayer: false, includeTilemapCels: false);
+Color[] framePixels = file.Frames[0].FlattenFrame(onlyVisibleLayers: true, includeBackgroundLayer: false, includeTilemapCels: false);
 ```
 
 ## Processor
@@ -86,7 +93,7 @@ using AsepriteDotNet.IO;
 using AsepriteDotNet.Processors;
 
 //  Load the Aseprite file from disk.
-AsepriteFile aseFile = AsepriteFileLoader.FromFile("file.aseprite");
+AsepriteFile<SystemColor> aseFile = AsepriteFileLoader.FromFile<SystemColor>("file.aseprite");
 
 //  Create new processor options or use the provided defaults
 ProcessorOptions options = ProcessorOptions.Default;

@@ -43,7 +43,9 @@ internal class CRC
     /// </param>
     internal CRC(ReadOnlySpan<byte> initial) : this() => _ = Update(initial);
 
+#pragma warning disable CA1810 // Initialize reference type static fields inline
     static CRC()
+#pragma warning restore CA1810 // Initialize reference type static fields inline
     {
 
         //  Make the table for fast crc

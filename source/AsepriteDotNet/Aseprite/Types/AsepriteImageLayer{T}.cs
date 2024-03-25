@@ -11,7 +11,7 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// Defines the properties of a layer in an Aseprite file that image cels are placed on.  This class cannot be
 /// inherited.
 /// </summary>
-public sealed class AsepriteImageLayer<TColor> : AsepriteLayer<TColor> where TColor : struct, IColor<TColor>
+public sealed class AsepriteImageLayer<T> : AsepriteLayer<T> where T: IColor, new()
 {
     internal AsepriteImageLayer(AsepriteLayerProperties header, string name) : base(header, name) { }
 }

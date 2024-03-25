@@ -11,9 +11,9 @@ namespace AsepriteDotNet;
 /// Defines a rectangular region within a larger texture that represents a sub texture.
 /// This class cannot be inherited.
 /// </summary>
-public sealed class TextureRegion<TColor> : IEquatable<TextureRegion<TColor>> where TColor : struct, IColor<TColor>
+public sealed class TextureRegion<T> : IEquatable<TextureRegion<T>> where T: IColor, new()
 {
-    private readonly Slice<TColor>[] _slices;
+    private readonly Slice<T>[] _slices;
 
     /// <summary>
     /// Gets the name of this texture region.
@@ -28,15 +28,15 @@ public sealed class TextureRegion<TColor> : IEquatable<TextureRegion<TColor>> wh
     /// <summary>
     /// Gets a read-only collection of the slices within this texture region.
     /// </summary>
-    public ReadOnlySpan<Slice<TColor>> Slices => _slices;
-    internal TextureRegion(string name, Rectangle bounds, Slice<TColor>[] slices) =>
+    public ReadOnlySpan<Slice<T>> Slices => _slices;
+    internal TextureRegion(string name, Rectangle bounds, Slice<T>[] slices) =>
         (Name, Bounds, _slices) = (name, bounds, slices);
 
     /// <inheritdoc/>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is TextureRegion<TColor> other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is TextureRegion<T> other && Equals(other);
 
     /// <inheritdoc/>
-    public bool Equals([NotNullWhen(true)] TextureRegion<TColor>? other)
+    public bool Equals([NotNullWhen(true)] TextureRegion<T>? other)
     {
         if (ReferenceEquals(this, other)) { return true; }
         return Name.Equals(other?.Name, StringComparison.OrdinalIgnoreCase)

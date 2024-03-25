@@ -11,14 +11,14 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// Defines the properties of a layer in an Aseprite file that tilemap cels are placed on.  This class cannot be
 /// inherited.
 /// </summary>
-public sealed class AsepriteTilemapLayer<TColor> : AsepriteLayer<TColor> where TColor : struct, IColor<TColor>
+public sealed class AsepriteTilemapLayer<T> : AsepriteLayer<T> where T: IColor, new()
 {
     /// <summary>
     /// Gets the tileset that is used by all tilemap cels on this tilemap layer.
     /// </summary>
-    public AsepriteTileset<TColor> Tileset { get; }
+    public AsepriteTileset<T> Tileset { get; }
 
-    internal AsepriteTilemapLayer(AsepriteLayerProperties header, string name, AsepriteTileset<TColor> tileset)
+    internal AsepriteTilemapLayer(AsepriteLayerProperties header, string name, AsepriteTileset<T> tileset)
         : base(header, name)
     {
         Tileset = tileset;

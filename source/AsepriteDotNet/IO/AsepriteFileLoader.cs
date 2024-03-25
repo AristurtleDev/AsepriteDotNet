@@ -22,11 +22,11 @@ public static partial class AsepriteFileLoader
     /// A new instance of the <see cref="AsepriteFile{T}"/> class containing the contents of the Aseprite file that was
     /// loaded.
     /// </returns>
-    public static AsepriteFile<TColor> FromFile<TColor>(string path) where TColor : struct, IColor<TColor>
+    public static AsepriteFile<T> FromFile<T>(string path) where T: IColor, new()
     {
         string fileName = Path.GetFileNameWithoutExtension(path);
         using FileStream stream = File.OpenRead(path);
-        return FromStream<TColor>(fileName, stream, true);
+        return FromStream<T>(fileName, stream, true);
     }
 
     /// <summary>
@@ -42,22 +42,22 @@ public static partial class AsepriteFileLoader
     /// A new instance of the <see cref="AsepriteFile{T}"/> class containing the contents of the Aseprite file that was
     /// loaded.
     /// </returns>
-    public static AsepriteFile<TColor> FromStream<TColor>(string fileName, Stream stream, bool leaveOpen = false)
-        where TColor : struct, IColor<TColor>
+    public static AsepriteFile<T> FromStream<T>(string fileName, Stream stream, bool leaveOpen = false)
+        where T: IColor, new()
     {
         using AsepriteBinaryReader reader = new AsepriteBinaryReader(stream, leaveOpen);
-        return LoadFile<TColor>(fileName, reader);
+        return LoadFile<T>(fileName, reader);
     }
 
-    private static AsepriteFile<TColor> LoadFile<TColor>(string fileName, AsepriteBinaryReader reader)
-        where TColor : struct, IColor<TColor>
+    private static AsepriteFile<T> LoadFile<T>(string fileName, AsepriteBinaryReader reader)
+        where T: IColor, new()
     {
         //  Collection of non-fatal warnings accumulated while loading the Aseprite file. Provided to the consumer as a
         //  means of seeing why some data may not be what they expect it to be.
         List<string> warnings = new List<string>();
 
         //  Reference to the last group layer that was read so that subsequent child layers can be added to it.
-        AsepriteGroupLayer<TColor>? lastGroupLayer = null;
+        AsepriteGroupLayer<T>? lastGroupLayer = null;
 
         //  Flag to determine if the palette has been read.  This is used to flag that a user data chunk is for the
         //  sprite due to changes in Aseprite 1.3
@@ -100,24 +100,24 @@ public static partial class AsepriteFileLoader
             warnings.Add("Transparent index only valid for Indexed Color Depth mode.  Defaulting to 0");
         }
 
-        AsepritePalette<TColor> palette = new AsepritePalette<TColor>(fileHeader.TransparentIndex);
-        List<AsepriteFrame<TColor>> frames = new List<AsepriteFrame<TColor>>();
-        List<AsepriteLayer<TColor>> layers = new List<AsepriteLayer<TColor>>();
-        List<AsepriteTag<TColor>> tags = new List<AsepriteTag<TColor>>();
-        List<AsepriteSlice<TColor>> slices = new List<AsepriteSlice<TColor>>();
-        List<AsepriteTileset<TColor>> tilesets = new List<AsepriteTileset<TColor>>();
-        AsepriteUserData<TColor> spriteUserData = new AsepriteUserData<TColor>();
+        AsepritePalette<T> palette = new AsepritePalette<T>(fileHeader.TransparentIndex);
+        List<AsepriteFrame<T>> frames = new List<AsepriteFrame<T>>();
+        List<AsepriteLayer<T>> layers = new List<AsepriteLayer<T>>();
+        List<AsepriteTag<T>> tags = new List<AsepriteTag<T>>();
+        List<AsepriteSlice<T>> slices = new List<AsepriteSlice<T>>();
+        List<AsepriteTileset<T>> tilesets = new List<AsepriteTileset<T>>();
+        AsepriteUserData<T> spriteUserData = new AsepriteUserData<T>();
 
         //  Read frame-by-frame until all frames are read.
         for (int frameNum = 0; frameNum < fileHeader.FrameCount; frameNum++)
         {
-            List<AsepriteCel<TColor>> cels = new List<AsepriteCel<TColor>>();
+            List<AsepriteCel<T>> cels = new List<AsepriteCel<T>>();
 
             uint? lastReadChunkType = null;
 
             //  Reference to the user data object to apply user data to from the last chunk that was read that
             //  could have had user data
-            AsepriteUserData<TColor>? currentUserData = null;
+            AsepriteUserData<T>? currentUserData = null;
 
             //  Tracks the iteration of the tags when reading user data for tags chunk.
             int tagIterator = 0;
@@ -150,19 +150,19 @@ public static partial class AsepriteFileLoader
                         {
                             AsepriteLayerProperties properties = reader.ReadUnsafe<AsepriteLayerProperties>(AsepriteLayerProperties.StructSize);
                             string layerName = reader.ReadString(properties.NameLen);
-                            AsepriteLayer<TColor> layer;
+                            AsepriteLayer<T> layer;
                             switch (properties.Type)
                             {
                                 case ASE_LAYER_TYPE_NORMAL:
-                                    layer = new AsepriteImageLayer<TColor>(properties, layerName);
+                                    layer = new AsepriteImageLayer<T>(properties, layerName);
                                     break;
                                 case ASE_LAYER_TYPE_GROUP:
-                                    layer = new AsepriteGroupLayer<TColor>(properties, layerName);
+                                    layer = new AsepriteGroupLayer<T>(properties, layerName);
                                     break;
                                 case ASE_LAYER_TYPE_TILEMAP:
                                     uint tilesetIndex = reader.ReadDword();
-                                    AsepriteTileset<TColor> tileset = tilesets[(int)tilesetIndex];
-                                    layer = new AsepriteTilemapLayer<TColor>(properties, layerName, tileset);
+                                    AsepriteTileset<T> tileset = tilesets[(int)tilesetIndex];
+                                    layer = new AsepriteTilemapLayer<T>(properties, layerName, tileset);
                                     break;
                                 default:
                                     reader.Dispose();
@@ -174,7 +174,7 @@ public static partial class AsepriteFileLoader
                                 lastGroupLayer.AddChild(layer);
                             }
 
-                            if (layer is AsepriteGroupLayer<TColor> groupLayer)
+                            if (layer is AsepriteGroupLayer<T> groupLayer)
                             {
                                 lastGroupLayer = groupLayer;
                             }
@@ -188,8 +188,8 @@ public static partial class AsepriteFileLoader
                     case ASE_CHUNK_CEL:
                         {
                             AsepriteCelProperties properties = reader.ReadUnsafe<AsepriteCelProperties>(AsepriteCelProperties.StructSize);
-                            AsepriteCel<TColor> cel;
-                            AsepriteLayer<TColor> celLayer = layers[properties.LayerIndex];
+                            AsepriteCel<T> cel;
+                            AsepriteLayer<T> celLayer = layers[properties.LayerIndex];
 
                             switch (properties.Type)
                             {
@@ -199,16 +199,16 @@ public static partial class AsepriteFileLoader
                                         AsepriteImageCelProperties imageCelProperties = reader.ReadUnsafe<AsepriteImageCelProperties>(AsepriteImageCelProperties.StructSize);
                                         int len = (int)(chunkEnd - reader.Position);
                                         byte[] data = properties.Type == ASE_CEL_TYPE_COMPRESSED_IMAGE ? reader.ReadCompressed(len) : reader.ReadBytes(len);
-                                        TColor[] pixels = AsepriteColorUtilities.PixelsToColor<TColor>(data, depth, palette);
-                                        cel = new AsepriteImageCel<TColor>(properties, celLayer, imageCelProperties, pixels);
+                                        T[] pixels = PixelsToColor<T>(data, depth, palette);
+                                        cel = new AsepriteImageCel<T>(properties, celLayer, imageCelProperties, pixels);
                                     }
                                     break;
 
                                 case ASE_CEL_TYPE_LINKED:
                                     {
                                         ushort frameIndex = reader.ReadWord();
-                                        AsepriteCel<TColor> otherCel = frames[frameIndex].Cels[cels.Count];
-                                        cel = new AsepriteLinkedCel<TColor>(properties, otherCel);
+                                        AsepriteCel<T> otherCel = frames[frameIndex].Cels[cels.Count];
+                                        cel = new AsepriteLinkedCel<T>(properties, otherCel);
                                     }
                                     break;
 
@@ -241,7 +241,7 @@ public static partial class AsepriteFileLoader
                                                 }
                                             }
                                         }
-                                        cel = new AsepriteTilemapCel<TColor>(properties, celLayer, tilemapCelProperties, tiles);
+                                        cel = new AsepriteTilemapCel<T>(properties, celLayer, tilemapCelProperties, tiles);
                                     }
                                     break;
 
@@ -274,7 +274,7 @@ public static partial class AsepriteFileLoader
 
                                 string tagName = reader.ReadString(properties.NameLen);
 
-                                AsepriteTag<TColor> tag = new AsepriteTag<TColor>(properties, tagName);
+                                AsepriteTag<T> tag = new AsepriteTag<T>(properties, tagName);
                                 currentUserData = tag.UserData;
                                 lastReadChunkType = chunkHeader.ChunkType;
                                 tags.Add(tag);
@@ -299,7 +299,7 @@ public static partial class AsepriteFileLoader
                                     //  Ignore color name
                                     reader.Ignore(reader.ReadWord());
                                 }
-                                TColor color = default(TColor);
+                                T color = new();
                                 color.R = entry.R;
                                 color.G = entry.G;
                                 color.B = entry.B;
@@ -316,7 +316,7 @@ public static partial class AsepriteFileLoader
                         {
                             uint flags = reader.ReadDword();
                             string? text = null;
-                            TColor? color = null;
+                            T color = new();
 
                             if (Calc.HasFlag(flags, ASE_USER_DATA_FLAG_HAS_TEXT))
                             {
@@ -326,7 +326,7 @@ public static partial class AsepriteFileLoader
                             if (Calc.HasFlag(flags, ASE_USER_DATA_FLAG_HAS_COLOR))
                             {
                                 byte[] rgba = reader.ReadBytes(4);
-                                color = rgba.IPackedColorFromBytes<TColor>();
+                                color = rgba.IPackedColorFromBytes<T>();
                             }
 
                             if (currentUserData is null && paletteRead)
@@ -383,7 +383,7 @@ public static partial class AsepriteFileLoader
                                 keys[i] = new AsepriteSliceKey(sliceKeyProperties, ninePatchProperties, pivotProperties);
                             }
 
-                            AsepriteSlice<TColor> slice = new AsepriteSlice<TColor>(sliceName, isNinePatch, hasPivot, keys);
+                            AsepriteSlice<T> slice = new AsepriteSlice<T>(sliceName, isNinePatch, hasPivot, keys);
                             currentUserData = slice.UserData;
                             lastReadChunkType = chunkHeader.ChunkType;
                             slices.Add(slice);
@@ -412,8 +412,8 @@ public static partial class AsepriteFileLoader
 
                             uint len = reader.ReadDword();
                             byte[] pixelData = reader.ReadCompressed((int)len);
-                            TColor[] pixels = AsepriteColorUtilities.PixelsToColor(pixelData, depth, palette);
-                            AsepriteTileset<TColor> tileset = new AsepriteTileset<TColor>(properties, tilesetName, pixels);
+                            T[] pixels = PixelsToColor(pixelData, depth, palette);
+                            AsepriteTileset<T> tileset = new AsepriteTileset<T>(properties, tilesetName, pixels);
                             tilesets.Add(tileset);
                             lastReadChunkType = chunkHeader.ChunkType;
                         }
@@ -458,7 +458,7 @@ public static partial class AsepriteFileLoader
                                         g = (byte)((g << 2) | (g >> 4));
                                         b = (byte)((b << 2) | (b >> 4));
                                     }
-                                    TColor color = default(TColor);
+                                    T color = new();
                                     color.R = r;
                                     color.G = g;
                                     color.B = b;
@@ -505,7 +505,7 @@ public static partial class AsepriteFileLoader
                 reader.Seek(chunkEnd, SeekOrigin.Begin);
             }
 
-            AsepriteFrame<TColor> frame = new AsepriteFrame<TColor>($"{fileName}{frameNum}", fileHeader.CanvasWidth, fileHeader.CanvasHeight, frameHeader.Duration, cels);
+            AsepriteFrame<T> frame = new AsepriteFrame<T>($"{fileName}{frameNum}", fileHeader.CanvasWidth, fileHeader.CanvasHeight, frameHeader.Duration, cels);
             frames.Add(frame);
         }
 
@@ -514,6 +514,67 @@ public static partial class AsepriteFileLoader
             warnings.Add($"Number of colors in file header ({fileHeader.NumberOfColors}) does not match the final palette count ({palette.Colors.Length})");
         }
 
-        return new AsepriteFile<TColor>(fileName, palette, fileHeader.CanvasWidth, fileHeader.CanvasHeight, depth, frames, layers, tags, slices, tilesets, spriteUserData, warnings);
+        return new AsepriteFile<T>(fileName, palette, fileHeader.CanvasWidth, fileHeader.CanvasHeight, depth, frames, layers, tags, slices, tilesets, spriteUserData, warnings);
+    }
+
+    /// <summary>
+    /// Converts an array of <see cref="byte"/> data to an array of <see cref="IColor"/> values based on the
+    /// specified <see cref="AsepriteColorDepth"/>.
+    /// </summary>
+    /// <param name="pixels">The array of <see cref="byte"/> data that represents the color data.</param>
+    /// <param name="depth">The color depth.</param>
+    /// <param name="palette">
+    /// The palette used for <see cref="AsepriteColorDepth.Indexed">ColorDepth.Index</see>.  Optional, only required when
+    /// <paramref name="depth"/> is equal to <see cref="AsepriteColorDepth.Indexed">ColorDepth.Indexed</see>.
+    /// </param>
+    /// <returns>An array of <see cref="IColor"/> values converted from the data.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="pixels"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">
+    /// <paramref name="depth"/> is an unknown <see cref="AsepriteColorDepth"/> value.
+    /// </exception>
+    private static T[] PixelsToColor<T>(byte[] pixels, AsepriteColorDepth depth, AsepritePalette<T>? palette = null) where T : IColor, new()
+    {
+        ArgumentNullException.ThrowIfNull(pixels);
+
+        int bpp = (int)depth / 8;
+        T[] result = new T[pixels.Length / bpp];
+
+        for (int i = 0, b = 0; i < result.Length; i++, b += bpp)
+        {
+            T value = new();
+
+            switch (depth)
+            {
+                case AsepriteColorDepth.RGBA:
+                    value.R = pixels[b];
+                    value.G = pixels[b + 1];
+                    value.B = pixels[b + 2];
+                    value.A = pixels[b + 3];
+                    break;
+
+                case AsepriteColorDepth.Grayscale:
+                    value.R = value.G = value.B = pixels[b];
+                    value.A = pixels[b + 1];
+                    break;
+
+                case AsepriteColorDepth.Indexed:
+                    int index = pixels[i];
+                    value.R = value.G = value.B = value.G = 0;
+                    if (index != palette?.TransparentIndex)
+                    {
+                        if (palette is not null)
+                        {
+                            value = palette.Colors[index];
+                        }
+                    }
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unknown Color Depth: {depth}");
+            }
+            result[i] = value;
+        }
+
+        return result;
     }
 }

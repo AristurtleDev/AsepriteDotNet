@@ -12,25 +12,25 @@ namespace AsepriteDotNet.Tests.Processors;
 
 public sealed class TilesetProcessorTestFixture
 {
-    public AsepriteFile<Rgba32> AsepriteFile { get; }
-    public Rgba32 Red { get; } = new Rgba32(255, 0, 0, 255);
-    public Rgba32 Green { get; } = new Rgba32(0, 255, 0, 255);
-    public Rgba32 Blue { get; } = new Rgba32(0, 0, 255, 255);
-    public Rgba32 White { get; } = new Rgba32(255, 255, 255, 255);
-    public Rgba32 Gray { get; } = new Rgba32(128, 128, 128, 255);
-    public Rgba32 Black { get; } = new Rgba32(0, 0, 0, 255);
-    public Rgba32 Transparent { get; } = new Rgba32(0, 0, 0, 0);
+    public AsepriteFile<SystemColor> AsepriteFile { get; }
+    public SystemColor Red { get; } = new SystemColor(255, 0, 0, 255);
+    public SystemColor Green { get; } = new SystemColor(0, 255, 0, 255);
+    public SystemColor Blue { get; } = new SystemColor(0, 0, 255, 255);
+    public SystemColor White { get; } = new SystemColor(255, 255, 255, 255);
+    public SystemColor Gray { get; } = new SystemColor(128, 128, 128, 255);
+    public SystemColor Black { get; } = new SystemColor(0, 0, 0, 255);
+    public SystemColor Transparent { get; } = new SystemColor(0, 0, 0, 0);
 
     public TilesetProcessorTestFixture()
     {
-        AsepritePalette<Rgba32> palette = new AsepritePalette<Rgba32>(0);
-        List<AsepriteTileset<Rgba32>> tilesets = new List<AsepriteTileset<Rgba32>>()
+        AsepritePalette<SystemColor> palette = new AsepritePalette<SystemColor>(0);
+        List<AsepriteTileset<SystemColor>> tilesets = new List<AsepriteTileset<SystemColor>>()
         {
-            new AsepriteTileset<Rgba32>(new AsepriteTilesetProperties(){Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] {Transparent, Red, Green, Blue}),
-            new AsepriteTileset<Rgba32>(new AsepriteTilesetProperties(){Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-1", new Rgba32[] {Transparent, White, Gray, Black}),
+            new AsepriteTileset<SystemColor>(new AsepriteTilesetProperties(){Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new SystemColor[] {Transparent, Red, Green, Blue}),
+            new AsepriteTileset<SystemColor>(new AsepriteTilesetProperties(){Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-1", new SystemColor[] {Transparent, White, Gray, Black}),
         };
 
-        AsepriteFile = new("file", palette, 0, 0, AsepriteColorDepth.RGBA, [], [], [], [], tilesets, new AsepriteUserData<Rgba32>(), []);
+        AsepriteFile = new("file", palette, 0, 0, AsepriteColorDepth.RGBA, [], [], [], [], tilesets, new AsepriteUserData<SystemColor>(), []);
     }
 }
 
@@ -44,9 +44,9 @@ public sealed class TilesetProcessorTests : IClassFixture<TilesetProcessorTestFi
     public void Process_By_Index()
     {
         int index = 0;
-        AsepriteTileset<Rgba32> aseTileset = _fixture.AsepriteFile.Tilesets[index];
+        AsepriteTileset<SystemColor> aseTileset = _fixture.AsepriteFile.Tilesets[index];
 
-        Tileset<Rgba32> tileset = TilesetProcessor.Process(_fixture.AsepriteFile, index);
+        Tileset<SystemColor> tileset = TilesetProcessor.Process(_fixture.AsepriteFile, index);
 
         Assert.Equal(aseTileset.ID, tileset.ID);
         Assert.Equal(aseTileset.Name, tileset.Name);
@@ -61,9 +61,9 @@ public sealed class TilesetProcessorTests : IClassFixture<TilesetProcessorTestFi
     [Fact]
     public void Process_By_Name()
     {
-        AsepriteTileset<Rgba32> aseTileset = _fixture.AsepriteFile.Tilesets[0];
+        AsepriteTileset<SystemColor> aseTileset = _fixture.AsepriteFile.Tilesets[0];
 
-        Tileset<Rgba32> tileset = TilesetProcessor.Process(_fixture.AsepriteFile, aseTileset.Name);
+        Tileset<SystemColor> tileset = TilesetProcessor.Process(_fixture.AsepriteFile, aseTileset.Name);
 
         Assert.Equal(aseTileset.ID, tileset.ID);
         Assert.Equal(aseTileset.Name, tileset.Name);

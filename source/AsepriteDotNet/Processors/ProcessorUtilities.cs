@@ -9,15 +9,15 @@ namespace AsepriteDotNet.Processors;
 
 internal static class ProcessorUtilities
 {
-    internal static Slice<TColor>[] GetSlicesForFrame<TColor>(int frameIndex, ReadOnlySpan<AsepriteSlice<TColor>> aseSlices)
-    where TColor : struct, IColor<TColor>
+    internal static Slice<T>[] GetSlicesForFrame<T>(int frameIndex, ReadOnlySpan<AsepriteSlice<T>> aseSlices)
+    where T: IColor, new()
     {
-        List<Slice<TColor>> slices = new List<Slice<TColor>>();
+        List<Slice<T>> slices = new List<Slice<T>>();
         HashSet<string> sliceNameCheck = new HashSet<string>();
 
         for (int s = 0; s < aseSlices.Length; s++)
         {
-            AsepriteSlice<TColor> aseSlice = aseSlices[s];
+            AsepriteSlice<T> aseSlice = aseSlices[s];
             ReadOnlySpan<AsepriteSliceKey> aseSliceKeys = aseSlice.Keys;
 
             //  Traverse keys backwards until we find a match for the frame index
@@ -34,12 +34,12 @@ internal static class ProcessorUtilities
                 }
 
                 Rectangle bounds = aseSliceKey.Bounds;
-                TColor color = aseSlice.UserData.Color.GetValueOrDefault();
+                T color = aseSlice.UserData.Color ?? new();
                 Point origin = aseSliceKey.Pivot;
 
-                Slice<TColor> slice = aseSlice.IsNinePatch
-                    ? new NinePatchSlice<TColor>(name, bounds, origin, color, aseSliceKey.CenterBounds)
-                    : new Slice<TColor>(name, bounds, origin, color);
+                Slice<T> slice = aseSlice.IsNinePatch
+                    ? new NinePatchSlice<T>(name, bounds, origin, color, aseSliceKey.CenterBounds)
+                    : new Slice<T>(name, bounds, origin, color);
                 slices.Add(slice);
                 break;
             }

@@ -3,73 +3,13 @@
 // See LICENSE file in the project root for full license information.
 
 using AsepriteDotNet.Aseprite;
-using AsepriteDotNet.Aseprite.Types;
 using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet;
 
-internal static class AsepriteColorUtilities
+internal static class AsepriteBlendFunctions
 {
-    /// <summary>
-    /// Converts an array of <see cref="byte"/> data to an array of <see cref="IColor{T}"/> values based on the
-    /// specified <see cref="AsepriteColorDepth"/>.
-    /// </summary>
-    /// <param name="pixels">The array of <see cref="byte"/> data that represents the color data.</param>
-    /// <param name="depth">The color depth.</param>
-    /// <param name="palette">
-    /// The palette used for <see cref="AsepriteColorDepth.Indexed">ColorDepth.Index</see>.  Optional, only required when
-    /// <paramref name="depth"/> is equal to <see cref="AsepriteColorDepth.Indexed">ColorDepth.Indexed</see>.
-    /// </param>
-    /// <returns>An array of <see cref="IColor{T}"/> values converted from the data.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="pixels"/> is <see langword="null"/>.</exception>
-    /// <exception cref="InvalidOperationException">
-    /// <paramref name="depth"/> is an unknown <see cref="AsepriteColorDepth"/> value.
-    /// </exception>
-    internal static TColor[] PixelsToColor<TColor>(byte[] pixels, AsepriteColorDepth depth, AsepritePalette<TColor>? palette = null) where TColor : struct, IColor<TColor>
-    {
-        ArgumentNullException.ThrowIfNull(pixels);
 
-        int bpp = (int)depth / 8;
-        TColor[] result = new TColor[pixels.Length / bpp];
-
-        for (int i = 0, b = 0; i < result.Length; i++, b += bpp)
-        {
-            TColor value = default(TColor);
-
-            switch (depth)
-            {
-                case AsepriteColorDepth.RGBA:
-                    value.R = pixels[b];
-                    value.G = pixels[b + 1];
-                    value.B = pixels[b + 2];
-                    value.A = pixels[b + 3];
-                    break;
-
-                case AsepriteColorDepth.Grayscale:
-                    value.R = value.G = value.B = pixels[b];
-                    value.A = pixels[b + 1];
-                    break;
-
-                case AsepriteColorDepth.Indexed:
-                    int index = pixels[i];
-                    value.R = value.G = value.B = value.G = 0;
-                    if (index != palette?.TransparentIndex)
-                    {
-                        if (palette is not null)
-                        {
-                            value = palette.Colors[index];
-                        }
-                    }
-                    break;
-
-                default:
-                    throw new InvalidOperationException($"Unknown Color Depth: {depth}");
-            }
-            result[i] = value;
-        }
-
-        return result;
-    }
 
     /// <summary>
     /// Calculates the saturation value based on the given RGB color component values.
@@ -181,19 +121,19 @@ internal static class AsepriteColorUtilities
     }
 
     /// <summary>
-    /// Blends two <see cref="IColor{T}"/> values using the specified <see cref="AsepriteBlendMode"/> and opacity.
+    /// Blends two <see cref="IColor"/> values using the specified <see cref="AsepriteBlendMode"/> and opacity.
     /// </summary>
     /// <param name="backdrop">The backdrop color.</param>
     /// <param name="source">The source color to be blended onto the <paramref name="backdrop"/>.</param>
     /// <param name="opacity">The opacity of the blending operation.</param>
     /// <param name="blendMode">The <see cref="AsepriteBlendMode"/> to use for the blending operation.</param>
-    /// <returns>The resulting <see cref="IColor{T}"/> value created from the blending.</returns>
+    /// <returns>The resulting <see cref="IColor"/> value created from the blending.</returns>
     /// <exception cref="InvalidOperationException">
     /// <paramref name="blendMode"/> is an unknown <see cref="AsepriteBlendMode"/> value.
     /// </exception>
-    internal static TColor Blend<TColor>(TColor backdrop, TColor source, int opacity, AsepriteBlendMode blendMode) where TColor : struct, IColor<TColor>
+    internal static T Blend<T>(T backdrop, T source, int opacity, AsepriteBlendMode blendMode) where T : IColor, new()
     {
-        TColor blended = default(TColor);
+        T blended = new();
         blended.R = blended.G = blended.B = blended.A = 0;
         //  Exit early depending on alpha
         if (backdrop.A == 0 && source.A == 0) { return blended; }
@@ -229,7 +169,7 @@ internal static class AsepriteColorUtilities
         return blended;
     }
 
-    private static TColor Normal<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Normal<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         if (backdrop.A == 0)
         {
@@ -243,7 +183,7 @@ internal static class AsepriteColorUtilities
 
         opacity = Calc.MultiplyUnsigned8Bit(source.A, opacity);
 
-        TColor result = default(TColor);
+        T result = new();
 
         int a = source.A + backdrop.A - Calc.MultiplyUnsigned8Bit(backdrop.A, source.A);
         int r = backdrop.R + (source.R - backdrop.R) * opacity / a;
@@ -257,7 +197,7 @@ internal static class AsepriteColorUtilities
         return result;
     }
 
-    private static TColor Multiply<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Multiply<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         source.R = Calc.MultiplyUnsigned8Bit(backdrop.R, source.R);
         source.G = Calc.MultiplyUnsigned8Bit(backdrop.G, source.G);
@@ -265,7 +205,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Screen<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Screen<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         source.R = (byte)(backdrop.R + source.R - Calc.MultiplyUnsigned8Bit(backdrop.R, source.R));
         source.G = (byte)(backdrop.G + source.G - Calc.MultiplyUnsigned8Bit(backdrop.G, source.G));
@@ -273,7 +213,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Overlay<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Overlay<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         static int overlay(int b, int s)
         {
@@ -293,7 +233,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Darken<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Darken<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         source.R = Math.Min(backdrop.R, source.R);
         source.G = Math.Min(backdrop.G, source.G);
@@ -301,7 +241,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Lighten<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Lighten<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         source.R = Math.Max(backdrop.R, source.R);
         source.G = Math.Max(backdrop.G, source.G);
@@ -309,7 +249,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor ColorDodge<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T ColorDodge<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         static int dodge(int b, int s)
         {
@@ -328,7 +268,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor ColorBurn<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T ColorBurn<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         static int burn(int b, int s)
         {
@@ -347,7 +287,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor HardLight<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T HardLight<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         static int hardlight(int b, int s)
         {
@@ -367,7 +307,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor SoftLight<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T SoftLight<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         static int softlight(int B, int _s)
         {
@@ -402,7 +342,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Difference<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Difference<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         source.R = (byte)Math.Abs(backdrop.R - source.R);
         source.G = (byte)Math.Abs(backdrop.G - source.G);
@@ -410,7 +350,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Exclusion<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Exclusion<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         static int exclusion(int b, int s) => b + s - 2 * Calc.MultiplyUnsigned8Bit(b, s);
 
@@ -420,7 +360,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor HslHue<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T HslHue<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         double r = backdrop.R / 255.0;
         double g = backdrop.G / 255.0;
@@ -441,7 +381,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor HslSaturation<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T HslSaturation<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         double r = source.R / 255.0;
         double g = source.G / 255.0;
@@ -462,7 +402,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor HslColor<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T HslColor<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         double r = backdrop.R / 255.0;
         double g = backdrop.G / 255.0;
@@ -481,7 +421,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor HslLuminosity<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T HslLuminosity<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         double r = source.R / 255.0;
         double g = source.G / 255.0;
@@ -500,7 +440,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Addition<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Addition<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         source.R = (byte)Math.Min(backdrop.R + source.R, 255);
         source.G = (byte)Math.Min(backdrop.G + source.G, 255);
@@ -508,7 +448,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Subtract<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Subtract<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         source.R = (byte)Math.Max(backdrop.R - source.R, 0);
         source.G = (byte)Math.Max(backdrop.G - source.G, 0);
@@ -516,7 +456,7 @@ internal static class AsepriteColorUtilities
         return Normal(backdrop, source, opacity);
     }
 
-    private static TColor Divide<TColor>(TColor backdrop, TColor source, int opacity) where TColor : struct, IColor<TColor>
+    private static T Divide<T>(T backdrop, T source, int opacity) where T : IColor, new()
     {
         static int divide(int b, int s)
         {

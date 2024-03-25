@@ -10,9 +10,9 @@ namespace AsepriteDotNet.Aseprite.Types;
 /// <summary>
 /// Defines the properties of an Aseprite animation tag.  This class cannot be inherited.
 /// </summary>
-public sealed class AsepriteTag<TColor> where TColor : struct, IColor<TColor>
+public sealed class AsepriteTag<T> where T: IColor, new()
 {
-    private readonly TColor _color;
+    private readonly T _color;
 
     /// <summary>
     /// Gets the index of the frame that the animation defined by this tag starts on.
@@ -37,7 +37,7 @@ public sealed class AsepriteTag<TColor> where TColor : struct, IColor<TColor>
     /// <summary>
     /// Gets the color defined for this tag.
     /// </summary>
-    public TColor Color => _color;
+    public T Color => _color;
 
     /// <summary>
     /// Gets the number of times the animation defined by this tag repeats.
@@ -47,7 +47,7 @@ public sealed class AsepriteTag<TColor> where TColor : struct, IColor<TColor>
     /// <summary>
     /// Gets the custom user data that was set in the properties for this tag in Aseprite.
     /// </summary>
-    public AsepriteUserData<TColor> UserData { get; } = new AsepriteUserData<TColor>();
+    public AsepriteUserData<T> UserData { get; } = new AsepriteUserData<T>();
 
     internal unsafe AsepriteTag(AsepriteTagProperties properties, string name)
     {
@@ -55,7 +55,7 @@ public sealed class AsepriteTag<TColor> where TColor : struct, IColor<TColor>
         To = properties.To;
         LoopDirection = (AsepriteLoopDirection)properties.Direction;
         Name = name;
-        _color = default(TColor);
+        _color = new();
         _color.R = properties.R;
         _color.G = properties.G;
         _color.B = properties.B;

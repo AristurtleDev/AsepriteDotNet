@@ -12,40 +12,40 @@ namespace AsepriteDotNet.Tests.Processors;
 
 public sealed class AnimatedTilemapProcessorTestFixture
 {
-    public AsepriteFile<Rgba32> AsepriteFile { get; }
-    public Rgba32 Red { get; } = new Rgba32(255, 0, 0, 255);
-    public Rgba32 Green { get; } = new Rgba32(0, 255, 0, 255);
-    public Rgba32 Blue { get; } = new Rgba32(0, 0, 255, 255);
-    public Rgba32 White { get; } = new Rgba32(255, 255, 255, 255);
-    public Rgba32 Gray { get; } = new Rgba32(128, 128, 128, 255);
-    public Rgba32 Black { get; } = new Rgba32(0, 0, 0, 255);
-    public Rgba32 Transparent { get; } = new Rgba32(0, 0, 0, 0);
+    public AsepriteFile<SystemColor> AsepriteFile { get; }
+    public SystemColor Red { get; } = new SystemColor(255, 0, 0, 255);
+    public SystemColor Green { get; } = new SystemColor(0, 255, 0, 255);
+    public SystemColor Blue { get; } = new SystemColor(0, 0, 255, 255);
+    public SystemColor White { get; } = new SystemColor(255, 255, 255, 255);
+    public SystemColor Gray { get; } = new SystemColor(128, 128, 128, 255);
+    public SystemColor Black { get; } = new SystemColor(0, 0, 0, 255);
+    public SystemColor Transparent { get; } = new SystemColor(0, 0, 0, 0);
 
 
     public AnimatedTilemapProcessorTestFixture()
     {
         string fileName = "animated-tilemap-processor-tests";
 
-        AsepritePalette<Rgba32> palette = new AsepritePalette<Rgba32>(0);
-        AsepriteTag<Rgba32>[] tags = Array.Empty<AsepriteTag<Rgba32>>();
-        AsepriteSlice<Rgba32>[] slices = Array.Empty<AsepriteSlice<Rgba32>>();
-        AsepriteUserData<Rgba32> userData = new();
+        AsepritePalette<SystemColor> palette = new AsepritePalette<SystemColor>(0);
+        AsepriteTag<SystemColor>[] tags = Array.Empty<AsepriteTag<SystemColor>>();
+        AsepriteSlice<SystemColor>[] slices = Array.Empty<AsepriteSlice<SystemColor>>();
+        AsepriteUserData<SystemColor> userData = new();
 
         AsepriteTilesetProperties tileset0Properties = new AsepriteTilesetProperties() { Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 };
         AsepriteTilesetProperties tileset1Properties = new AsepriteTilesetProperties() { Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 };
-        AsepriteTileset<Rgba32>[] tilesets = new AsepriteTileset<Rgba32>[]
+        AsepriteTileset<SystemColor>[] tilesets = new AsepriteTileset<SystemColor>[]
         {
-            new AsepriteTileset<Rgba32>(tileset0Properties, "tileset-0", new Rgba32[] {Transparent, Red, Green, Blue }),
-            new AsepriteTileset<Rgba32>(tileset1Properties, "tileset-1", new Rgba32[] {Transparent, White, Gray, Black}),
+            new AsepriteTileset<SystemColor>(tileset0Properties, "tileset-0", new SystemColor[] {Transparent, Red, Green, Blue }),
+            new AsepriteTileset<SystemColor>(tileset1Properties, "tileset-1", new SystemColor[] {Transparent, White, Gray, Black}),
         };
 
         AsepriteLayerProperties layer1 = new AsepriteLayerProperties() { Flags = 1, BlendMode = 0 };
         AsepriteLayerProperties layer2 = new AsepriteLayerProperties() { Flags = 0, BlendMode = 0 };
 
-        AsepriteLayer<Rgba32>[] layers = new AsepriteLayer<Rgba32>[]
+        AsepriteLayer<SystemColor>[] layers = new AsepriteLayer<SystemColor>[]
         {
-            new AsepriteTilemapLayer<Rgba32>(layer1, "visible", tilesets[0]),
-            new AsepriteTilemapLayer<Rgba32>(layer2, "hidden", tilesets[1]),
+            new AsepriteTilemapLayer<SystemColor>(layer1, "visible", tilesets[0]),
+            new AsepriteTilemapLayer<SystemColor>(layer2, "hidden", tilesets[1]),
         };
 
         AsepriteTile[] frame0Cel0Tiles = new AsepriteTile[]
@@ -66,10 +66,10 @@ public sealed class AnimatedTilemapProcessorTestFixture
         AsepriteCelProperties celProperties2 = new AsepriteCelProperties() { LayerIndex = 1, Opacity = 255, Type = 3, X = 0, Y = 1, ZIndex = 0 };
         AsepriteTilemapCelProperties tilemapCelProperties = new AsepriteTilemapCelProperties() { Width = 2, Height = 2 };
 
-        AsepriteCel<Rgba32>[] frame0Cels = new AsepriteCel<Rgba32>[]
+        AsepriteCel<SystemColor>[] frame0Cels = new AsepriteCel<SystemColor>[]
         {
-            new AsepriteTilemapCel<Rgba32>(celProperties1, layers[0], tilemapCelProperties, frame0Cel1Tiles),
-            new AsepriteTilemapCel<Rgba32>(celProperties2, layers[01], tilemapCelProperties, frame0Cel1Tiles)
+            new AsepriteTilemapCel<SystemColor>(celProperties1, layers[0], tilemapCelProperties, frame0Cel1Tiles),
+            new AsepriteTilemapCel<SystemColor>(celProperties2, layers[01], tilemapCelProperties, frame0Cel1Tiles)
         };
 
         AsepriteTile[] frame1Cel0Tiles = new AsepriteTile[]
@@ -86,28 +86,28 @@ public sealed class AnimatedTilemapProcessorTestFixture
             new AsepriteTile(2, false, false, false)
         };
 
-        AsepriteCel<Rgba32>[] frame1Cels = new AsepriteCel<Rgba32>[]
+        AsepriteCel<SystemColor>[] frame1Cels = new AsepriteCel<SystemColor>[]
         {
-            new AsepriteTilemapCel<Rgba32>(celProperties1, layers[0], tilemapCelProperties, frame1Cel1Tiles),
-            new AsepriteTilemapCel<Rgba32>(celProperties2, layers[01], tilemapCelProperties, frame1Cel1Tiles)
+            new AsepriteTilemapCel<SystemColor>(celProperties1, layers[0], tilemapCelProperties, frame1Cel1Tiles),
+            new AsepriteTilemapCel<SystemColor>(celProperties2, layers[01], tilemapCelProperties, frame1Cel1Tiles)
         };
 
-        AsepriteFrame<Rgba32>[] frames = new AsepriteFrame<Rgba32>[]
+        AsepriteFrame<SystemColor>[] frames = new AsepriteFrame<SystemColor>[]
         {
-            new AsepriteFrame<Rgba32>($"{fileName}", 2, 2, 100, new List<AsepriteCel<Rgba32>>(frame0Cels)),
-            new AsepriteFrame<Rgba32>($"{fileName}", 2, 2, 200, new List<AsepriteCel<Rgba32>>(frame1Cels))
+            new AsepriteFrame<SystemColor>($"{fileName}", 2, 2, 100, new List<AsepriteCel<SystemColor>>(frame0Cels)),
+            new AsepriteFrame<SystemColor>($"{fileName}", 2, 2, 200, new List<AsepriteCel<SystemColor>>(frame1Cels))
         };
 
-        AsepriteFile = new AsepriteFile<Rgba32>(fileName,
+        AsepriteFile = new AsepriteFile<SystemColor>(fileName,
                                                 palette,
                                                 0,
                                                 0,
                                                 AsepriteColorDepth.RGBA,
-                                                new List<AsepriteFrame<Rgba32>>(frames),
-                                                new List<AsepriteLayer<Rgba32>>(layers),
-                                                new List<AsepriteTag<Rgba32>>(tags),
-                                                new List<AsepriteSlice<Rgba32>>(slices),
-                                                new List<AsepriteTileset<Rgba32>>(tilesets),
+                                                new List<AsepriteFrame<SystemColor>>(frames),
+                                                new List<AsepriteLayer<SystemColor>>(layers),
+                                                new List<AsepriteTag<SystemColor>>(tags),
+                                                new List<AsepriteSlice<SystemColor>>(slices),
+                                                new List<AsepriteTileset<SystemColor>>(tilesets),
                                                 userData,
                                                 new List<string>());
     }
@@ -122,7 +122,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
     [Fact]
     public void Process_OnlyVisibleLayers_True_Processes_Only_Visible_Layers()
     {
-        AnimatedTilemap<Rgba32> tilemap = AnimatedTilemapProcessor.Process(_fixture.AsepriteFile, ProcessorOptions.Default);
+        AnimatedTilemap<SystemColor> tilemap = AnimatedTilemapProcessor.Process(_fixture.AsepriteFile, ProcessorOptions.Default);
 
         //  Expect the name of the aseprite file to be the name of the tilemap.
         Assert.Equal(_fixture.AsepriteFile.Name, tilemap.Name);
@@ -134,7 +134,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
         Assert.Equal(1, tilemap.Tilesets.Length);
 
         //  Expect that the tileset was processed correctly
-        Tileset<Rgba32> tileset = TilesetProcessor.Process(_fixture.AsepriteFile, 0);
+        Tileset<SystemColor> tileset = TilesetProcessor.Process(_fixture.AsepriteFile, 0);
         Assert.Equal(tileset, tilemap.Tilesets[0]);
 
         //  The file has 2 frames, so expect 2 frames
@@ -149,9 +149,9 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
         Assert.Equal(1, tilemap.Frames[1].Layers.Length);
 
         // Getting reference to the aseprite layers and cels used to construct the  tilemap layers
-        AsepriteTilemapLayer<Rgba32> aseLayer0 = (AsepriteTilemapLayer<Rgba32>)_fixture.AsepriteFile.Layers[0];
-        AsepriteTilemapCel<Rgba32> aseFrame0Cel = (AsepriteTilemapCel<Rgba32>)_fixture.AsepriteFile.Frames[0].Cels[0];
-        AsepriteTilemapCel<Rgba32> aseFrame1Cel = (AsepriteTilemapCel<Rgba32>)_fixture.AsepriteFile.Frames[1].Cels[0];
+        AsepriteTilemapLayer<SystemColor> aseLayer0 = (AsepriteTilemapLayer<SystemColor>)_fixture.AsepriteFile.Layers[0];
+        AsepriteTilemapCel<SystemColor> aseFrame0Cel = (AsepriteTilemapCel<SystemColor>)_fixture.AsepriteFile.Frames[0].Cels[0];
+        AsepriteTilemapCel<SystemColor> aseFrame1Cel = (AsepriteTilemapCel<SystemColor>)_fixture.AsepriteFile.Frames[1].Cels[0];
 
         //  Expect that the single layer of each frame was constructed properly from the aseprite layer and cel data.
         AssertLayer(tilemap.Frames[0].Layers[0], aseLayer0, aseFrame0Cel);
@@ -162,7 +162,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
     public void Process_OnlyVisibleLayers_False_Processes_All_Layers()
     {
         ProcessorOptions options = ProcessorOptions.Default with { OnlyVisibleLayers = false };
-        AnimatedTilemap<Rgba32> tilemap = AnimatedTilemapProcessor.Process<Rgba32>(_fixture.AsepriteFile, options);
+        AnimatedTilemap<SystemColor> tilemap = AnimatedTilemapProcessor.Process<SystemColor>(_fixture.AsepriteFile, options);
 
         //  Expect the name of the aseprite file to be the name of the tilemap.
         Assert.Equal(_fixture.AsepriteFile.Name, tilemap.Name);
@@ -174,8 +174,8 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
         Assert.Equal(2, tilemap.Tilesets.Length);
 
         //  Expect that both of the tilesets were processed correctly
-        Tileset<Rgba32> tileset0 = TilesetProcessor.Process(_fixture.AsepriteFile, 0);
-        Tileset<Rgba32> tileset1 = TilesetProcessor.Process(_fixture.AsepriteFile, 1);
+        Tileset<SystemColor> tileset0 = TilesetProcessor.Process(_fixture.AsepriteFile, 0);
+        Tileset<SystemColor> tileset1 = TilesetProcessor.Process(_fixture.AsepriteFile, 1);
         Assert.Equal(tileset0, tilemap.Tilesets[0]);
         Assert.Equal(tileset1, tilemap.Tilesets[1]);
 
@@ -191,12 +191,12 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
         Assert.Equal(2, tilemap.Frames[1].Layers.Length);
 
         // Getting reference to the aseprite layers and cels used to construct the  tilemap layers
-        AsepriteTilemapLayer<Rgba32> aseLayer0 = (AsepriteTilemapLayer<Rgba32>)_fixture.AsepriteFile.Layers[0];
-        AsepriteTilemapLayer<Rgba32> aseLayer1 = (AsepriteTilemapLayer<Rgba32>)_fixture.AsepriteFile.Layers[1];
-        AsepriteTilemapCel<Rgba32> aseFrame0Cel0 = (AsepriteTilemapCel<Rgba32>)_fixture.AsepriteFile.Frames[0].Cels[0];
-        AsepriteTilemapCel<Rgba32> aseFrame0Cel1 = (AsepriteTilemapCel<Rgba32>)_fixture.AsepriteFile.Frames[0].Cels[1];
-        AsepriteTilemapCel<Rgba32> aseFrame1Cel0 = (AsepriteTilemapCel<Rgba32>)_fixture.AsepriteFile.Frames[1].Cels[0];
-        AsepriteTilemapCel<Rgba32> aseFrame1Cel1 = (AsepriteTilemapCel<Rgba32>)_fixture.AsepriteFile.Frames[1].Cels[1];
+        AsepriteTilemapLayer<SystemColor> aseLayer0 = (AsepriteTilemapLayer<SystemColor>)_fixture.AsepriteFile.Layers[0];
+        AsepriteTilemapLayer<SystemColor> aseLayer1 = (AsepriteTilemapLayer<SystemColor>)_fixture.AsepriteFile.Layers[1];
+        AsepriteTilemapCel<SystemColor> aseFrame0Cel0 = (AsepriteTilemapCel<SystemColor>)_fixture.AsepriteFile.Frames[0].Cels[0];
+        AsepriteTilemapCel<SystemColor> aseFrame0Cel1 = (AsepriteTilemapCel<SystemColor>)_fixture.AsepriteFile.Frames[0].Cels[1];
+        AsepriteTilemapCel<SystemColor> aseFrame1Cel0 = (AsepriteTilemapCel<SystemColor>)_fixture.AsepriteFile.Frames[1].Cels[0];
+        AsepriteTilemapCel<SystemColor> aseFrame1Cel1 = (AsepriteTilemapCel<SystemColor>)_fixture.AsepriteFile.Frames[1].Cels[1];
 
         //  Expect that the layers on each frame were constructed properly from the aseprite layer and cel data
         AssertLayer(tilemap.Frames[0].Layers[0], aseLayer0, aseFrame0Cel0);
@@ -209,11 +209,11 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
     public void Process_Duplicate_AsepriteLayer_Names_Throws_Exception()
     {
         AsepriteLayerProperties layerProperties = new AsepriteLayerProperties() { BlendMode = 0, Opacity = 255, Flags = 1 };
-        AsepriteLayer<Rgba32>[] layers = new AsepriteLayer<Rgba32>[]
+        AsepriteLayer<SystemColor>[] layers = new AsepriteLayer<SystemColor>[]
         {
-            new AsepriteTilemapLayer<Rgba32>(layerProperties, "layer-0", _fixture.AsepriteFile.Tilesets[0]),
-            new AsepriteTilemapLayer<Rgba32>(layerProperties, "layer-1", _fixture.AsepriteFile.Tilesets[0]),
-            new AsepriteTilemapLayer<Rgba32>(layerProperties, "layer-0", _fixture.AsepriteFile.Tilesets[0])
+            new AsepriteTilemapLayer<SystemColor>(layerProperties, "layer-0", _fixture.AsepriteFile.Tilesets[0]),
+            new AsepriteTilemapLayer<SystemColor>(layerProperties, "layer-1", _fixture.AsepriteFile.Tilesets[0]),
+            new AsepriteTilemapLayer<SystemColor>(layerProperties, "layer-0", _fixture.AsepriteFile.Tilesets[0])
         };
 
         AsepriteTile[] tiles = new AsepriteTile[]
@@ -227,37 +227,37 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
 
         AsepriteCelProperties celProperties = new AsepriteCelProperties() { LayerIndex = 0, Opacity = 255, Type = 3, X = 0, Y = 0, ZIndex = 0 };
         AsepriteTilemapCelProperties tilemapCelProperties = new AsepriteTilemapCelProperties() { Width = 2, Height = 2 };
-        AsepriteCel<Rgba32>[] cels = new AsepriteCel<Rgba32>[]
+        AsepriteCel<SystemColor>[] cels = new AsepriteCel<SystemColor>[]
         {
-            new AsepriteTilemapCel<Rgba32>(celProperties, layers[0], tilemapCelProperties, tiles),
-            new AsepriteTilemapCel<Rgba32>(celProperties with {LayerIndex = 1 }, layers[1], tilemapCelProperties, tiles),
-            new AsepriteTilemapCel<Rgba32>(celProperties with {LayerIndex = 2 }, layers[0], tilemapCelProperties, tiles),
+            new AsepriteTilemapCel<SystemColor>(celProperties, layers[0], tilemapCelProperties, tiles),
+            new AsepriteTilemapCel<SystemColor>(celProperties with {LayerIndex = 1 }, layers[1], tilemapCelProperties, tiles),
+            new AsepriteTilemapCel<SystemColor>(celProperties with {LayerIndex = 2 }, layers[0], tilemapCelProperties, tiles),
         };
 
-        AsepriteFrame<Rgba32>[] frames = new AsepriteFrame<Rgba32>[]
+        AsepriteFrame<SystemColor>[] frames = new AsepriteFrame<SystemColor>[]
         {
-            new($"{_fixture.AsepriteFile.Name} 0", 2, 2, 100, new List<AsepriteCel<Rgba32>>(cels))
+            new($"{_fixture.AsepriteFile.Name} 0", 2, 2, 100, new List<AsepriteCel<SystemColor>>(cels))
         };
 
         //  Reuse the fixture, but use the layers array from above with duplicate layer names
 
-        AsepriteFile<Rgba32> aseFile = new AsepriteFile<Rgba32>(_fixture.AsepriteFile.Name,
+        AsepriteFile<SystemColor> aseFile = new AsepriteFile<SystemColor>(_fixture.AsepriteFile.Name,
                                                                 _fixture.AsepriteFile.Palette,
                                                                 _fixture.AsepriteFile.CanvasWidth,
                                                                 _fixture.AsepriteFile.CanvasHeight,
                                                                 AsepriteColorDepth.RGBA,
-                                                                new List<AsepriteFrame<Rgba32>>(frames),
-                                                                new List<AsepriteLayer<Rgba32>>(layers),
-                                                                new List<AsepriteTag<Rgba32>>(_fixture.AsepriteFile.Tags.ToArray()),
-                                                                new List<AsepriteSlice<Rgba32>>(_fixture.AsepriteFile.Slices.ToArray()),
-                                                                new List<AsepriteTileset<Rgba32>>(_fixture.AsepriteFile.Tilesets.ToArray()),
+                                                                new List<AsepriteFrame<SystemColor>>(frames),
+                                                                new List<AsepriteLayer<SystemColor>>(layers),
+                                                                new List<AsepriteTag<SystemColor>>(_fixture.AsepriteFile.Tags.ToArray()),
+                                                                new List<AsepriteSlice<SystemColor>>(_fixture.AsepriteFile.Slices.ToArray()),
+                                                                new List<AsepriteTileset<SystemColor>>(_fixture.AsepriteFile.Tilesets.ToArray()),
                                                                 _fixture.AsepriteFile.UserData,
                                                                 new List<string>());
 
         Assert.Throws<InvalidOperationException>(() => AnimatedTilemapProcessor.Process(aseFile));
     }
 
-    private static void AssertLayer(TilemapLayer tilemapLayer, AsepriteTilemapLayer<Rgba32> aseLayer, AsepriteTilemapCel<Rgba32> aseCel)
+    private static void AssertLayer(TilemapLayer tilemapLayer, AsepriteTilemapLayer<SystemColor> aseLayer, AsepriteTilemapCel<SystemColor> aseCel)
     {
         Assert.Equal(aseLayer.Name, tilemapLayer.Name);
         Assert.Equal(aseLayer.Tileset.ID, tilemapLayer.TilesetID);

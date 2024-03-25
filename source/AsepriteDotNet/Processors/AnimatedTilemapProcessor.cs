@@ -10,54 +10,54 @@ using AsepriteDotNet.Common;
 namespace AsepriteDotNet.Processors;
 
 /// <summary>
-/// Defines a processor for processing a <see cref="AnimatedTilemap{TColor}"/> from an <see cref="AsepriteFile{TColor}"/>.
+/// Defines a processor for processing a <see cref="AnimatedTilemap{T}"/> from an <see cref="AsepriteFile{T}"/>.
 /// </summary>
 public static class AnimatedTilemapProcessor
 {
     /// <summary>
-    /// Processes an <see cref="AnimatedTilemap{TColor}"/> from an <see cref="AsepriteFile{TColor}"/> using the
+    /// Processes an <see cref="AnimatedTilemap{T}"/> from an <see cref="AsepriteFile{T}"/> using the
     /// <see cref="ProcessorOptions.Default"/> options.
     /// </summary>
-    /// <param name="file">The <see cref="AsepriteFile{TColor}"/> to process.</param>
-    /// <returns>The <see cref="AnimatedTilemap{TColor}"/>.</returns>
+    /// <param name="file">The <see cref="AsepriteFile{T}"/> to process.</param>
+    /// <returns>The <see cref="AnimatedTilemap{T}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">Thrown when duplicate layer names are found.</exception>
-    public static AnimatedTilemap<TColor> Process<TColor>(AsepriteFile<TColor> file)
-        where TColor : struct, IColor<TColor> => Process(file, ProcessorOptions.Default);
+    public static AnimatedTilemap<T> Process<T>(AsepriteFile<T> file)
+        where T: IColor, new() => Process(file, ProcessorOptions.Default);
 
     /// <summary>
-    /// Processes an <see cref="AnimatedTilemap{TColor}"/> from an <see cref="AsepriteFile{TColor}"/>.
+    /// Processes an <see cref="AnimatedTilemap{T}"/> from an <see cref="AsepriteFile{T}"/>.
     /// </summary>
-    /// <param name="file">The <see cref="AsepriteFile{TColor}"/> to process.</param>
+    /// <param name="file">The <see cref="AsepriteFile{T}"/> to process.</param>
     /// <param name="options">The <see cref="ProcessorOptions"/> to use when processing</param>
-    /// <returns>The <see cref="AnimatedTilemap{TColor}"/>.</returns>
+    /// <returns>The <see cref="AnimatedTilemap{T}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">Thrown when duplicate layer names are found.</exception>
-    public static AnimatedTilemap<TColor> Process<TColor>(AsepriteFile<TColor> file, ProcessorOptions options)
-        where TColor : struct, IColor<TColor>
+    public static AnimatedTilemap<T> Process<T>(AsepriteFile<T> file, ProcessorOptions options)
+        where T: IColor, new()
     {
         ArgumentNullException.ThrowIfNull(file);        
 
-        List<Tileset<TColor>> tilesets = new List<Tileset<TColor>>();
+        List<Tileset<T>> tilesets = new List<Tileset<T>>();
         TilemapFrame[] frames = new TilemapFrame[file.Frames.Length];
         HashSet<int> tilesetIDCheck = new HashSet<int>();
 
         for (int f = 0; f < file.Frames.Length; f++)
         {
-            AsepriteFrame<TColor> aseFrame = file.Frames[f];
+            AsepriteFrame<T> aseFrame = file.Frames[f];
             List<TilemapLayer> tilemapLayers = new List<TilemapLayer>();
             HashSet<string> layerNameCheck = new HashSet<string>();
 
             for (int c = 0; c < aseFrame.Cels.Length; c++)
             {
                 //  Only care about tilemap cels
-                if (aseFrame.Cels[c] is not AsepriteTilemapCel<TColor> aseTilemapCel) { continue; }
+                if (aseFrame.Cels[c] is not AsepriteTilemapCel<T> aseTilemapCel) { continue; }
 
                 //  Only continue if layer is visible or if explicitly told to include non-visible layers
                 if (!aseTilemapCel.Layer.IsVisible && options.OnlyVisibleLayers) { continue; }
 
-                Debug.Assert(aseTilemapCel.Layer is AsepriteTilemapLayer<TColor>);
-                AsepriteTilemapLayer<TColor> aseTilemapLayer = (AsepriteTilemapLayer<TColor>)aseTilemapCel.Layer;
+                Debug.Assert(aseTilemapCel.Layer is AsepriteTilemapLayer<T>);
+                AsepriteTilemapLayer<T> aseTilemapLayer = (AsepriteTilemapLayer<T>)aseTilemapCel.Layer;
 
                 //  Need to perform a check that we don't have duplicate layer names.  This is because Aseprite allows
                 //  duplicate layer names, be we require unique names from this point on.
@@ -68,7 +68,7 @@ public static class AnimatedTilemapProcessor
 
                 if (tilesetIDCheck.Add(aseTilemapLayer.Tileset.ID))
                 {
-                    Tileset<TColor> tileset = TilesetProcessor.Process<TColor>(aseTilemapLayer.Tileset);
+                    Tileset<T> tileset = TilesetProcessor.Process<T>(aseTilemapLayer.Tileset);
                     tilesets.Add(tileset);
                 }
 
@@ -87,6 +87,6 @@ public static class AnimatedTilemapProcessor
             frames[f] = new TilemapFrame(aseFrame.Duration, tilemapLayers.ToArray());
         }
 
-        return new AnimatedTilemap<TColor>(file.Name, tilesets.ToArray(), frames);
+        return new AnimatedTilemap<T>(file.Name, tilesets.ToArray(), frames);
     }
 }

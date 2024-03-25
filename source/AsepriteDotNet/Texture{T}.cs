@@ -11,9 +11,9 @@ namespace AsepriteDotNet;
 /// Defines a texture that is composed of color values that represent an image.
 /// This class cannot be inherited.
 /// </summary>
-public sealed class Texture<TColor> : IEquatable<Texture<TColor>>  where TColor : struct, IColor<TColor>
+public sealed class Texture<T> : IEquatable<Texture<T>>  where T: IColor, new()
 {
-    private readonly TColor[] _pixels;
+    private readonly T[] _pixels;
 
     /// <summary>
     /// Gets the name of this texture.
@@ -29,15 +29,15 @@ public sealed class Texture<TColor> : IEquatable<Texture<TColor>>  where TColor 
     /// Gets a read-only collection of the pixels that represent the image of this texture.  Pixels are read from
     /// left-to-right top-to-bottom.
     /// </summary>
-    public ReadOnlySpan<TColor> Pixels => _pixels;
+    public ReadOnlySpan<T> Pixels => _pixels;
 
-    internal Texture(string name, Size size, TColor[] pixels) => (Name, Size, _pixels) = (name, size, pixels);
-
-    /// <inheritdoc/>
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Texture<TColor> other && Equals(other);
+    internal Texture(string name, Size size, T[] pixels) => (Name, Size, _pixels) = (name, size, pixels);
 
     /// <inheritdoc/>
-    public bool Equals([NotNullWhen(true)] Texture<TColor>? other)
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is Texture<T> other && Equals(other);
+
+    /// <inheritdoc/>
+    public bool Equals([NotNullWhen(true)] Texture<T>? other)
     {
         if (ReferenceEquals(this, other)) { return true; }
         return Name.Equals(other?.Name, StringComparison.Ordinal)

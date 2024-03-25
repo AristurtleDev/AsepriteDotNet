@@ -17,7 +17,7 @@ internal class PngWriter
     //  8Kib for this project.
     private const int MAX_IDAT_LEN = 8192;
 
-    public static void SaveTo<T>(string path, int width, int height, T[] data) where T : struct, IColor<T>
+    public static void SaveTo<T>(string path, int width, int height, T[] data) where T: IColor, new()
     {
         try
         {
@@ -163,7 +163,7 @@ internal class PngWriter
     //             https://www.w3.org/TR/png-3/#10Compression
     //             https://www.w3.org/TR/png-3/#7Scanline
     //             https://www.w3.org/TR/png-3/#7Filtering
-    private static void WriteIDAT<TColor>(BinaryWriter writer, int width, int height, TColor[] data) where TColor : struct, IColor<TColor>
+    private static void WriteIDAT<T>(BinaryWriter writer, int width, int height, T[] data) where T: IColor, new()
     {
         void Flush(MemoryStream stream)
         {
@@ -218,7 +218,7 @@ internal class PngWriter
                 deflate.Write(filter);
                 adler.Update(filter);
 
-                TColor[] scanline = data[(i)..(i + width)];
+                T[] scanline = data[(i)..(i + width)];
                 for (int c = 0; c < scanline.Length; c++)
                 {
                     ReadOnlySpan<byte> pixel = new byte[4]

@@ -22,7 +22,7 @@ public static class AsepriteFrameExtensions
     /// </param>
     /// <returns>A array of <see cref="Rgba32"/> value representing the flattened frame.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="frame"/> is <see langword="null"/>.</exception>
-    public static Rgba32[] FlattenFrame(this AsepriteFrame frame, bool onlyVisibleLayers, bool includeBackgroundLayer, bool includeTilemapCels = true)
+    public static Rgba32[] FlattenFrame(this AsepriteFrame frame, bool onlyVisibleLayers = true, bool includeBackgroundLayer = false, bool includeTilemapCels = true)
     {
         ArgumentNullException.ThrowIfNull(frame);
 

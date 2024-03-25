@@ -27,7 +27,7 @@ public sealed class Sprite : IEquatable<Sprite>
     /// <summary>
     /// Gets a read-only collection of the slices contained within this sprite.
     /// </summary>
-    public IReadOnlyCollection<Slice> Slices => _slices;
+    public ReadOnlySpan<Slice> Slices => _slices;
 
     internal Sprite(string name, Texture texture, Slice[] slices) =>
         (Name, Texture, _slices) = (name, texture, slices);

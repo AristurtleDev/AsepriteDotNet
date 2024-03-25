@@ -4,7 +4,7 @@
 A Cross Platform C# Library for Reading Aseprite Files
 
 [![main](https://github.com/AristurtleDev/AsepriteDotNet/actions/workflows/main.yml/badge.svg)](https://github.com/AristurtleDev/AsepriteDotNet/actions/workflows/main.yml)
-[![Nuget 1.0.0.9](https://img.shields.io/nuget/v/AsepriteDotNet?color=blue&style=flat-square)](https://www.nuget.org/packages/AsepriteDotNet/1.0.0.9)
+[![Nuget 1.1.0.14](https://img.shields.io/nuget/v/AsepriteDotNet?color=blue&style=flat-square)](https://www.nuget.org/packages/AsepriteDotNet/1.1.0.14)
 [![License: MIT](https://img.shields.io/badge/📃%20license-MIT-blue?style=flat)](LICENSE)
 [![Twitter](https://img.shields.io/badge/%20-Share%20On%20Twitter-555?style=flat&logo=twitter)](https://twitter.com/intent/tweet?text=AsepriteDotNet%20by%20%40aristurtledev%0A%0AA%20new%20cross-platform%20library%20in%20C%23%20for%20reading%20Aseprite%20.ase%2F.aseprite%20files.%20https%3A%2F%2Fgithub.com%2FAristurtleDev%2FAsepriteDotNet%0A%0A%23aseprite%20%23dotnet%20%23csharp%20%23oss%0A)
 </h1>
@@ -27,7 +27,7 @@ A Cross Platform C# Library for Reading Aseprite Files
 # Installation
 Install via NuGet
 ```
-dotnet add package AsepriteDotNet --version 1.0.0.9
+dotnet add package AsepriteDotNet --version 1.1.0.14
 ```
 
 # Usage

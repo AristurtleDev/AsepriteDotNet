@@ -9,6 +9,9 @@ using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.IO;
 
+/// <summary>
+/// Defines a utility class used for loading an Aseprite file.
+/// </summary>
 public static partial class AsepriteFileLoader
 {
     /// <summary>

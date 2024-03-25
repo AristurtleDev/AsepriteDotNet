@@ -5,6 +5,7 @@
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
 using AsepriteDotNet.Common;
+using AsepriteDotNet.Compression;
 
 namespace AsepriteDotNet;
 
@@ -34,41 +35,37 @@ internal static class AsepriteColorUtilities
 
         for (int i = 0, b = 0; i < result.Length; i++, b += bpp)
         {
-            byte red, green, blue, alpha;
+            Rgba32 color = new Rgba32();
 
             switch (depth)
             {
                 case AsepriteColorDepth.RGBA:
-                    red = pixels[b];
-                    green = pixels[b + 1];
-                    blue = pixels[b + 2];
-                    alpha = pixels[b + 3];
-                    result[i] = new Rgba32(red, green, blue, alpha);
+                    color.R = pixels[b];
+                    color.G = pixels[b + 1];
+                    color.B = pixels[b + 2];
+                    color.A = pixels[b + 3];
                     break;
 
                 case AsepriteColorDepth.Grayscale:
-                    red = pixels[b];
-                    green = pixels[b];
-                    blue = pixels[b];
-                    alpha = pixels[b + 1];
-                    result[i] = new Rgba32(red, green, blue, alpha);
+                    color.R = color.G = color.B = pixels[b];
+                    color.A = pixels[b + 1];
                     break;
 
                 case AsepriteColorDepth.Indexed:
                     int index = pixels[i];
-                    if (index == palette?.TransparentIndex)
+                    if (index != palette?.TransparentIndex)
                     {
-                        result[i] = new Rgba32(0, 0, 0, 0);
-                    }
-                    else
-                    {
-                        result[i] = palette?.Colors[index] ?? new Rgba32(0, 0, 0, 0);
+                        if(palette is not null)
+                        {
+                            color = palette.Colors[index];
+                        }
                     }
                     break;
 
                 default:
                     throw new InvalidOperationException($"Unknown Color Depth: {depth}");
             }
+            result[i] = color;
         }
 
         return result;

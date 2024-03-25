@@ -151,4 +151,19 @@ public struct Rgba32 : IEquatable<Rgba32>
         Vector128<byte> result = Vector128.ConvertToInt32(vector.AsVector128()).AsByte();
         return new Rgba32(result.GetElement(0), result.GetElement(4), result.GetElement(8), result.GetElement(12));
     }
+
+    /// <summary>
+    /// Deconstructs this <see cref="Rgba32"/> value into its individual R, G, B, A component values.
+    /// </summary>
+    /// <param name="r">When this method returns, contains the <see cref="R"/> color component value.</param>
+    /// <param name="g">When this method returns, contains the <see cref="G"/> color component value.</param>
+    /// <param name="b">When this method returns, contains the <see cref="B"/> color component value.</param>
+    /// <param name="a">When this method returns, contains the <see cref="A"/> color component value.</param>
+    public readonly void Deconstruct(out byte r, out byte g, out byte b, out byte a)
+    {
+        r = R;
+        g = G;
+        b = B;
+        a = A;
+    }
 }

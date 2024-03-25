@@ -17,12 +17,12 @@ public static class AsepriteFrameExtensions
     /// Flattens the a <see cref="AsepriteFrame"/> into an array of <see cref="Rgba32"/> values.
     /// </summary>
     /// <param name="frame">The <see cref="AsepriteFrame"/> to flatten.</param>
-    /// <param name="onlyVisibleLayers">
-    /// Indicates whether only cels on visible layers should be included.
-    /// </param>
+    /// <param name="onlyVisibleLayers">Indicates whether only cels on visible layers should be included.</param>
+    /// <param name="includeBackgroundLayer">Indicates whether cels on the background layer should be included.</param>
+    /// <param name="includeTilemapCels">Indicates whether tilemap cels should be included.</param>
     /// <returns>A array of <see cref="Rgba32"/> value representing the flattened frame.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="frame"/> is <see langword="null"/>.</exception>
-    public static Rgba32[] FlattenFrame(this AsepriteFrame frame, bool onlyVisibleLayers, bool includeBackgroundLayer, bool includeTilemapCels = true)
+    public static Rgba32[] FlattenFrame(this AsepriteFrame frame, bool onlyVisibleLayers = true, bool includeBackgroundLayer = false, bool includeTilemapCels = true)
     {
         ArgumentNullException.ThrowIfNull(frame);
 
@@ -42,18 +42,18 @@ public static class AsepriteFrameExtensions
 
             if (cel is AsepriteImageCel imageCel)
             {
-                BlendCel(result, imageCel.Pixels, imageCel.Layer.BlendMode, new Rectangle(imageCel.Location, imageCel.Size), imageCel.Opacity, imageCel.Layer.Opacity);
+                BlendCel(result, imageCel.Pixels, imageCel.Layer.BlendMode, new Rectangle(imageCel.Location, imageCel.Size), frame.Size.Width, imageCel.Opacity, imageCel.Layer.Opacity);
             }
             else if (includeTilemapCels && cel is AsepriteTilemapCel tilemapCel)
             {
-                BlendTilemapCel(result, tilemapCel);
+                BlendTilemapCel(result, tilemapCel, frame.Size.Width);
             }
         }
 
         return result;
     }
 
-    private static void BlendCel(Span<Rgba32> backdrop, ReadOnlySpan<Rgba32> source, AsepriteBlendMode blendMode, Rectangle bounds, int celOpacity, int layerOpacity)
+    private static void BlendCel(Span<Rgba32> backdrop, ReadOnlySpan<Rgba32> source, AsepriteBlendMode blendMode, Rectangle bounds, int frameWidth, int celOpacity, int layerOpacity)
     {
         byte opacity = Calc.MultiplyUnsigned8Bit(celOpacity, layerOpacity);
 
@@ -61,7 +61,7 @@ public static class AsepriteFrameExtensions
         {
             int x = (i % bounds.Width) + bounds.X;
             int y = (i / bounds.Width) + bounds.Y;
-            int index = y * bounds.Width + x;
+            int index = y * frameWidth + x;
 
             //  Sometimes a cel can have a negative x and/or y value.  This is caused by selecting an area within
             //  aseprite and then moving a portion of the selected pixels outside the canvas.  We don't care about
@@ -75,7 +75,7 @@ public static class AsepriteFrameExtensions
         }
     }
 
-    private static void BlendTilemapCel(Span<Rgba32> backdrop, AsepriteTilemapCel cel)
+    private static void BlendTilemapCel(Span<Rgba32> backdrop, AsepriteTilemapCel cel, int frameWidth)
     {
         byte opacity = Calc.MultiplyUnsigned8Bit(cel.Opacity, cel.Layer.Opacity);
 
@@ -107,7 +107,7 @@ public static class AsepriteFrameExtensions
             }
         }
 
-        BlendCel(backdrop, pixels, cel.Layer.BlendMode, bounds, cel.Opacity, cel.Layer.Opacity);
+        BlendCel(backdrop, pixels, cel.Layer.BlendMode, bounds, frameWidth, cel.Opacity, cel.Layer.Opacity);
     }
 }
 

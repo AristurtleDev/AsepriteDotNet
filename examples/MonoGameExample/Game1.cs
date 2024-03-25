@@ -50,21 +50,20 @@ public class Game1 : Game
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
-        /// AsepriteDotNet internally uses it's own Rgba32 color struct to represent color data. This needs to be
-        /// converted to the Microsoft.Xna.Framework.Color value type used by MonoGame.  AsepriteDotNet offers
-        /// extension methods on Rgba32 for converting it to a different color type.
-        /// 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        Color[] pixels = frame0Pixels.As<Color>(rgba => new Color(rgba.PackedValue));
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///
-        /// Create the texture now that we have all the data we need
+        /// Create the texture
         ///
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         _texture = new Texture2D(GraphicsDevice, aseFile.Frames[0].Size.Width, aseFile.Frames[0].Size.Height);
-        _texture.SetData<Color>(pixels);
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        /// AsepriteDotNet internally uses it's own Rgba32 color struct to represent color data. This struct is
+        /// compatible with MonoGame's Color struct when setting texture data so we can use it directly without
+        /// needing to convert back and forth between the two.
+        /// 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        _texture.SetData<Rgba32>(frame0Pixels);
     }
 
     protected override void Draw(GameTime gameTime)

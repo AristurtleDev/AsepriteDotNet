@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5F219449
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsepriteDotNet.Tests", "tests\AsepriteDotNet.Tests\AsepriteDotNet.Tests.csproj", "{A289C75E-0BCF-421F-AAE0-050F45AC4F4E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2B0F6763-3C96-4753-8E12-6A2975369212}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{2B0F6763-3C96-4753-8E12-6A2975369212}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection

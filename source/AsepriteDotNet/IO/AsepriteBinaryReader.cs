@@ -4,6 +4,7 @@
 
 using System.Buffers.Binary;
 using System.IO.Compression;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
 using AsepriteDotNet.Compression;
@@ -75,7 +76,14 @@ internal sealed class AsepriteBinaryReader : IDisposable
     public byte[] ReadBytes(int count)
     {
         ValidateDisposed(_isDisposed);
+#if NET6_0
+        if(count < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count));
+        }
+#else
         ArgumentOutOfRangeException.ThrowIfNegative(count);
+#endif
 
         if (count == 0)
         {
@@ -83,7 +91,11 @@ internal sealed class AsepriteBinaryReader : IDisposable
         }
 
         byte[] result = new byte[count];
+#if NET6_0
+        ReadExactly(_stream, result);
+#elif NET8_0_OR_GREATER
         _stream.ReadExactly(result);
+#endif
         return result;
     }
 
@@ -101,7 +113,11 @@ internal sealed class AsepriteBinaryReader : IDisposable
     public ushort ReadWord()
     {
         ValidateDisposed(_isDisposed);
+#if NET6_0
+        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(ushort)));
+#elif NET8_0_OR_GREATER
         _stream.ReadExactly(_buffer.AsSpan(0, sizeof(ushort)));
+#endif
         return BinaryPrimitives.ReadUInt16LittleEndian(_buffer);
     }
 
@@ -119,7 +135,11 @@ internal sealed class AsepriteBinaryReader : IDisposable
     public short ReadShort()
     {
         ValidateDisposed(_isDisposed);
+#if NET6_0
+        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(short)));
+#elif NET8_0_OR_GREATER
         _stream.ReadExactly(_buffer.AsSpan(0, sizeof(short)));
+#endif
         return BinaryPrimitives.ReadInt16LittleEndian(_buffer);
     }
 
@@ -137,7 +157,11 @@ internal sealed class AsepriteBinaryReader : IDisposable
     public uint ReadDword()
     {
         ValidateDisposed(_isDisposed);
+#if NET6_0
+        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(uint)));
+#elif NET8_0_OR_GREATER
         _stream.ReadExactly(_buffer.AsSpan(0, sizeof(uint)));
+#endif
         return BinaryPrimitives.ReadUInt32LittleEndian(_buffer);
     }
 
@@ -155,7 +179,11 @@ internal sealed class AsepriteBinaryReader : IDisposable
     public int ReadLong()
     {
         ValidateDisposed(_isDisposed);
+#if NET6_0
+        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(int)));
+#elif NET8_0_OR_GREATER
         _stream.ReadExactly(_buffer.AsSpan(0, sizeof(int)));
+#endif
         return BinaryPrimitives.ReadInt32LittleEndian(_buffer);
     }
 
@@ -173,7 +201,11 @@ internal sealed class AsepriteBinaryReader : IDisposable
     public float ReadFixed()
     {
         ValidateDisposed(_isDisposed);
+#if NET6_0
+        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(float)));
+#elif NET8_0_OR_GREATER
         _stream.ReadExactly(_buffer.AsSpan(0, sizeof(float)));
+#endif
         return BinaryPrimitives.ReadSingleLittleEndian(_buffer);
     }
 
@@ -377,4 +409,24 @@ internal sealed class AsepriteBinaryReader : IDisposable
             throw new ObjectDisposedException(nameof(AsepriteBinaryReader), $"The {nameof(AsepriteBinaryReader)} has been disposed previously.");
         }
     }
+
+#if NET6_0
+    private static void ReadExactly(Stream stream, Span<byte> buffer)
+    {
+        buffer.Clear();
+
+        int total = 0;
+        int read = 0;
+
+        while (total < buffer.Length)
+        {
+            if ((read = stream.Read(buffer.Slice(total))) == 0)
+            {
+                throw new EndOfStreamException();
+            }
+
+            total += read;
+        }
+    }
+#endif
 }

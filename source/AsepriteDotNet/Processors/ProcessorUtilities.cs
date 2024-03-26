@@ -44,6 +44,6 @@ internal static class ProcessorUtilities
             }
         }
 
-        return [.. slices];
+        return slices.ToArray();
     }
 }

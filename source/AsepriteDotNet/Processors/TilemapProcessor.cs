@@ -73,6 +73,6 @@ public static class TilemapProcessor
             tilemapLayers.Add(tilemapLayer);
         }
 
-        return new Tilemap(file.Name, [.. tilesets], [.. tilemapLayers]);
+        return new Tilemap(file.Name, tilesets.ToArray(), tilemapLayers.ToArray());
     }
 }

@@ -73,12 +73,14 @@ public struct Rgba32 : IEquatable<Rgba32>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Rgba32(byte r, byte g, byte b, byte a) => (R, G, B, A) = (r, g, b, a);
 
+#if NET8_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the <see cref="Rgba32"/> value from a <see cref="Vector4"/>
     /// </summary>
     /// <param name="vector">The vector containing the red, green, blue, and alpha components.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Rgba32(Vector4 vector) : this() => this = Pack(vector);
+#endif
 
     /// <summary>
     /// Returns this <see cref="Rgba32"/> value as a <see cref="Vector4"/> value.
@@ -137,6 +139,7 @@ public struct Rgba32 : IEquatable<Rgba32>
     /// <inheritdoc/>
     public override readonly int GetHashCode() => PackedValue.GetHashCode();
 
+#if NET8_0_OR_GREATER
     /// <summary>
     /// Packs a <see cref="Vector4"/> value into a new <see cref="Rgba32"/> value.
     /// </summary>
@@ -151,6 +154,7 @@ public struct Rgba32 : IEquatable<Rgba32>
         Vector128<byte> result = Vector128.ConvertToInt32(vector.AsVector128()).AsByte();
         return new Rgba32(result.GetElement(0), result.GetElement(4), result.GetElement(8), result.GetElement(12));
     }
+#endif
 
     /// <summary>
     /// Deconstructs this <see cref="Rgba32"/> value into its individual R, G, B, A component values.

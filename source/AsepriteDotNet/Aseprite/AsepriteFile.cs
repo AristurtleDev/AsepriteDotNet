@@ -96,12 +96,12 @@ public sealed class AsepriteFile
         CanvasWidth = canvasWidth;
         CanvasHeight = canvasHeight;
         ColorDepth = colorDepth;
-        _frames = [.. frames];
-        _tags = [.. tags];
-        _slices = [.. slices];
-        _tilesets = [.. tilesets];
-        _warnings = [.. warnings];
-        _layers = [.. layers];
+        _frames = frames.ToArray();
+        _tags = tags.ToArray();
+        _slices = slices.ToArray();
+        _tilesets = tilesets.ToArray();
+        _warnings = warnings.ToArray();
+        _layers = layers.ToArray();
         Palette = palette;
         UserData = userData;
     }
@@ -160,7 +160,14 @@ public sealed class AsepriteFile
     /// </exception>
     public AsepriteLayer GetLayer(string name)
     {
+#if NET6_0
+        if(string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException(nameof(name));
+        }
+#elif NET8_0_OR_GREATER
         ArgumentException.ThrowIfNullOrEmpty(name);
+#endif
 
         return _layers.AsParallel()
                       .WithDegreeOfParallelism(Environment.ProcessorCount)
@@ -232,7 +239,14 @@ public sealed class AsepriteFile
     /// </exception>
     public AsepriteTag GetTag(string name)
     {
+#if NET6_0
+        if(string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException(nameof(name));
+        }
+#elif NET8_0_OR_GREATER
         ArgumentException.ThrowIfNullOrEmpty(name);
+#endif
 
         return _tags.AsParallel()
                       .WithDegreeOfParallelism(Environment.ProcessorCount)
@@ -304,7 +318,14 @@ public sealed class AsepriteFile
     /// </exception>
     public AsepriteSlice GetSlice(string name)
     {
+#if NET6_0
+        if(string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException(nameof(name));
+        }
+#elif NET8_0_OR_GREATER
         ArgumentException.ThrowIfNullOrEmpty(name);
+#endif
 
         return _slices.AsParallel()
                       .WithDegreeOfParallelism(Environment.ProcessorCount)
@@ -376,7 +397,14 @@ public sealed class AsepriteFile
     /// </exception>
     public AsepriteTileset GetTileset(string name)
     {
+#if NET6_0
+        if(string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException(nameof(name));
+        }
+#elif NET8_0_OR_GREATER
         ArgumentException.ThrowIfNullOrEmpty(name);
+#endif
 
         return _tilesets.AsParallel()
                         .WithDegreeOfParallelism(Environment.ProcessorCount)

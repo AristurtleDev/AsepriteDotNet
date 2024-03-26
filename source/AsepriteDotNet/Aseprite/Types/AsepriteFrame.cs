@@ -45,7 +45,7 @@ public sealed class AsepriteFrame
         Name = name;
         Size = new Size(width, height);
         Duration = TimeSpan.FromMilliseconds(duration);
-        _cels = [.. cels];
+        _cels = cels;
     }
 
     internal void AddCel(AsepriteCel cel) => _cels.Add(cel);

@@ -325,10 +325,6 @@ public static partial class AsepriteFileLoader
                             if (Calc.HasFlag(flags, ASE_USER_DATA_FLAG_HAS_COLOR))
                             {
                                 color = reader.ReadUnsafe<Rgba32>(Rgba32.StructSize);
-                                if(preMultiplyAlpha)
-                                {
-                                    color = Rgba32.FromNonPreMultiplied(color.Value.R, color.Value.G, color.Value.B, color.Value.A);
-                                }
                             }
 
                             if (currentUserData is null && paletteRead)

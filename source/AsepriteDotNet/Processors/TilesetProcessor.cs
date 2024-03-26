@@ -4,6 +4,7 @@
 
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Types;
+using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Processors;
 
@@ -58,7 +59,9 @@ public static class TilesetProcessor
     public static Tileset Process(AsepriteTileset aseTileset)
     {
         ArgumentNullException.ThrowIfNull(aseTileset);
-        Texture texture = new Texture(aseTileset.Name, aseTileset.Size, aseTileset.Pixels.ToArray());
-        return new Tileset(aseTileset.ID, aseTileset.Name, texture, aseTileset.Size);
+        //  Aseprite tile maps are stored in horizontal strips
+        Size textureSize = new Size(aseTileset.TileSize.Width, aseTileset.TileSize.Height * aseTileset.TileCount);
+        Texture texture = new Texture(aseTileset.Name, textureSize, aseTileset.Pixels.ToArray());
+        return new Tileset(aseTileset.ID, aseTileset.Name, texture, aseTileset.TileSize);
     }
 }

@@ -27,7 +27,14 @@ public sealed class AsepriteTileset
     /// <summary>
     /// Gets the size of this tileset.
     /// </summary>
+    [Obsolete("Use TileSize instead as it more accurately describes this property.  This will be removed in a future release")]
     public Size Size { get; }
+
+    /// <summary>
+    /// Gets the size of each tile in this tileset.
+    /// </summary>
+    public Size TileSize { get; }
+
 
     /// <summary>
     /// Gets the name of this tileset.
@@ -44,7 +51,10 @@ public sealed class AsepriteTileset
     {
         ID = (int)tilesetProperties.Id;
         TileCount = (int)tilesetProperties.NumberOfTiles;
+#pragma warning disable CS0618 // Type or member is obsolete
         Size = new Size(tilesetProperties.TileWidth, tilesetProperties.TileHeight);
+#pragma warning restore CS0618 // Type or member is obsolete
+        TileSize = new Size(tilesetProperties.TileWidth, tilesetProperties.TileHeight);
         Name = name;
         _pixels = pixels;
     }

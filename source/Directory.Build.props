@@ -26,6 +26,8 @@
         <RepositoryBranch>main</RepositoryBranch>
         <RepositoryUrl>https://github.com/AristurtleDev/AsepriteDotNet</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
 
     <!-- Import the root prop last -->

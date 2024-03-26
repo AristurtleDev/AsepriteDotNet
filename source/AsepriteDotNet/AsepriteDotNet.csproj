@@ -1,32 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- Project level compilation properties -->
-  <PropertyGroup>
+    <!-- Project level compilation properties -->
+    <PropertyGroup>
         <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
 
-  <!-- Project level package properties -->
-  <PropertyGroup>
-    <PackageId>AsepriteDotNet</PackageId>
-    <Description>
-      AsepriteDotNet is a cross-platform C# library for reading Aseprite
-      (.aseprite/.ase) files. Once file has been read, the library presents an
-      easy to navigate AsepriteFile class containing the data read from the file.
-    </Description>
-  </PropertyGroup>
+    <!-- Project level package properties -->
+    <PropertyGroup>
+        <PackageId>AsepriteDotNet</PackageId>
+        <Description>
+            AsepriteDotNet is a cross-platform C# library for reading Aseprite
+            (.aseprite/.ase) files. Once file has been read, the library presents an
+            easy to navigate AsepriteFile class containing the data read from the file.
+        </Description>
+    </PropertyGroup>
 
-  <!-- Includes for Nugets -->
-  <ItemGroup>
-      <None Include="..\..\.images\nuget-icon.png" Pack="true" PackagePath="" />
-      <None Include="..\..\README.md" Pack="true" PackagePath="" />
-  </ItemGroup>
+    <!-- Includes for NuGets -->
+    <ItemGroup>
+        <None Include="..\..\.images\nuget-icon.png" Pack="true" PackagePath="" />
+        <None Include="..\..\README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
 
-  <!-- Allow Test project to access internals -->
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>AsepriteDotNet.Tests</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
+    <!-- Allow Test project to access internals -->
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>AsepriteDotNet.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
 
 </Project>

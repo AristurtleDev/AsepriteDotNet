@@ -157,6 +157,19 @@ public struct Rgba32 : IEquatable<Rgba32>
 #endif
 
     /// <summary>
+    /// Creates a premultiplied alpha <see cref="Rgba32"/> color value.
+    /// </summary>
+    /// <param name="r">The red color component value.</param>
+    /// <param name="g">The green color component value.</param>
+    /// <param name="b">The blue color component value.</param>
+    /// <param name="a">The alpha color component value.</param>
+    /// <returns></returns>
+    public static Rgba32 FromNonPreMultiplied(byte r, byte g, byte b, byte a)
+    {
+        return new Rgba32((byte)(r * a / 255), (byte)(g * a / 255), (byte)(b * a / 255), a);
+    }
+
+    /// <summary>
     /// Deconstructs this <see cref="Rgba32"/> value into its individual R, G, B, A component values.
     /// </summary>
     /// <param name="r">When this method returns, contains the <see cref="R"/> color component value.</param>

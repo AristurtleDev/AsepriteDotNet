@@ -17,6 +17,9 @@ internal static class AsepriteColorUtilities
     /// </summary>
     /// <param name="pixels">The array of <see cref="byte"/> data that represents the color data.</param>
     /// <param name="depth">The color depth.</param>
+    /// <param name="preMultiplyAlpha">
+    /// Indicates whether color values should be translated to a premultiplied alpha value.
+    /// </param>
     /// <param name="palette">
     /// The palette used for <see cref="AsepriteColorDepth.Indexed">ColorDepth.Index</see>.  Optional, only required when
     /// <paramref name="depth"/> is equal to <see cref="AsepriteColorDepth.Indexed">ColorDepth.Indexed</see>.
@@ -26,7 +29,7 @@ internal static class AsepriteColorUtilities
     /// <exception cref="InvalidOperationException">
     /// <paramref name="depth"/> is an unknown <see cref="AsepriteColorDepth"/> value.
     /// </exception>
-    internal static Rgba32[] PixelsToColor(byte[] pixels, AsepriteColorDepth depth, AsepritePalette? palette = null)
+    internal static Rgba32[] PixelsToColor(byte[] pixels, AsepriteColorDepth depth, bool preMultiplyAlpha, AsepritePalette? palette = null)
     {
         ArgumentNullException.ThrowIfNull(pixels);
 
@@ -35,20 +38,21 @@ internal static class AsepriteColorUtilities
 
         for (int i = 0, b = 0; i < result.Length; i++, b += bpp)
         {
-            Rgba32 color = new Rgba32();
+            byte red, green, blue, alpha;
+            red = green = blue = alpha = 0;
 
             switch (depth)
             {
                 case AsepriteColorDepth.RGBA:
-                    color.R = pixels[b];
-                    color.G = pixels[b + 1];
-                    color.B = pixels[b + 2];
-                    color.A = pixels[b + 3];
+                    red = pixels[b];
+                    green = pixels[b + 1];
+                    blue = pixels[b + 2];
+                    alpha = pixels[b + 3];
                     break;
 
                 case AsepriteColorDepth.Grayscale:
-                    color.R = color.G = color.B = pixels[b];
-                    color.A = pixels[b + 1];
+                    red = green = blue = pixels[b];
+                    alpha = pixels[b + 1];
                     break;
 
                 case AsepriteColorDepth.Indexed:
@@ -57,7 +61,7 @@ internal static class AsepriteColorUtilities
                     {
                         if(palette is not null)
                         {
-                            color = palette.Colors[index];
+                            palette.Colors[index].Deconstruct(out red, out green, out blue, out alpha);
                         }
                     }
                     break;
@@ -65,7 +69,7 @@ internal static class AsepriteColorUtilities
                 default:
                     throw new InvalidOperationException($"Unknown Color Depth: {depth}");
             }
-            result[i] = color;
+            result[i] = preMultiplyAlpha ? Rgba32.FromNonPreMultiplied(red, green, blue, alpha) : new Rgba32(red, green, blue, alpha);
         }
 
         return result;

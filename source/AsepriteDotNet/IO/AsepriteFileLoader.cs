@@ -18,15 +18,18 @@ public static partial class AsepriteFileLoader
     /// Loads the Aseprite file at the specified path.
     /// </summary>
     /// <param name="path">The absolute file path to the Aseprite file to load.</param>
+    /// <param name="preMultiplyAlpha">
+    /// Indicates whether color values should be translated to a premultiplied alpha value.
+    /// </param>
     /// <returns>
     /// A new instance of the <see cref="AsepriteFile"/> class containing the contents of the Aseprite file that was
     /// loaded.
     /// </returns>
-    public static AsepriteFile FromFile(string path)
+    public static AsepriteFile FromFile(string path, bool preMultiplyAlpha = true)
     {
         string fileName = Path.GetFileNameWithoutExtension(path);
         using FileStream stream = File.OpenRead(path);
-        return FromStream(fileName, stream, true);
+        return FromStream(fileName, stream, true, preMultiplyAlpha);
     }
 
     /// <summary>
@@ -38,17 +41,20 @@ public static partial class AsepriteFileLoader
     /// <see langword="true"/> to leave the given <paramref name="stream"/> open after loading the Aseprite file;
     /// otherwise, <see langword="false"/>.
     /// </param>
+    /// <param name="preMultiplyAlpha">
+    /// Indicates whether color values should be translated to a premultiplied alpha value.
+    /// </param>
     /// <returns>
     /// A new instance of the <see cref="AsepriteFile"/> class containing the contents for the Aseprite file that was
     /// loaded.
     /// </returns>
-    public static AsepriteFile FromStream(string fileName, Stream stream, bool leaveOpen = false)
+    public static AsepriteFile FromStream(string fileName, Stream stream, bool leaveOpen = false, bool preMultiplyAlpha = true)
     {
         using AsepriteBinaryReader reader = new AsepriteBinaryReader(stream, leaveOpen);
-        return LoadFile(fileName, reader);
+        return LoadFile(fileName, reader, preMultiplyAlpha);
     }
 
-    private static AsepriteFile LoadFile(string fileName, AsepriteBinaryReader reader)
+    private static AsepriteFile LoadFile(string fileName, AsepriteBinaryReader reader, bool preMultiplyAlpha)
     {
         //  Collection of non-fatal warnings accumulated while loading the Aseprite file. Provided to the consumer as a
         //  means of seeing why some data may not be what they expect it to be.
@@ -197,7 +203,7 @@ public static partial class AsepriteFileLoader
                                         AsepriteImageCelProperties imageCelProperties = reader.ReadUnsafe<AsepriteImageCelProperties>(AsepriteImageCelProperties.StructSize);
                                         int len = (int)(chunkEnd - reader.Position);
                                         byte[] data = properties.Type == ASE_CEL_TYPE_COMPRESSED_IMAGE ? reader.ReadCompressed(len) : reader.ReadBytes(len);
-                                        Rgba32[] pixels = AsepriteColorUtilities.PixelsToColor(data, depth, palette);
+                                        Rgba32[] pixels = AsepriteColorUtilities.PixelsToColor(data, depth, preMultiplyAlpha, palette);
                                         cel = new AsepriteImageCel(properties, celLayer, imageCelProperties, pixels);
                                     }
                                     break;
@@ -319,6 +325,10 @@ public static partial class AsepriteFileLoader
                             if (Calc.HasFlag(flags, ASE_USER_DATA_FLAG_HAS_COLOR))
                             {
                                 color = reader.ReadUnsafe<Rgba32>(Rgba32.StructSize);
+                                if(preMultiplyAlpha)
+                                {
+                                    color = Rgba32.FromNonPreMultiplied(color.Value.R, color.Value.G, color.Value.B, color.Value.A);
+                                }
                             }
 
                             if (currentUserData is null && paletteRead)
@@ -404,7 +414,7 @@ public static partial class AsepriteFileLoader
 
                             uint len = reader.ReadDword();
                             byte[] pixelData = reader.ReadCompressed((int)len);
-                            Rgba32[] pixels = AsepriteColorUtilities.PixelsToColor(pixelData, depth, palette);
+                            Rgba32[] pixels = AsepriteColorUtilities.PixelsToColor(pixelData, depth, preMultiplyAlpha, palette);
                             AsepriteTileset tileset = new AsepriteTileset(properties, tilesetName, pixels);
                             tilesets.Add(tileset);
                             lastReadChunkType = chunkHeader.ChunkType;

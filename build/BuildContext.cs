@@ -51,19 +51,19 @@ public sealed class BuildContext : FrostingContext
 
             if (!RepositoryUrl.Equals(DefaultRepositoryUrl, StringComparison.OrdinalIgnoreCase))
             {
-                Version = $"{Version}.{workflow.RunNumber}-{workflow.RepositoryOwner}";
+                Version = $"{Version}-{workflow.RepositoryOwner}";
             }
             else if (workflow.RefType == GitHubActionsRefType.Branch && !workflow.RefName.Equals("refs/head/main", StringComparison.OrdinalIgnoreCase))
             {
-                Version = $"{Version}.{workflow.RunNumber}-develop";
+                Version = $"{Version}-develop";
             }
             else if (IsPreRelease)
             {
-                Version = $"{Version}.{workflow.RunNumber}-prerelease";
+                Version = $"{Version}-prerelease";
             }
             else
             {
-                Version = $"{Version}.{workflow.RunNumber}";
+                Version = $"{Version}";
             }
         }
 

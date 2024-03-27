@@ -12,7 +12,10 @@ using AsepriteDotNet.Compression;
 namespace AsepriteDotNet.IO;
 
 //  Reference: https://www.w3.org/TR/png-3
-internal class PngWriter
+/// <summary>
+/// Write <see cref="Rgba32"/> color data to a png file.
+/// </summary>
+public class PngWriter
 {
     //  Common IDAT chunk sizes are between 8 and 32 Kib.  Opting to use
     //  8Kib for this project.

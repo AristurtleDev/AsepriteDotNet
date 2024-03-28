@@ -43,7 +43,6 @@ public static class AsepriteCelExtensions
         throw new InvalidOperationException("This cel does not contain pixel data");
     }
 
-    {
     /// <summary>
     /// Extracts pixel data from an <see cref="AsepriteImageCel"/> and returns it as a <see cref="Texture"/>.
     /// </summary>

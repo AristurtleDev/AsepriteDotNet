@@ -395,5 +395,26 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal("Test Sprite UserData", doc.UserData.Text);
             Assert.Equal(new Rgba32(1, 2, 3, 4), doc.UserData.Color);
         }
+
+        [Fact]
+        public void AsepriteFileReader_ReadTagsTest()
+        {
+            string path = GetPath("read-test.aseprite");
+            AsepriteTag[] tags = AsepriteFileLoader.ReadTags(path);
+
+            Assert.Equal(3, tags.Length);
+            Assert.Equal("tag0to2forward", tags[0].Name);
+            Assert.Equal(0, tags[0].From);
+            Assert.Equal(2, tags[0].To);
+            Assert.Equal(new Rgba32(0, 0, 0, 255), tags[0].Color);
+            Assert.Equal(AsepriteLoopDirection.Forward, tags[0].LoopDirection);
+            Assert.Equal("tag3pingpong", tags[1].Name);
+            Assert.Equal(AsepriteLoopDirection.PingPong, tags[1].LoopDirection);
+            Assert.Equal("tag4userdata", tags[2].Name);
+            Assert.Equal(new Rgba32(11, 255, 230, 255), tags[2].Color);
+            Assert.Equal(new Rgba32(11, 255, 230, 255), tags[2].UserData.Color);
+            Assert.Equal("tag-4-user-data", tags[2].UserData.Text);
+
+        }
     }
 }

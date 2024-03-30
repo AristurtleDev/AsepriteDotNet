@@ -2,6 +2,7 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
+using System;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Document;
 using AsepriteDotNet.Aseprite.Types;
@@ -53,6 +54,164 @@ public static partial class AsepriteFileLoader
         using AsepriteBinaryReader reader = new AsepriteBinaryReader(stream, leaveOpen);
         return LoadFile(fileName, reader, preMultiplyAlpha);
     }
+
+    /// <summary>
+    /// Reads only the tag data from the Aseprite file.
+    /// </summary>
+    /// <param name="path">The absolute file path to the Aseprite file to load.</param>
+    /// <returns>An array of all tag data from the Aseprite file.</returns>
+    public static AsepriteTag[] ReadTags(string path)
+    {
+        using FileStream stream = File.OpenRead(path);
+        return ReadTags(stream);
+    }
+
+    /// <summary>
+    /// Reads only the tag data from the Aseprite file.
+    /// </summary>
+    /// <param name="stream">The stream to load the Aseprite file from.</param>
+    /// <param name="leaveOpen">
+    /// <see langword="true"/> to leave the given <paramref name="stream"/> open after loading the Aseprite file;
+    /// otherwise, <see langword="false"/>.
+    /// </param>
+    /// <returns>An array of all tag data from the Aseprite file.</returns>
+    public static AsepriteTag[] ReadTags(Stream stream, bool leaveOpen = false)
+    {
+        using AsepriteBinaryReader reader = new AsepriteBinaryReader(stream, leaveOpen);
+        return ReadTags(reader);
+    }
+
+    private static AsepriteTag[] ReadTags(AsepriteBinaryReader reader)
+    {
+        List<AsepriteTag> tags = new List<AsepriteTag>();
+
+        //  Read the file header
+        AsepriteFileHeader fileHeader = reader.ReadUnsafe<AsepriteFileHeader>(AsepriteFileHeader.StructSize);
+
+        //  Validate the file header magic number
+        if (fileHeader.MagicNumber != ASE_HEADER_MAGIC)
+        {
+            reader.Dispose();
+            throw new InvalidOperationException($"invalid file header magic number: 0x{fileHeader.MagicNumber:X4}.  This does not appear to be a valid Aseprite file.");
+        }
+
+        //  All tags exist within the first frame data so we only need to read one frame
+        AsepriteFrameHeader frameHeader = reader.ReadUnsafe<AsepriteFrameHeader>(AsepriteFrameHeader.StructSize);
+
+        //  Validate the magic number in frame header
+        if (frameHeader.MagicNumber != ASE_FRAME_MAGIC)
+        {
+            throw new InvalidOperationException($"Frame 0 contains an invalid magic number: 0x{frameHeader.MagicNumber:X4}");
+        }
+
+        //  Determine the number of chunks to read
+        int chunkCount = frameHeader.OldChunkCount;
+        if (chunkCount == 0xFFFF && chunkCount < frameHeader.NewChunkCount)
+        {
+            chunkCount = (int)frameHeader.NewChunkCount;
+        }
+
+        //  Reference to the user data object to apply user data to from the last chunk that was read that
+        //  could have had user data
+        AsepriteUserData? currentUserData = null;
+
+        //  Tracks the iteration of the tags when reading user data for tags chunk.
+        int tagIterator = 0;
+
+        uint? lastReadChunkType = null;
+
+        //  Read until we get the tags then exit early
+        for (int chunkNum = 0; chunkNum < chunkCount; chunkNum++)
+        {
+            long chunkStart = reader.Position;
+            AsepriteChunkHeader chunkHeader = reader.ReadUnsafe<AsepriteChunkHeader>(AsepriteChunkHeader.StructSize);
+            long chunkEnd = chunkStart + chunkHeader.ChunkSize;
+
+            switch (chunkHeader.ChunkType)
+            {
+                case ASE_CHUNK_TAGS:
+                    {
+                        ushort tagCount = reader.ReadWord();
+                        reader.Ignore(8);
+
+                        for (int i = 0; i < tagCount; i++)
+                        {
+                            AsepriteTagProperties properties = reader.ReadUnsafe<AsepriteTagProperties>(AsepriteTagProperties.StructSize);
+
+                            //  Validate loop direction
+                            if (!Enum.IsDefined<AsepriteLoopDirection>((AsepriteLoopDirection)properties.Direction))
+                            {
+                                reader.Dispose();
+                                throw new InvalidOperationException($"Unknown loop direction: {properties.Direction}");
+                            }
+
+                            string tagName = reader.ReadString(properties.NameLen);
+
+                            AsepriteTag tag = new AsepriteTag(properties, tagName);
+                            currentUserData = tag.UserData;
+                            lastReadChunkType = chunkHeader.ChunkType;
+                            tags.Add(tag);
+                        }
+                    }
+                    break;
+
+                case ASE_CHUNK_USER_DATA:
+                    {
+                        uint flags = reader.ReadDword();
+                        string? text = null;
+                        Rgba32? color = null;
+
+                        if (Calc.HasFlag(flags, ASE_USER_DATA_FLAG_HAS_TEXT))
+                        {
+                            text = reader.ReadString();
+                        }
+
+                        if (Calc.HasFlag(flags, ASE_USER_DATA_FLAG_HAS_COLOR))
+                        {
+                            color = reader.ReadUnsafe<Rgba32>(Rgba32.StructSize);
+                        }
+
+                        if (currentUserData is not null)
+                        {
+                            currentUserData.Text = text;
+                            currentUserData.Color = color;
+
+                            if (lastReadChunkType == ASE_CHUNK_TAGS)
+                            {
+                                //  Tags are a special case.  User data for tags comes all together
+                                //  (one next to the other) after the tags chunk, in the same order:
+                                //
+                                //  TAGS CHUNK (TAG1, TAG2, ..., TAGn)
+                                //  USER DATA CHUNK FOR TAG1
+                                //  USER DATA CHUNK FOR TAG2
+                                //  ...
+                                //  USER DATA CHUNK FOR TAGn
+                                //
+                                //  So here we expect that the next user data chunk will correspond to the next tag
+                                //  int he tags collection
+                                tagIterator++;
+
+                                if (tagIterator < tags.Count)
+                                {
+                                    currentUserData = tags[tagIterator].UserData;
+                                }
+                                else
+                                {
+                                    currentUserData = null;
+                                    lastReadChunkType = null;
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+            }
+            reader.Seek(chunkEnd, SeekOrigin.Begin);
+        }
+
+        return tags.ToArray();
+    }
+
 
     private static AsepriteFile LoadFile(string fileName, AsepriteBinaryReader reader, bool preMultiplyAlpha)
     {

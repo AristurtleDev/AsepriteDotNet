@@ -22,6 +22,9 @@
     <None Update="Files\rgba-pixel-test.aseprite">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Files\slice-test.aseprite">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Files\sprite-userdata-test.aseprite">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

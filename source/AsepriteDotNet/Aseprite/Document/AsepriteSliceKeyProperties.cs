@@ -10,8 +10,8 @@ namespace AsepriteDotNet.Aseprite.Document;
 internal struct AsepriteSliceKeyProperties
 {
     internal const int StructSize = sizeof(uint) +  //  FrameNumber
-                                    sizeof(long) +  //  X
-                                    sizeof(long) +  //  Y
+                                    sizeof(int) +  //  X
+                                    sizeof(int) +  //  Y
                                     sizeof(uint) +  //  Width
                                     sizeof(uint);   //  Height
 
@@ -19,14 +19,14 @@ internal struct AsepriteSliceKeyProperties
     internal uint FrameNumber;
 
     [FieldOffset(4)]
-    internal long X;
+    internal int X;
+
+    [FieldOffset(8)]
+    internal int Y;
 
     [FieldOffset(12)]
-    internal long Y;
-
-    [FieldOffset(20)]
     internal uint Width;
 
-    [FieldOffset(24)]
+    [FieldOffset(16)]
     internal uint Height;
 }

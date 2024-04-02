@@ -3,6 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using AsepriteDotNet.Aseprite;
+using AsepriteDotNet.Aseprite.Document;
 using AsepriteDotNet.Aseprite.Types;
 using AsepriteDotNet.Common;
 using AsepriteDotNet.IO;
@@ -415,6 +416,33 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal(new Rgba32(11, 255, 230, 255), tags[2].UserData.Color);
             Assert.Equal("tag-4-user-data", tags[2].UserData.Text);
 
+        }
+
+        //  There was an issue where slice data was read incorrectly.  This test was put in place to ensure that
+        //  doesn't happen again....
+        [Fact]
+        public void AsepriteFileReader_SliceTest()
+        {
+            AsepriteSliceKeyProperties sliceKeyProperties = new AsepriteSliceKeyProperties()
+            {
+                FrameNumber = 0,
+                X = 2,
+                Y = 2,
+                Width = 28,
+                Height = 27
+            };
+
+            AsepriteSliceKey expected = new AsepriteSliceKey(sliceKeyProperties, null, null);
+
+            string path = GetPath("slice-test.aseprite");
+            AsepriteFile aseFile = AsepriteFileLoader.FromFile(path);
+
+            AsepriteSliceKey actual = aseFile.Slices[0].Keys[0];
+
+            Assert.Equal(expected.Bounds.X, actual.Bounds.X);
+            Assert.Equal(expected.Bounds.Y, actual.Bounds.Y);
+            Assert.Equal(expected.Bounds.Width, actual.Bounds.Width);
+            Assert.Equal(expected.Bounds.Height, actual.Bounds.Height);
         }
     }
 }

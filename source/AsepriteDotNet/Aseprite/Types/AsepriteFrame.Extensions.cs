@@ -67,7 +67,7 @@ public static class AsepriteFrameExtensions
             //  aseprite and then moving a portion of the selected pixels outside the canvas.  We don't care about
             //  these pixels, so if the index is outside the range of the array to store them in, we'll just
             //  discard them
-            if (index < 0 || index > backdrop.Length) { continue; }
+            if (index < 0 || index >= backdrop.Length) { continue; }
 
             Rgba32 b = backdrop[index];
             Rgba32 s = source[i];

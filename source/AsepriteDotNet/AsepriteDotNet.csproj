@@ -9,11 +9,7 @@
     <!-- Project level package properties -->
     <PropertyGroup>
         <PackageId>AsepriteDotNet</PackageId>
-        <Description>
-            AsepriteDotNet is a cross-platform C# library for reading Aseprite
-            (.aseprite/.ase) files. Once file has been read, the library presents an
-            easy to navigate AsepriteFile class containing the data read from the file.
-        </Description>
+        <Description>AsepriteDotNet is a cross-platform C# library for reading Aseprite files.</Description>
     </PropertyGroup>
 
     <!-- Includes for NuGets -->

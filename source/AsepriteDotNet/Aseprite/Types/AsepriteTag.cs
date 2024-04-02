@@ -53,6 +53,7 @@ public sealed class AsepriteTag
         To = properties.To;
         LoopDirection = (AsepriteLoopDirection)properties.Direction;
         Name = name;
+        Repeat = properties.Repeat;
         Color = new Rgba32(properties.R, properties.G, properties.B);
     }
 }

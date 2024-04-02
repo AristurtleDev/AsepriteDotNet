@@ -57,21 +57,27 @@ public static class AsepriteFrameExtensions
     {
         byte opacity = Calc.MultiplyUnsigned8Bit(celOpacity, layerOpacity);
 
-        for (int i = 0; i < source.Length; i++)
+        //  Sometimes a cel can have a negative x- and/or y-coordinate location, or an x- and/or y-coordinate location
+        //  that extends outside of the bounds of the frame.  This is caused by selecting an area within Aseprite and
+        //  then moving a portion of the selected pixels outside the canvas.  We don't care about these pixels, we only
+        //  want the ones inside the frame bounds.
+        //
+        //  So we need to determine the starting and ending xy-coordinate locations within the pixels of the
+        //  cel (backdrop) that are within the frame bounds so we only process those.
+        int startX = Math.Max(0, -bounds.X); 
+        int startY = Math.Max(0, -bounds.Y); 
+        int endX = Math.Min(bounds.Width, frameWidth - bounds.X); 
+        int endY = Math.Min(bounds.Height, backdrop.Length / frameWidth - bounds.Y);
+
+        for (int y = startY; y < endY; y++)
         {
-            int x = (i % bounds.Width) + bounds.X;
-            int y = (i / bounds.Width) + bounds.Y;
-            int index = y * frameWidth + x;
-
-            //  Sometimes a cel can have a negative x and/or y value.  This is caused by selecting an area within
-            //  aseprite and then moving a portion of the selected pixels outside the canvas.  We don't care about
-            //  these pixels, so if the index is outside the range of the array to store them in, we'll just
-            //  discard them
-            if (index < 0 || index >= backdrop.Length) { continue; }
-
-            Rgba32 b = backdrop[index];
-            Rgba32 s = source[i];
-            backdrop[index] = AsepriteColorUtilities.Blend(b, s, opacity, blendMode);
+            for (int x = startX; x < endX; x++)
+            {
+                int index = (y + bounds.Y) * frameWidth + (x + bounds.X);
+                Rgba32 b = backdrop[index];
+                Rgba32 s = source[y * bounds.Width + x]; // Index within the sliced source
+                backdrop[index] = AsepriteColorUtilities.Blend(b, s, opacity, blendMode);
+            }
         }
     }
 

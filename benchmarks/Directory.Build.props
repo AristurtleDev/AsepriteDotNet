@@ -6,6 +6,17 @@
         <ProjectCategory>benchmarks</ProjectCategory>
     </PropertyGroup>
 
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\source\AsepriteDotNet\AsepriteDotNet.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="../adventurer.aseprite" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
     <!-- Import the root prop last -->
     <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
 </Project>

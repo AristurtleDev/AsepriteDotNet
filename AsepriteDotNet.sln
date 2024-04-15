@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoGameExample", "examples
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtractCelExample", "examples\ExtractCelExample\ExtractCelExample.csproj", "{11D9BF92-538C-4B1D-B996-22E64F3F3ECF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VectorBenchmarks", "benchmarks\VectorBenchmarks\VectorBenchmarks.csproj", "{94A4A26E-D6DC-4D04-87E3-7AD6DA848796}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{11D9BF92-538C-4B1D-B996-22E64F3F3ECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11D9BF92-538C-4B1D-B996-22E64F3F3ECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11D9BF92-538C-4B1D-B996-22E64F3F3ECF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94A4A26E-D6DC-4D04-87E3-7AD6DA848796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94A4A26E-D6DC-4D04-87E3-7AD6DA848796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94A4A26E-D6DC-4D04-87E3-7AD6DA848796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94A4A26E-D6DC-4D04-87E3-7AD6DA848796}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{DAD91498-F650-44C7-AAB8-A3454E084E5D} = {E55B2B0D-9615-434F-942A-6C496A02E617}
 		{6FA09867-535B-4200-9D0A-88A2987BF033} = {E55B2B0D-9615-434F-942A-6C496A02E617}
 		{11D9BF92-538C-4B1D-B996-22E64F3F3ECF} = {E55B2B0D-9615-434F-942A-6C496A02E617}
+		{94A4A26E-D6DC-4D04-87E3-7AD6DA848796} = {C4B76AC7-83D0-4F29-BAB9-3C0EAFB31C0D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ABE689B5-F304-403F-A1E4-9973EB2F5FBD}

@@ -9,12 +9,12 @@ namespace AsepriteDotNet.Aseprite.Document;
 [StructLayout(LayoutKind.Explicit)]
 internal struct AsepritePivotProperties
 {
-    internal const int StructSize = sizeof(long) +  //  X
-                                    sizeof(long);   //  Y
+    internal const int StructSize = sizeof(int) +  //  X
+                                    sizeof(int);   //  Y
 
     [FieldOffset(0)]
-    internal long X;
+    internal int X;
 
-    [FieldOffset(8)]
-    internal long Y;
+    [FieldOffset(4)]
+    internal int Y;
 }

@@ -9,20 +9,20 @@ namespace AsepriteDotNet.Aseprite.Document;
 [StructLayout(LayoutKind.Explicit)]
 internal struct AsepriteNinePatchProperties
 {
-    internal const int StructSize = sizeof(long) +  //  X
-                                    sizeof(long) +  //  Y
+    internal const int StructSize = sizeof(int) +  //  X
+                                    sizeof(int) +  //  Y
                                     sizeof(uint) +  //  Width
                                     sizeof(uint);   //  Height
 
     [FieldOffset(0)]
-    internal long X;
+    internal int X;
+
+    [FieldOffset(4)]
+    internal int Y;
 
     [FieldOffset(8)]
-    internal long Y;
-
-    [FieldOffset(16)]
     internal uint Width;
 
-    [FieldOffset(20)]
+    [FieldOffset(12)]
     internal uint Height;
 }

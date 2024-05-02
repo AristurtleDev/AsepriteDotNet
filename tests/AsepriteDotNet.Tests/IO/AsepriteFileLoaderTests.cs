@@ -100,6 +100,19 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal(8, fgCel.Location.X);
             Assert.Equal(8, fgCel.Location.Y);
             Assert.Equal(fgCel.Size.Width * fgCel.Size.Height, fgCel.Pixels.Length);
+
+            //  Validate Slices
+            Assert.Equal(1, doc.Slices.Length);
+            AsepriteSlice slice = doc.Slices[0];
+            Assert.Equal("test-slice", slice.Name);
+            Assert.Equal(1, slice.Keys.Length);
+            Assert.True(slice.IsNinePatch);
+            Assert.True(slice.HasPivot);
+            AsepriteSliceKey sliceKey = slice.Keys[0];
+            Assert.Equal(new Rectangle(0, 0, 32, 32), sliceKey.Bounds);
+            Assert.Equal(new Rectangle(1, 2, 3, 4), sliceKey.CenterBounds);
+            Assert.Equal(new Point(5, 6), sliceKey.Pivot);
+
         }
 
         [Fact]

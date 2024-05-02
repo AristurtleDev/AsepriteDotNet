@@ -40,6 +40,11 @@ public static class AsepriteCelExtensions
             return tilemapCel.ExtractCel(name);
         }
 
+        if (cel is AsepriteLinkedCel linkedCel)
+        {
+            return linkedCel.Cel.ExtractCel(name);
+        }
+
         throw new InvalidOperationException("This cel does not contain pixel data");
     }
 

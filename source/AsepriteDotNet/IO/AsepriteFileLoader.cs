@@ -219,8 +219,10 @@ public static partial class AsepriteFileLoader
         //  means of seeing why some data may not be what they expect it to be.
         List<string> warnings = new List<string>();
 
-        //  Reference to the last group layer that was read so that subsequent child layers can be added to it.
-        AsepriteGroupLayer? lastGroupLayer = null;
+        // References to the most recent previous group layers read by child level.
+        // Key: Child level of the group layer
+        // Value: Group layer
+        Dictionary<int, AsepriteGroupLayer> lastGroupsByChildLevel = new();
 
         //  Flag to determine if the palette has been read.  This is used to flag that a user data chunk is for the
         //  sprite due to changes in Aseprite 1.3
@@ -332,14 +334,14 @@ public static partial class AsepriteFileLoader
                                     throw new InvalidOperationException($"Unknown layer type: {properties.Type}");
                             }
 
-                            if (properties.Level != 0 && lastGroupLayer is not null)
+                            if (properties.Level != 0 && lastGroupsByChildLevel.TryGetValue(properties.Level - 1, out var group))
                             {
-                                lastGroupLayer.AddChild(layer);
+                                group.AddChild(layer);
                             }
 
                             if (layer is AsepriteGroupLayer groupLayer)
                             {
-                                lastGroupLayer = groupLayer;
+                                lastGroupsByChildLevel[groupLayer.ChildLevel] = groupLayer;
                             }
 
                             currentUserData = layer.UserData;

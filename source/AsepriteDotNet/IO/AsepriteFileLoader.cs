@@ -372,8 +372,23 @@ public static partial class AsepriteFileLoader
                                 case ASE_CEL_TYPE_LINKED:
                                     {
                                         ushort frameIndex = reader.ReadWord();
-                                        AsepriteCel otherCel = frames[frameIndex].Cels[cels.Count];
-                                        cel = new AsepriteLinkedCel(properties, otherCel);
+                                        AsepriteFrame originFrame = frames[frameIndex];
+                                        AsepriteCel? originCel = null;
+                                        for(int i = 0; i < originFrame.Cels.Length; i++)
+                                        {
+                                            if(originFrame.Cels[i].Layer == celLayer)
+                                            {
+                                                originCel = originFrame.Cels[i];
+                                                break;
+                                            }
+                                        }
+
+                                        if(originCel is null)
+                                        {
+                                            throw new InvalidOperationException("Unable to find origin cel for linked cel");
+                                        }
+
+                                        cel = new AsepriteLinkedCel(properties, originCel);
                                     }
                                     break;
 

@@ -16,7 +16,6 @@ internal sealed class AsepriteBinaryReader : IDisposable
 {
     private readonly Stream _stream;
     private readonly bool _leaveOpen;
-    private readonly byte[] _buffer = new byte[16];
     private bool _isDisposed;
 
     /// <summary>
@@ -44,18 +43,18 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     public byte ReadByte()
     {
         ValidateDisposed(_isDisposed);
 
         int b = _stream.ReadByte();
-        if (b == -1)
+        if (b < 0)
         {
             throw new EndOfStreamException("The end of stream was reached");
         }
-        return (byte)b;
+        return unchecked((byte)b);
     }
 
     /// <summary>
@@ -71,7 +70,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// Throw if <paramref name="count"/> is less than zero.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     public byte[] ReadBytes(int count)
     {
@@ -108,17 +107,19 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     public ushort ReadWord()
     {
         ValidateDisposed(_isDisposed);
+
+        Span<byte> buffer = stackalloc byte[sizeof(ushort)];
 #if NET6_0
-        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(ushort)));
+        ReadExactly(_stream, buffer);
 #elif NET8_0_OR_GREATER
-        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(ushort)));
+        _stream.ReadExactly(buffer);
 #endif
-        return BinaryPrimitives.ReadUInt16LittleEndian(_buffer);
+        return BinaryPrimitives.ReadUInt16LittleEndian(buffer);
     }
 
     /// <summary>
@@ -130,17 +131,19 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     public short ReadShort()
     {
         ValidateDisposed(_isDisposed);
+
+        Span<byte> buffer = stackalloc byte[sizeof(short)];
 #if NET6_0
-        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(short)));
+        ReadExactly(_stream, buffer);
 #elif NET8_0_OR_GREATER
-        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(short)));
+        _stream.ReadExactly(buffer);
 #endif
-        return BinaryPrimitives.ReadInt16LittleEndian(_buffer);
+        return BinaryPrimitives.ReadInt16LittleEndian(buffer);
     }
 
     /// <summary>
@@ -152,17 +155,19 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     public uint ReadDword()
     {
         ValidateDisposed(_isDisposed);
+
+        Span<byte> buffer = stackalloc byte[sizeof(uint)];
 #if NET6_0
-        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(uint)));
+        ReadExactly(_stream, buffer);
 #elif NET8_0_OR_GREATER
-        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(uint)));
+        _stream.ReadExactly(buffer);
 #endif
-        return BinaryPrimitives.ReadUInt32LittleEndian(_buffer);
+        return BinaryPrimitives.ReadUInt32LittleEndian(buffer);
     }
 
     /// <summary>
@@ -174,39 +179,67 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     public int ReadLong()
     {
         ValidateDisposed(_isDisposed);
+
+        Span<byte> buffer = stackalloc byte[sizeof(int)];
 #if NET6_0
-        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(int)));
+        ReadExactly(_stream, buffer);
 #elif NET8_0_OR_GREATER
-        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(int)));
+        _stream.ReadExactly(buffer);
 #endif
-        return BinaryPrimitives.ReadInt32LittleEndian(_buffer);
+        return BinaryPrimitives.ReadInt32LittleEndian(buffer);
     }
 
     /// <summary>
-    /// Reads a 4-byte floating point integer from the underlying stream and advances the stream by four bytes.
+    /// Reads a 4-byte fixed-point (16:16) value from the underlying stream and advances the stream by four bytes.
     /// </summary>
-    /// <returns>The 4-byte floating point integer read from the underlying stream.</returns>
+    /// <returns>The 4-byte floating point representation of the value read from the underlying stream.</returns>
     /// <exception cref="ObjectDisposedException">
     /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
     /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     public float ReadFixed()
     {
         ValidateDisposed(_isDisposed);
+
+        Span<byte> buffer = stackalloc byte[sizeof(int)];
 #if NET6_0
-        ReadExactly(_stream, _buffer.AsSpan(0, sizeof(float)));
+        ReadExactly(_stream, buffer);
 #elif NET8_0_OR_GREATER
-        _stream.ReadExactly(_buffer.AsSpan(0, sizeof(float)));
+        _stream.ReadExactly(buffer);
 #endif
-        return BinaryPrimitives.ReadSingleLittleEndian(_buffer);
+        return BinaryPrimitives.ReadInt32LittleEndian(buffer) / 65536.0f;
+    }
+
+    /// <summary>
+    /// Reads a 4-byte floating point value from the underlying stream and advances the stream by four bytes.
+    /// </summary>
+    /// <returns>The 4-byte floating point value read from the underlying stream.</returns>
+    /// <exception cref="ObjectDisposedException">
+    /// Thrown if this instance of the <see cref="AsepriteBinaryReader"/> class, or the underlying stream, has been
+    /// disposed of prior to calling this method.
+    /// </exception>
+    /// <exception cref="EndOfStreamException">
+    /// Thrown if the end of stream was reached when attempting to read.
+    /// </exception>
+    public float ReadFloat()
+    {
+        ValidateDisposed(_isDisposed);
+
+        Span<byte> buffer = stackalloc byte[sizeof(float)];
+#if NET6_0
+        ReadExactly(_stream, buffer);
+#elif NET8_0_OR_GREATER
+        _stream.ReadExactly(buffer);
+#endif
+        return BinaryPrimitives.ReadSingleLittleEndian(buffer);
     }
 
     /// <summary>
@@ -220,7 +253,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     /// Thrown if an exception occurs during the internal call to <see cref="Encoding.GetString(byte[])"/>.  See inner
@@ -250,7 +283,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// disposed of prior to calling this method.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     /// Thrown if an exception occurs during the internal call to <see cref="Encoding.GetString(byte[])"/>.  See inner
@@ -284,7 +317,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// Throw if <paramref name="structSize"/> is less than zero.
     /// </exception>
     /// <exception cref="EndOfStreamException">
-    /// Thrown if the end of stream is was reached when attempting to read.
+    /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     /// Thrown if an exception occurs during the internal call to <see cref="Marshal.PtrToStructure{T}(nint)"/>.  See

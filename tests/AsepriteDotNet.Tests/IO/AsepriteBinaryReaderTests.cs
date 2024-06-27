@@ -42,8 +42,10 @@ namespace AsepriteDotNet.Tests.IO
             ValidateEndOfStreamException(writer => writer.Write(uint.MaxValue), reader => reader.ReadDword());
             ValidateEndOfStreamException(writer => writer.Write(int.MinValue), reader => reader.ReadLong());
             ValidateEndOfStreamException(writer => writer.Write(int.MaxValue), reader => reader.ReadLong());
-            ValidateEndOfStreamException(writer => writer.Write(float.MinValue), reader => reader.ReadFixed());
-            ValidateEndOfStreamException(writer => writer.Write(float.MaxValue), reader => reader.ReadFixed());
+            ValidateEndOfStreamException(writer => writer.Write(int.MinValue), reader => reader.ReadFixed());
+            ValidateEndOfStreamException(writer => writer.Write(int.MaxValue), reader => reader.ReadFixed());
+            ValidateEndOfStreamException(writer => writer.Write(float.MinValue), reader => reader.ReadFloat());
+            ValidateEndOfStreamException(writer => writer.Write(float.MaxValue), reader => reader.ReadFloat());
             ValidateEndOfStreamException(writer => WriteValidAsepriteString(writer, string.Empty), reader => reader.ReadString());
             ValidateEndOfStreamException(writer => WriteValidAsepriteString(writer, "Hello World"), reader => reader.ReadString());
         }
@@ -100,8 +102,17 @@ namespace AsepriteDotNet.Tests.IO
         [Fact]
         public void AsepriteBinaryReader_ReadFixed()
         {
-            ValidateRead(writer => writer.Write(float.MinValue), reader => reader.ReadFixed(), float.MinValue);
-            ValidateRead(writer => writer.Write(float.MaxValue), reader => reader.ReadFixed(), float.MaxValue);
+            const float minValue = int.MinValue / 65536.0f;
+            const float maxValue = int.MaxValue / 65536.0f;
+            ValidateRead(writer => writer.Write(int.MinValue), reader => reader.ReadFixed(), minValue);
+            ValidateRead(writer => writer.Write(int.MaxValue), reader => reader.ReadFixed(), maxValue);
+        }
+
+        [Fact]
+        public void AsepriteBinaryReader_ReadFloat()
+        {
+            ValidateRead(writer => writer.Write(float.MinValue), reader => reader.ReadFloat(), float.MinValue);
+            ValidateRead(writer => writer.Write(float.MaxValue), reader => reader.ReadFloat(), float.MaxValue);
         }
 
         [Fact]

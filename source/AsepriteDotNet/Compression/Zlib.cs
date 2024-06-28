@@ -14,14 +14,10 @@ internal static class Zlib
     public static byte[] Deflate(byte[] buffer)
     {
         using MemoryStream compressedStream = new(buffer);
-
-        //  First 2 bytes are the zlib header information, skip past them.
-        _ = compressedStream.ReadByte();
-        _ = compressedStream.ReadByte();
-
         using MemoryStream decompressedStream = new();
-        using DeflateStream deflateStream = new(compressedStream, CompressionMode.Decompress);
-        deflateStream.CopyTo(decompressedStream);
+        using ZLibStream zlibStream = new(compressedStream, CompressionMode.Decompress);
+        zlibStream.CopyTo(decompressedStream);
+
         return decompressedStream.ToArray();
     }
 }

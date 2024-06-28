@@ -92,7 +92,7 @@ public class PngWriter
     //  Bit Depth:
     //      1-byte integer that indicates the number of bits per sample. Valid
     //      values depend on the color type used
-    //      
+    //
     //       -----------------------------------------------
     //      | Color Type            |   Allowed bit depths  |
     //       -----------------------------------------------
@@ -128,8 +128,8 @@ public class PngWriter
     //
     //  Interlace Method:
     //      1-byte integer that indicates the transmission order of the image
-    //      data.  
-    //  
+    //      data.
+    //
     //       ---------------------------------------
     //      | Interlace Method          |   Value   |
     //       ---------------------------------------
@@ -159,7 +159,7 @@ public class PngWriter
     //  the compression stream.
     //
     //  The compression stream is a deflate stream including the Adler-32
-    //  trailer.  
+    //  trailer.
     //
     //  Each scanline of the image begins with a single byte that defines the
     //  filter used on that scanline.
@@ -215,13 +215,9 @@ public class PngWriter
 
         using MemoryStream ms = new();
 
-        //  Zlib deflate header for Default Compression
-        ms.WriteByte(0x78);
-        ms.WriteByte(0x9C);
-
         Adler32 adler = new();
 
-        using (DeflateStream deflate = new DeflateStream(ms, CompressionMode.Compress, leaveOpen: true))
+        using (ZLibStream deflate = new ZLibStream(ms, CompressionMode.Compress, leaveOpen: true))
         {
             ReadOnlySpan<byte> filter = stackalloc byte[1] { 0 };   //  Filter mode 0
             for (int i = 0; i < data.Length; i += width)
@@ -278,7 +274,7 @@ public class PngWriter
     //
     //  If there is no data (Length = 0), then the data chunk is not written
     //
-    //  Length: 
+    //  Length:
     //      A 4-byte unsigned integer giving the number of bytes in the chunk's
     //      data field. Only the data field. Do not include the length field
     //      itself, the chunk type field, or the crc field
@@ -329,12 +325,12 @@ public class PngWriter
 
 
     //  Per https://www.w3.org/TR/png-3/#7Integers-and-byte-order
-    //      
-    //      "All integers that require more than one byte shall be in network 
+    //
+    //      "All integers that require more than one byte shall be in network
     //      byte order"
     //
-    //  Basically, we have to ensure that all integer type values are in 
-    //  BigEndian.  
+    //  Basically, we have to ensure that all integer type values are in
+    //  BigEndian.
     //
     //  This method will check for endianess and convert to BigEndian if needed.
     private static int ToBigEndian(int value)

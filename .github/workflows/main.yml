@@ -34,33 +34,6 @@ jobs:
           ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
           ACTIONS_RUNTIME_URL: "${{ env.ACTIONS_RUNTIME_URL }}"
 
-  deploy-to-github:
-    name: Deploy To GitHub
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    permissions:
-      packages: write
-      contents: write
-    steps:
-    - name: Expose GitHub Runtime
-      uses: crazy-max/ghaction-github-runtime@v3  
-      
-    - name: Clone Repository
-      uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
-
-    - name: Push GitHub NuGets
-      run: dotnet run --project build/AsepriteDotNet.Build.csproj -- --target=DeployNuGetsToGitHub
-      env:
-        ACTIONS_RUNTIME_TOKEN: ${{ env.ACTIONS_RUNTIME_TOKEN }}
-        ACTIONS_RUNTIME_URL: "${{ env.ACTIONS_RUNTIME_URL }}"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   deploy-to-nuget:
     name: Deploy To NuGet
     needs: [ build ]

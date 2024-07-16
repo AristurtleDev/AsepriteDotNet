@@ -34,6 +34,8 @@ public sealed class AsepriteSliceKey
 
     internal AsepriteSliceKey(AsepriteSliceKeyProperties keyProperties, AsepriteNinePatchProperties? ninePatchProperties, AsepritePivotProperties? pivotProperties)
     {
+        FrameIndex = (int)keyProperties.FrameNumber;
+
         Bounds = new Rectangle((int)keyProperties.X, (int)keyProperties.Y, (int)keyProperties.Width, (int)keyProperties.Height);
 
         //  If this is not a nine patch, make the center bounds equal to the key bounds.

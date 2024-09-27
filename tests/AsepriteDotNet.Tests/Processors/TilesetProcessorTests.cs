@@ -50,11 +50,11 @@ public sealed class TilesetProcessorTests : IClassFixture<TilesetProcessorTestFi
 
         Assert.Equal(aseTileset.ID, tileset.ID);
         Assert.Equal(aseTileset.Name, tileset.Name);
-        Assert.Equal(aseTileset.Size.Width, tileset.TileSize.Width);
-        Assert.Equal(aseTileset.Size.Height, tileset.TileSize.Height);
+        Assert.Equal(aseTileset.TileSize.Width, tileset.TileSize.Width);
+        Assert.Equal(aseTileset.TileSize.Height, tileset.TileSize.Height);
         Assert.Equal(aseTileset.Name, tileset.Texture.Name);
-        Assert.Equal(aseTileset.Size.Width, tileset.Texture.Size.Width);
-        Assert.Equal(aseTileset.Size.Height * aseTileset.TileCount, tileset.Texture.Size.Height);
+        Assert.Equal(aseTileset.TileSize.Width, tileset.Texture.Size.Width);
+        Assert.Equal(aseTileset.TileSize.Height * aseTileset.TileCount, tileset.Texture.Size.Height);
         Assert.Equal(aseTileset.Pixels.ToArray(), tileset.Texture.Pixels.ToArray());
     }
 
@@ -67,11 +67,11 @@ public sealed class TilesetProcessorTests : IClassFixture<TilesetProcessorTestFi
 
         Assert.Equal(aseTileset.ID, tileset.ID);
         Assert.Equal(aseTileset.Name, tileset.Name);
-        Assert.Equal(aseTileset.Size.Width, tileset.TileSize.Width);
-        Assert.Equal(aseTileset.Size.Height, tileset.TileSize.Height);
+        Assert.Equal(aseTileset.TileSize.Width, tileset.TileSize.Width);
+        Assert.Equal(aseTileset.TileSize.Height, tileset.TileSize.Height);
         Assert.Equal(aseTileset.Name, tileset.Texture.Name);
-        Assert.Equal(aseTileset.Size.Width, tileset.Texture.Size.Width);
-        Assert.Equal(aseTileset.Size.Height * aseTileset.TileCount, tileset.Texture.Size.Height);
+        Assert.Equal(aseTileset.TileSize.Width, tileset.Texture.Size.Width);
+        Assert.Equal(aseTileset.TileSize.Height * aseTileset.TileCount, tileset.Texture.Size.Height);
         Assert.Equal(aseTileset.Pixels.ToArray(), tileset.Texture.Pixels.ToArray());
     }
 

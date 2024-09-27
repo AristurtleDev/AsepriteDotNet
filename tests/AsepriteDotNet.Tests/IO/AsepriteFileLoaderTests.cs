@@ -12,7 +12,7 @@ namespace AsepriteDotNet.Tests.IO
 {
     public class AsepriteFileLoaderTests
     {
-        private string GetPath(string name)
+        private static string GetPath(string name)
         {
             return Path.Combine(Environment.CurrentDirectory, "Files", name);
         }
@@ -269,8 +269,8 @@ namespace AsepriteDotNet.Tests.IO
 
             Assert.Equal(0, tileset.ID);
             Assert.Equal(11, tileset.TileCount);
-            Assert.Equal(8, tileset.Size.Width);
-            Assert.Equal(8, tileset.Size.Height);
+            Assert.Equal(8, tileset.TileSize.Width);
+            Assert.Equal(8, tileset.TileSize.Height);
 
             Rgba32[] expectedTilesetPixels = new Rgba32[]
             {

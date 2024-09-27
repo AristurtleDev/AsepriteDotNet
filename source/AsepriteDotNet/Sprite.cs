@@ -12,6 +12,11 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class Sprite : IEquatable<Sprite>
 {
+    /// <summary>
+    /// An empty sprite with no name, an empty texture, and an empty array of slices
+    /// </summary>
+    public static readonly Sprite Empty = new Sprite(string.Empty, Texture.Empty, Array.Empty<Slice>());
+
     private readonly Slice[] _slices;
 
     /// <summary>

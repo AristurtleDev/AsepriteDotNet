@@ -89,7 +89,7 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
     [Fact]
     public void Process_Atlas_And_Texture_Name_Same_As_File_Name()
     {
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 0, 0, 0);
         Assert.Equal(_fixture.Name, atlas.Name);
         Assert.Equal(_fixture.Name, atlas.Texture.Name);
     }
@@ -97,14 +97,14 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
     [Fact]
     public void Process_One_Region_Per_Frame()
     {
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 0, 0, 0);
         Assert.Equal(_fixture.AsepriteFile.Frames.Length, atlas.Regions.Length);
     }
 
     [Fact]
     public void ProcessRegion_Names_Are_Frame_Names()
     {
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 0, 0, 0);
 
         Assert.Equal(_fixture.AsepriteFile.Frames[0].Name, atlas.Regions[0].Name);
         Assert.Equal(_fixture.AsepriteFile.Frames[1].Name, atlas.Regions[1].Name);
@@ -115,8 +115,7 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
     [Fact]
     public void Process_Duplicate_Frame_Is_Merged()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { MergeDuplicateFrames = true };
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 0, 0, 0);
 
         Rgba32[] expected = new Rgba32[]
         {
@@ -138,8 +137,7 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
     [Fact]
     public void Process_Duplicate_Frame_Not_Merged()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { MergeDuplicateFrames = false };
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, false, 0, 0, 0);
 
         Rgba32[] expected = new Rgba32[]
         {
@@ -161,8 +159,7 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
     [Fact]
     public void Process_Border_Padding_Added_Correctly()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { BorderPadding = 1 };
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 1, 0, 0);
 
         Rgba32[] expected = new Rgba32[]
         {
@@ -186,8 +183,7 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
     [Fact]
     public void Process_Spacing_Added_Correctly()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { Spacing = 1 };
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 0, 1, 0);
 
         Rgba32[] expected = new Rgba32[]
         {
@@ -210,8 +206,7 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
     [Fact]
     public void Process_InnerPadding_Added_Correctly()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { InnerPadding = 1 };
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 0, 0, 1);
 
         Rgba32[] expected = new Rgba32[]
         {
@@ -237,8 +232,7 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
     [Fact]
     public void Process_Combined_Border_Padding_Spacing_Inner_Padding_Added_Correctly()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { BorderPadding = 1, Spacing = 1, InnerPadding = 1 };
-        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
+        TextureAtlas atlas = TextureAtlasProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 1, 1, 1);
 
         Rgba32[] expected = new Rgba32[]
         {
@@ -262,5 +256,13 @@ public sealed class TextureAtlasProcessorTests : IClassFixture<TextureAtlasProce
         Assert.Equal(new Rectangle(7, 2, 2, 2), atlas.Regions[1].Bounds);
         Assert.Equal(new Rectangle(2, 7, 2, 2), atlas.Regions[2].Bounds);
         Assert.Equal(new Rectangle(2, 2, 2, 2), atlas.Regions[3].Bounds);
+    }
+
+    [Fact]
+    public void Process_Returns_Empty_TextureAtlas_When_No_Layers()
+    {
+        TextureAtlas expected = TextureAtlas.Empty;
+        TextureAtlas actual = TextureAtlasProcessor.Process(_fixture.AsepriteFile, Array.Empty<string>());
+        Assert.Equal(expected, actual);
     }
 }

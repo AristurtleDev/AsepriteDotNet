@@ -23,14 +23,16 @@ public class ZlibTests
         Assert.Equal(expected, decompressed);
     }
 
-    private byte[] GetRandomBytes(int size)
+    private static byte[] GetRandomBytes(int size)
     {
         byte[] data = new byte[size];
+        #pragma warning disable CA5394
         Random.Shared.NextBytes(data);
+        #pragma warning restore CA5394
         return data;
     }
 
-    private byte[] CompressBytes(byte[] data)
+    private static byte[] CompressBytes(byte[] data)
     {
         using MemoryStream ms = new();
         using ZLibStream zOut = new(ms, CompressionMode.Compress);

@@ -12,6 +12,11 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class Tilemap : IEquatable<Tilemap>
 {
+    /// <summary>
+    /// An empty tilemap with no name, an empty collection of tilesets, and an empty collection of tilemap layers.
+    /// </summary>
+    public static readonly Tilemap Empty = new Tilemap(string.Empty, Array.Empty<Tileset>(), Array.Empty<TilemapLayer>());
+
     private readonly Tileset[] _tilesets;
     private readonly TilemapLayer[] _layers;
 

@@ -152,7 +152,7 @@ public sealed class AsepriteFile
     /// </summary>
     /// <param name="name">The name of <see cref="AsepriteLayer"/>.</param>
     /// <returns>The <see cref="AsepriteLayer"/> with the specified name.</returns>
-    /// <exception cref="ArgumentException">
+    /// <exception cref="ArgumentNullException">
     /// If <paramref name="name"/> is <see langword="null"/> or an empty string.
     /// </exception>
     /// <exception cref="InvalidOperationException">
@@ -163,10 +163,10 @@ public sealed class AsepriteFile
 #if NET6_0
         if(string.IsNullOrEmpty(name))
         {
-            throw new ArgumentException(nameof(name));
+            throw new ArgumentNullException(nameof(name), $"{nameof(name)} cannot be null or an empty string.");
         }
 #elif NET8_0_OR_GREATER
-        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNullOrEmpty(name);
 #endif
 
         return _layers.AsParallel()
@@ -231,7 +231,7 @@ public sealed class AsepriteFile
     /// </summary>
     /// <param name="name">The name of <see cref="AsepriteTag"/>.</param>
     /// <returns>The <see cref="AsepriteTag"/> with the specified name.</returns>
-    /// <exception cref="ArgumentException">
+    /// <exception cref="ArgumentNullException">
     /// If <paramref name="name"/> is <see langword="null"/> or an empty string.
     /// </exception>
     /// <exception cref="InvalidOperationException">
@@ -242,10 +242,10 @@ public sealed class AsepriteFile
 #if NET6_0
         if(string.IsNullOrEmpty(name))
         {
-            throw new ArgumentException(nameof(name));
+            throw new ArgumentNullException(nameof(name), $"{nameof(name)} cannot be null or an empty string");
         }
 #elif NET8_0_OR_GREATER
-        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNullOrEmpty(name);
 #endif
 
         return _tags.AsParallel()
@@ -310,7 +310,7 @@ public sealed class AsepriteFile
     /// </summary>
     /// <param name="name">The name of <see cref="AsepriteSlice"/>.</param>
     /// <returns>The <see cref="AsepriteSlice"/> with the specified name.</returns>
-    /// <exception cref="ArgumentException">
+    /// <exception cref="ArgumentNullException">
     /// If <paramref name="name"/> is <see langword="null"/> or an empty string.
     /// </exception>
     /// <exception cref="InvalidOperationException">
@@ -321,10 +321,10 @@ public sealed class AsepriteFile
 #if NET6_0
         if(string.IsNullOrEmpty(name))
         {
-            throw new ArgumentException(nameof(name));
+            throw new ArgumentNullException(nameof(name), $"{nameof(name)} cannot be null or an empty string");
         }
 #elif NET8_0_OR_GREATER
-        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNullOrEmpty(name);
 #endif
 
         return _slices.AsParallel()
@@ -389,7 +389,7 @@ public sealed class AsepriteFile
     /// </summary>
     /// <param name="name">The name of <see cref="AsepriteTileset"/>.</param>
     /// <returns>The <see cref="AsepriteTileset"/> with the specified name.</returns>
-    /// <exception cref="ArgumentException">
+    /// <exception cref="ArgumentNullException">
     /// If <paramref name="name"/> is <see langword="null"/> or an empty string.
     /// </exception>
     /// <exception cref="InvalidOperationException">
@@ -400,10 +400,10 @@ public sealed class AsepriteFile
 #if NET6_0
         if(string.IsNullOrEmpty(name))
         {
-            throw new ArgumentException(nameof(name));
+            throw new ArgumentNullException(nameof(name), $"{nameof(name)} cannot be null or an empty string");
         }
 #elif NET8_0_OR_GREATER
-        ArgumentException.ThrowIfNullOrEmpty(name);
+        ArgumentNullException.ThrowIfNullOrEmpty(name);
 #endif
 
         return _tilesets.AsParallel()

@@ -17,6 +17,52 @@ public static class AsepriteFrameExtensions
     /// Flattens the a <see cref="AsepriteFrame"/> into an array of <see cref="Rgba32"/> values.
     /// </summary>
     /// <param name="frame">The <see cref="AsepriteFrame"/> to flatten.</param>
+    /// <param name="layers">The layers to include (case sensitive)</param>
+    /// <returns>
+    /// A array of <see cref="Rgba32"/> value representing the flattened frame.  If <paramref name="layers"/> is
+    /// <see langword="null"/> or contains zero elements, then an empty array is returned.
+    /// </returns>
+    /// <exception cref="ArgumentNullException"><paramref name="frame"/> is <see langword="null"/>.</exception>
+    public static Rgba32[] FlattenFrame(this AsepriteFrame frame, ICollection<string> layers)
+    {
+        ArgumentNullException.ThrowIfNull(frame);
+        if (layers is null || layers.Count == 0)
+        {
+            return Array.Empty<Rgba32>();
+        }
+
+        Rgba32[] result = new Rgba32[frame.Size.Width * frame.Size.Height];
+        HashSet<string> layerNames = new HashSet<string>(layers);
+        ReadOnlySpan<AsepriteCel> cels = frame.Cels;
+
+        for (int celNum = 0; celNum < cels.Length; celNum++)
+        {
+            AsepriteCel cel = cels[celNum];
+
+            if (!layerNames.Contains(cel.Layer.Name)) { continue; }
+
+            if (cel is AsepriteLinkedCel linkedCel)
+            {
+                cel = linkedCel.Cel;
+            }
+
+            if (cel is AsepriteImageCel imageCel)
+            {
+                BlendCel(result, imageCel.Pixels, imageCel.Layer.BlendMode, new Rectangle(imageCel.Location, imageCel.Size), frame.Size.Width, imageCel.Opacity, imageCel.Layer.Opacity);
+            }
+            else if (cel is AsepriteTilemapCel tilemapCel)
+            {
+                BlendTilemapCel(result, tilemapCel, frame.Size.Width);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Flattens the a <see cref="AsepriteFrame"/> into an array of <see cref="Rgba32"/> values.
+    /// </summary>
+    /// <param name="frame">The <see cref="AsepriteFrame"/> to flatten.</param>
     /// <param name="onlyVisibleLayers">Indicates whether only cels on visible layers should be included.</param>
     /// <param name="includeBackgroundLayer">Indicates whether cels on the background layer should be included.</param>
     /// <param name="includeTilemapCels">Indicates whether tilemap cels should be included.</param>
@@ -26,12 +72,15 @@ public static class AsepriteFrameExtensions
     {
         ArgumentNullException.ThrowIfNull(frame);
 
+        List<AsepriteLayer> layers = new List<AsepriteLayer>();
+
         Rgba32[] result = new Rgba32[frame.Size.Width * frame.Size.Height];
         ReadOnlySpan<AsepriteCel> cels = frame.Cels;
 
         for (int celNum = 0; celNum < cels.Length; celNum++)
         {
             AsepriteCel cel = cels[celNum];
+
             if (cel is AsepriteLinkedCel linkedCel)
             {
                 cel = linkedCel.Cel;
@@ -64,9 +113,9 @@ public static class AsepriteFrameExtensions
         //
         //  So we need to determine the starting and ending xy-coordinate locations within the pixels of the
         //  cel (backdrop) that are within the frame bounds so we only process those.
-        int startX = Math.Max(0, -bounds.X); 
-        int startY = Math.Max(0, -bounds.Y); 
-        int endX = Math.Min(bounds.Width, frameWidth - bounds.X); 
+        int startX = Math.Max(0, -bounds.X);
+        int startY = Math.Max(0, -bounds.Y);
+        int endX = Math.Min(bounds.Width, frameWidth - bounds.X);
         int endY = Math.Min(bounds.Height, backdrop.Length / frameWidth - bounds.Y);
 
         for (int y = startY; y < endY; y++)
@@ -90,8 +139,8 @@ public static class AsepriteFrameExtensions
 
         AsepriteTileset tileset = aseTilemapLayer.Tileset;
         Rectangle bounds;
-        bounds.Width = cel.Size.Width * tileset.Size.Width;
-        bounds.Height = cel.Size.Height * tileset.Size.Height;
+        bounds.Width = cel.Size.Width * tileset.TileSize.Width;
+        bounds.Height = cel.Size.Height * tileset.TileSize.Height;
         bounds.X = cel.Location.X;
         bounds.Y = cel.Location.Y;
 
@@ -106,8 +155,8 @@ public static class AsepriteFrameExtensions
 
             for (int j = 0; j < tilePixels.Length; j++)
             {
-                int px = (j % tileset.Size.Width) + (column * tileset.Size.Height);
-                int py = (j / tileset.Size.Width) + (row * tileset.Size.Height);
+                int px = (j % tileset.TileSize.Width) + (column * tileset.TileSize.Height);
+                int py = (j / tileset.TileSize.Width) + (row * tileset.TileSize.Height);
                 int index = py * bounds.Width + px;
                 pixels[index] = tilePixels[j];
             }

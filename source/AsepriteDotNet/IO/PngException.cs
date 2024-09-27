@@ -14,6 +14,8 @@ namespace AsepriteDotNet.IO;
 /// </remarks>
 public class PngException : Exception
 {
+    internal PngException():base() {}
+    internal PngException(string message):base(message) {}
     internal PngException(string message, Exception innerException)
         : base(message, innerException) { }
 }

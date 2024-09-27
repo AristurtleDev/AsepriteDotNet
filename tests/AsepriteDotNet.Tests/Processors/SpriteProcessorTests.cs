@@ -23,7 +23,7 @@ public sealed class SpriteProcessorTestsFixture
         palette.Resize(2);
         palette[0] = Black;
         palette[1] = White;
-        
+
 
         AsepriteTileset[] tilesets = Array.Empty<AsepriteTileset>();
 
@@ -61,7 +61,7 @@ public sealed class SpriteProcessorTestsFixture
         AsepriteFile = new AsepriteFile(Name,
                                         palette,
                                         2,
-                                        3,
+                                        2,
                                         AsepriteColorDepth.RGBA,
                                         new List<AsepriteFrame>(frames),
                                         new List<AsepriteLayer>(layers),
@@ -85,7 +85,7 @@ public sealed class SpriteProcessorTests : IClassFixture<SpriteProcessorTestsFix
     [InlineData(1)]
     public void Process_Sprite_And_Texture_Name_Include_Correct_Index(int frame)
     {
-        Sprite sprite = SpriteProcessor.Process(_fixture.AsepriteFile, frame);
+        Sprite sprite = SpriteProcessor.Process(_fixture.AsepriteFile, frame, true, false, false);
 
         string name = $"{_fixture.Name} {frame}";
 
@@ -98,14 +98,14 @@ public sealed class SpriteProcessorTests : IClassFixture<SpriteProcessorTestsFix
     [InlineData(2)]
     public void Process_Throws_Exception_When_Frame_Index_Out_Of_Range(int frame)
     {
-        Assert.Throws<IndexOutOfRangeException>(() => SpriteProcessor.Process(_fixture.AsepriteFile, frame));
+        Assert.Throws<IndexOutOfRangeException>(() => SpriteProcessor.Process(_fixture.AsepriteFile, frame, true, false, false));
     }
 
     [Fact]
     public void Process_Processes_Given_Frame()
     {
-        Sprite frame0Sprite = SpriteProcessor.Process(_fixture.AsepriteFile, 0);
-        Sprite frame1Sprite = SpriteProcessor.Process(_fixture.AsepriteFile, 1);
+        Sprite frame0Sprite = SpriteProcessor.Process(_fixture.AsepriteFile, 0, true, false, false);
+        Sprite frame1Sprite = SpriteProcessor.Process(_fixture.AsepriteFile, 1, true, false, false);
 
         Rgba32[] frame0Expected = new Rgba32[] { _fixture.Black, _fixture.Black, _fixture.Black, _fixture.Black };
         Rgba32[] frame1Expected = new Rgba32[] { _fixture.White, _fixture.White, _fixture.White, _fixture.White };
@@ -115,5 +115,28 @@ public sealed class SpriteProcessorTests : IClassFixture<SpriteProcessorTestsFix
 
         Assert.Equal(frame0Expected, frame0Actual);
         Assert.Equal(frame1Expected, frame1Actual);
+    }
+
+    [Fact]
+    public void Process_Returns_Expected_When_Given_Existing_Layer_Name()
+    {
+        string name = _fixture.AsepriteFile.Name + " 0";
+        Size size = new Size(_fixture.AsepriteFile.CanvasWidth, _fixture.AsepriteFile.CanvasHeight);
+        Rgba32[] pixels = new Rgba32[] { _fixture.Black, _fixture.Black, _fixture.Black, _fixture.Black };
+        Texture texture = new Texture(name, size, pixels);
+        Slice[] slices = Array.Empty<Slice>();
+
+        Sprite expected = new Sprite(name, texture, slices);
+        Sprite actual = SpriteProcessor.Process(_fixture.AsepriteFile, 0, new List<string>() {_fixture.AsepriteFile.Layers[0].Name});
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Process_Returns_Empty_Sprite_When_No_Layers()
+    {
+        Sprite expected = Sprite.Empty;
+        Sprite actual = SpriteProcessor.Process(_fixture.AsepriteFile, 0, Array.Empty<string>());
+        Assert.Equal(expected, actual);
     }
 }

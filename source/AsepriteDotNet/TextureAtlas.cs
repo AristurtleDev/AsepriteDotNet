@@ -12,6 +12,11 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class TextureAtlas : IEquatable<TextureAtlas>
 {
+    /// <summary>
+    /// An empty texture atlas with no name, an empty texture, and an empty collection of regions.
+    /// </summary>
+    public static readonly TextureAtlas Empty = new TextureAtlas(string.Empty, Texture.Empty, Array.Empty<TextureRegion>());
+
     private readonly TextureRegion[] _regions;
 
     /// <summary>

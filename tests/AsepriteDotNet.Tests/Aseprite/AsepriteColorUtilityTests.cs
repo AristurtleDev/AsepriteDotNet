@@ -17,9 +17,6 @@ namespace AsepriteDotNet.Tests.Aseprite
         private static readonly Rgba32 _green = new Rgba32(106, 190, 48, 255);
         private static readonly Rgba32 _orange = new Rgba32(223, 113, 38, 255);
         private static readonly Rgba32 _transparent = new Rgba32(0, 0, 0, 0);
-        private static readonly Rgba32 _purple = new Rgba32(63, 63, 116, 255);
-        private static readonly Rgba32 _pink = new Rgba32(215, 123, 186, 255);
-        private static readonly Rgba32 _red = new Rgba32(172, 50, 50, 255);
 
         [Theory]
         [InlineData(AsepriteBlendMode.Normal)]

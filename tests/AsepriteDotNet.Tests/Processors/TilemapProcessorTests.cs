@@ -77,8 +77,7 @@ public sealed class TilemapProcessorTests : IClassFixture<TilemapProcessorTestFi
     [Fact]
     public void Process_OnlyVisibleLayers_True_Processes_Only_Visible_Layers()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { OnlyVisibleLayers = true };
-        Tilemap tilemap = TilemapProcessor.Process(_fixture.AsepriteFile, 0, options);
+        Tilemap tilemap = TilemapProcessor.Process(_fixture.AsepriteFile, 0, true);
 
         Assert.Equal(_fixture.AsepriteFile.Name, tilemap.Name);
 
@@ -95,8 +94,7 @@ public sealed class TilemapProcessorTests : IClassFixture<TilemapProcessorTestFi
     [Fact]
     public void Process_OnlyVisibleLayers_False_Processes_All_Layers()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { OnlyVisibleLayers = false };
-        Tilemap tilemap = TilemapProcessor.Process(_fixture.AsepriteFile, 0, options);
+        Tilemap tilemap = TilemapProcessor.Process(_fixture.AsepriteFile, 0, false);
 
         Assert.Equal(_fixture.AsepriteFile.Name, tilemap.Name);
 
@@ -120,9 +118,9 @@ public sealed class TilemapProcessorTests : IClassFixture<TilemapProcessorTestFi
     [Fact]
     public void Process_Index_Out_Of_Range_Throws_Exception()
     {
-        Assert.Throws<IndexOutOfRangeException>(() => TilemapProcessor.Process(_fixture.AsepriteFile, -1));
-        Assert.Throws<IndexOutOfRangeException>(() => TilemapProcessor.Process(_fixture.AsepriteFile, _fixture.AsepriteFile.Frames.Length));
-        Assert.Throws<IndexOutOfRangeException>(() => TilemapProcessor.Process(_fixture.AsepriteFile, _fixture.AsepriteFile.Frames.Length + 1));
+        Assert.Throws<IndexOutOfRangeException>(() => TilemapProcessor.Process(_fixture.AsepriteFile, -1, true));
+        Assert.Throws<IndexOutOfRangeException>(() => TilemapProcessor.Process(_fixture.AsepriteFile, _fixture.AsepriteFile.Frames.Length, true));
+        Assert.Throws<IndexOutOfRangeException>(() => TilemapProcessor.Process(_fixture.AsepriteFile, _fixture.AsepriteFile.Frames.Length + 1, true));
     }
 
     [Fact]
@@ -173,10 +171,10 @@ public sealed class TilemapProcessorTests : IClassFixture<TilemapProcessorTestFi
                                                 _fixture.AsepriteFile.UserData,
                                                 []);
 
-        Assert.Throws<InvalidOperationException>(() => TilemapProcessor.Process(aseFile, 0));
+        Assert.Throws<InvalidOperationException>(() => TilemapProcessor.Process(aseFile, 0, true));
     }
 
-    private void AssertLayer(TilemapLayer layer, string name, int tilesetID, int columns, int rows, Point offset, ReadOnlySpan<AsepriteTile> tiles)
+    private static void AssertLayer(TilemapLayer layer, string name, int tilesetID, int columns, int rows, Point offset, ReadOnlySpan<AsepriteTile> tiles)
     {
         Assert.Equal(name, layer.Name);
         Assert.Equal(tilesetID, layer.TilesetID);
@@ -191,5 +189,13 @@ public sealed class TilemapProcessorTests : IClassFixture<TilemapProcessorTestFi
             Assert.Equal(tiles[i].FlipVertically, layer.Tiles[i].FlipVertically);
             Assert.Equal(tiles[i].FlipDiagonally, layer.Tiles[i].FlipDiagonally);
         }
+    }
+
+    [Fact]
+    public void Process_Returns_Empty_TilemapLayer_When_No_Layers()
+    {
+        Tilemap expected = Tilemap.Empty;
+        Tilemap actual = TilemapProcessor.Process(_fixture.AsepriteFile, 0, Array.Empty<string>());
+        Assert.Equal(expected, actual);
     }
 }

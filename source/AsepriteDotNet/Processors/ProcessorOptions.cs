@@ -14,6 +14,7 @@ namespace AsepriteDotNet.Processors;
 /// <param name="BorderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
 /// <param name="Spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
 /// <param name="InnerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+[Obsolete("ProcessorOptions will be removed in a future release.  Users should switch to one of the Process method overloads that does not require an instance of these options", false)]
 public record ProcessorOptions(bool OnlyVisibleLayers,
                                            bool IncludeBackgroundLayer,
                                            bool IncludeTilemapLayers,
@@ -59,6 +60,7 @@ public record ProcessorOptions(bool OnlyVisibleLayers,
     ///     </item>
     /// </list>
     /// </summary>
+    [Obsolete("ProcessorOptions will be removed in a future release.  Users should switch to one of the Process method overloads that does not require an instance of these options", false)]
     public static readonly ProcessorOptions Default = new ProcessorOptions(true, false, true, true, 0, 0, 0);
 }
 

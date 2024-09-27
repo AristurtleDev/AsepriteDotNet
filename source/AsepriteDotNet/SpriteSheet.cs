@@ -12,6 +12,11 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class SpriteSheet : IEquatable<SpriteSheet>
 {
+    /// <summary>
+    /// An empty sprite sheet with no name, an empty texture atlas, and an empty collection of animation tags.
+    /// </summary>
+    public static readonly SpriteSheet Empty = new SpriteSheet(string.Empty, TextureAtlas.Empty, Array.Empty<AnimationTag>());
+
     private readonly AnimationTag[] _tags;
     /// <summary>
     /// Gets the name of this sprite sheet.

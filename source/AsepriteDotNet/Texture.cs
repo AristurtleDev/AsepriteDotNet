@@ -13,6 +13,11 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class Texture : IEquatable<Texture>
 {
+    /// <summary>
+    /// An empty texture, with the no name, 0 width, 0, height, and an empty array of pixels
+    /// </summary>
+    public static readonly Texture Empty = new Texture(string.Empty, Size.Empty, Array.Empty<Rgba32>());
+
     private readonly Rgba32[] _pixels;
 
     /// <summary>

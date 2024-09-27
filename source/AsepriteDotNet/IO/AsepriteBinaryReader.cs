@@ -320,7 +320,7 @@ internal sealed class AsepriteBinaryReader : IDisposable
     /// Thrown if the end of stream was reached when attempting to read.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if an exception occurs during the internal call to <see cref="Marshal.PtrToStructure{T}(nint)"/>.  See
+    /// Thrown if an exception occurs while attempting to map the type ot the <typeparamref name="T"/> struct. See the
     /// inner exception for details.
     /// </exception>
     public T ReadUnsafe<T>(int structSize) where T : struct

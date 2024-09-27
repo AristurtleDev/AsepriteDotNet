@@ -19,6 +19,10 @@ public static class SpriteProcessor
     /// </summary>
     /// <param name="file">The <see cref="AsepriteFile"/> to process the frame from.</param>
     /// <param name="frameIndex">The zero-based index of the frame to process.</param>
+    /// <param name="options">
+    /// Optional options to use when processing.  If <see langword="null"/>, then
+    /// <see cref="ProcessorOptions.Default"/> will be used.
+    /// </param>
     /// <returns>The <see cref="Sprite"/> created by this method.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">

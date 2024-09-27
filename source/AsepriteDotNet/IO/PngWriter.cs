@@ -15,7 +15,7 @@ namespace AsepriteDotNet.IO;
 /// <summary>
 /// Write <see cref="Rgba32"/> color data to a png file.
 /// </summary>
-public class PngWriter
+public static class PngWriter
 {
     //  Common IDAT chunk sizes are between 8 and 32 Kib.  Opting to use
     //  8Kib for this project.
@@ -30,6 +30,8 @@ public class PngWriter
     /// <param name="data">The color data of the image.</param>
     public static void SaveTo(string path, int width, int height, Rgba32[] data)
     {
+        ArgumentNullException.ThrowIfNull(data);
+
         try
         {
             using FileStream fs = File.OpenWrite(path);

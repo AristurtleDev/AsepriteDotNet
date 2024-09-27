@@ -14,7 +14,7 @@ internal class CRC
     /// </summary>
     public const uint DEFAULT = 0xFFFFFFFF;
 
-    private static readonly uint[] _crcTable;
+    private static readonly uint[] _crcTable = new uint[256];
 
     private uint _value;
 
@@ -48,8 +48,6 @@ internal class CRC
 
         //  Make the table for fast crc
         //  https://www.w3.org/TR/2003/REC-PNG-20031110/#D-CRCAppendix
-        _crcTable = new uint[256];
-
         uint c;
         for (uint n = 0; n < 256; n++)
         {

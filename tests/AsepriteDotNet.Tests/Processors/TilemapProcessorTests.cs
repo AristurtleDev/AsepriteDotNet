@@ -174,7 +174,7 @@ public sealed class TilemapProcessorTests : IClassFixture<TilemapProcessorTestFi
         Assert.Throws<InvalidOperationException>(() => TilemapProcessor.Process(aseFile, 0, true));
     }
 
-    private void AssertLayer(TilemapLayer layer, string name, int tilesetID, int columns, int rows, Point offset, ReadOnlySpan<AsepriteTile> tiles)
+    private static void AssertLayer(TilemapLayer layer, string name, int tilesetID, int columns, int rows, Point offset, ReadOnlySpan<AsepriteTile> tiles)
     {
         Assert.Equal(name, layer.Name);
         Assert.Equal(tilesetID, layer.TilesetID);

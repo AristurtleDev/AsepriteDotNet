@@ -12,7 +12,7 @@ namespace AsepriteDotNet.Tests.IO
 {
     public class AsepriteFileLoaderTests
     {
-        private string GetPath(string name)
+        private static string GetPath(string name)
         {
             return Path.Combine(Environment.CurrentDirectory, "Files", name);
         }

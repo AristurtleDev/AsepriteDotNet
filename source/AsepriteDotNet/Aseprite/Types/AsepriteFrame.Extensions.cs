@@ -139,8 +139,8 @@ public static class AsepriteFrameExtensions
 
         AsepriteTileset tileset = aseTilemapLayer.Tileset;
         Rectangle bounds;
-        bounds.Width = cel.Size.Width * tileset.Size.Width;
-        bounds.Height = cel.Size.Height * tileset.Size.Height;
+        bounds.Width = cel.Size.Width * tileset.TileSize.Width;
+        bounds.Height = cel.Size.Height * tileset.TileSize.Height;
         bounds.X = cel.Location.X;
         bounds.Y = cel.Location.Y;
 
@@ -155,8 +155,8 @@ public static class AsepriteFrameExtensions
 
             for (int j = 0; j < tilePixels.Length; j++)
             {
-                int px = (j % tileset.Size.Width) + (column * tileset.Size.Height);
-                int py = (j / tileset.Size.Width) + (row * tileset.Size.Height);
+                int px = (j % tileset.TileSize.Width) + (column * tileset.TileSize.Height);
+                int py = (j / tileset.TileSize.Width) + (row * tileset.TileSize.Height);
                 int index = py * bounds.Width + px;
                 pixels[index] = tilePixels[j];
             }

@@ -92,7 +92,6 @@ public static class SpriteSheetProcessor
     /// A collection containing the name of the layers to process.  Only cels on a layer who's name matches a name in
     /// this collection will be processed.
     /// </param>
-    /// <returns>
     /// <param name="mergeDuplicateFrames">Indicates whether duplicates frames should be merged.</param>
     /// <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
     /// <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>

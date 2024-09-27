@@ -17,8 +17,8 @@ public sealed class AnimatedTilemapProcessorTestFixture
     public Rgba32 Green { get; } = new Rgba32(0, 255, 0, 255);
     public Rgba32 Blue { get; } = new Rgba32(0, 0, 255, 255);
     public Rgba32 White { get; } = new Rgba32(255, 255, 255, 255);
-    public Rgba32 Gray{ get; } = new Rgba32(128, 128, 128, 255);
-    public Rgba32 Black{ get; } = new Rgba32(0, 0, 0, 255);
+    public Rgba32 Gray { get; } = new Rgba32(128, 128, 128, 255);
+    public Rgba32 Black { get; } = new Rgba32(0, 0, 0, 255);
     public Rgba32 Transparent { get; } = new Rgba32(0, 0, 0, 0);
 
 
@@ -122,7 +122,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
     [Fact]
     public void Process_OnlyVisibleLayers_True_Processes_Only_Visible_Layers()
     {
-        AnimatedTilemap tilemap = AnimatedTilemapProcessor.Process(_fixture.AsepriteFile, ProcessorOptions.Default);
+        AnimatedTilemap tilemap = AnimatedTilemapProcessor.Process(_fixture.AsepriteFile, true);
 
         //  Expect the name of the aseprite file to be the name of the tilemap.
         Assert.Equal(_fixture.AsepriteFile.Name, tilemap.Name);
@@ -161,8 +161,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
     [Fact]
     public void Process_OnlyVisibleLayers_False_Processes_All_Layers()
     {
-        ProcessorOptions options = ProcessorOptions.Default with { OnlyVisibleLayers = false };
-        AnimatedTilemap tilemap = AnimatedTilemapProcessor.Process(_fixture.AsepriteFile, options);
+        AnimatedTilemap tilemap = AnimatedTilemapProcessor.Process(_fixture.AsepriteFile, false);
 
         //  Expect the name of the aseprite file to be the name of the tilemap.
         Assert.Equal(_fixture.AsepriteFile.Name, tilemap.Name);
@@ -254,7 +253,7 @@ public sealed class AnimatedTilemapProcessorTests : IClassFixture<AnimatedTilema
                                                 _fixture.AsepriteFile.UserData,
                                                 new List<string>());
 
-        Assert.Throws<InvalidOperationException>(() => AnimatedTilemapProcessor.Process(aseFile));
+        Assert.Throws<InvalidOperationException>(() => AnimatedTilemapProcessor.Process(aseFile, true));
     }
 
     private static void AssertLayer(TilemapLayer tilemapLayer, AsepriteTilemapLayer aseLayer, AsepriteTilemapCel aseCel)

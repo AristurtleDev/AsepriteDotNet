@@ -100,9 +100,8 @@ public sealed class SpriteSheetProcessorTests : IClassFixture<SpriteSheetProcess
     [InlineData(false, false, false, false, 0, 0, 0)]
     public void Process_Parameters_To_TextureAtlasProcess_Correctly(bool onlyVisible, bool includeBackground, bool includeTilemap, bool mergeDuplicates, int borderPadding, int spacing, int innerPadding)
     {
-        ProcessorOptions options = new ProcessorOptions(onlyVisible, includeBackground, includeTilemap, mergeDuplicates, borderPadding, spacing, innerPadding);
-        SpriteSheet sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile, options);
-        TextureAtlas expected = TextureAtlasProcessor.Process(_fixture.AsepriteFile, options);
+        SpriteSheet sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile, onlyVisible, includeBackground, includeTilemap, mergeDuplicates, borderPadding, spacing, innerPadding);
+        TextureAtlas expected = TextureAtlasProcessor.Process(_fixture.AsepriteFile, onlyVisible, includeBackground, includeTilemap, mergeDuplicates, borderPadding, spacing, innerPadding);
 
         Assert.Equal(expected, sheet.TextureAtlas);
     }
@@ -110,7 +109,7 @@ public sealed class SpriteSheetProcessorTests : IClassFixture<SpriteSheetProcess
     [Fact]
     public void Process_SpriteSheet_Atlas_and_Texture_Names_Same_As_File_Name()
     {
-        SpriteSheet sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile);
+        SpriteSheet sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 0, 0, 0);
         Assert.Equal(_fixture.Name, sheet.Name);
         Assert.Equal(_fixture.Name, sheet.TextureAtlas.Name);
         Assert.Equal(_fixture.Name, sheet.TextureAtlas.Texture.Name);
@@ -119,7 +118,7 @@ public sealed class SpriteSheetProcessorTests : IClassFixture<SpriteSheetProcess
     [Fact]
     public void Processes_All_Tags()
     {
-        SpriteSheet sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile);
+        SpriteSheet sheet = SpriteSheetProcessor.Process(_fixture.AsepriteFile, true, false, false, true, 0, 0, 0);
         Assert.Equal(_fixture.AsepriteFile.Tags.Length, sheet.Tags.Length);
     }
 
@@ -147,6 +146,14 @@ public sealed class SpriteSheetProcessorTests : IClassFixture<SpriteSheetProcess
                                    _fixture.AsepriteFile.UserData,
                                    new List<string>());
 
-        Assert.Throws<InvalidOperationException>(() => SpriteSheetProcessor.Process(aseFile));
+        Assert.Throws<InvalidOperationException>(() => SpriteSheetProcessor.Process(aseFile, true, false, false, true, 0, 0, 0));
+    }
+
+    [Fact]
+    public void Process_Returns_Empty_SpriteSheet_When_No_Layers()
+    {
+        SpriteSheet expected = SpriteSheet.Empty;
+        SpriteSheet actual = SpriteSheetProcessor.Process(_fixture.AsepriteFile, Array.Empty<string>());
+        Assert.Equal(expected, actual);
     }
 }

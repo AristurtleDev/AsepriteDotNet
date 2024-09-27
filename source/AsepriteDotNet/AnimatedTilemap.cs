@@ -12,6 +12,12 @@ namespace AsepriteDotNet;
 /// </summary>
 public sealed class AnimatedTilemap : IEquatable<AnimatedTilemap>
 {
+    /// <summary>
+    /// An empty animated tilemap with no name, an empty collection of tilesets, and an empty collection of tilemap
+    /// frames.
+    /// </summary>
+    public static readonly AnimatedTilemap Empty = new AnimatedTilemap(string.Empty, Array.Empty<Tileset>(), Array.Empty<TilemapFrame>());
+
     private readonly Tileset[] _tilests;
     private readonly TilemapFrame[] _frames;
 

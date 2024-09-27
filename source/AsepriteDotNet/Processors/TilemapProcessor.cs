@@ -25,10 +25,61 @@ public static class TilemapProcessor
     /// <returns>The <see cref="Tilemap"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+    [Obsolete("This method will be removed in a future release.  Users should switch to one of the other appropriate Process methods", false)]
     public static Tilemap Process(AsepriteFile file, int frameIndex, ProcessorOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(file);
         options ??= ProcessorOptions.Default;
+
+        return Process(file, frameIndex, options.OnlyVisibleLayers);
+    }
+
+
+    /// <summary>
+    /// Processes a <see cref="Tilemap"/> from an <see cref="AsepriteFile"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="AsepriteFile"/> to process.</param>
+    /// <param name="frameIndex">The index of the frame containing the tilemap to process.</param>
+    /// <param name="onlyVisibleLayers">Indicates whether only visible layers should be processed.</param>
+    /// <returns>The <see cref="Tilemap"/> created by this method.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+    public static Tilemap Process(AsepriteFile file, int frameIndex, bool onlyVisibleLayers = true)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+
+        List<string> layers = new List<string>();
+        for (int i = 0; i < file.Layers.Length; i++)
+        {
+            AsepriteLayer layer = file.Layers[i];
+            if (layer is not AsepriteTilemapLayer) { continue; }
+            if (onlyVisibleLayers && !layer.IsVisible) { continue; }
+            layers.Add(layer.Name);
+        }
+
+        return Process(file, frameIndex, layers);
+    }
+
+    /// <summary>
+    /// Processes a <see cref="Tilemap"/> from an <see cref="AsepriteFile"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="AsepriteFile"/> to process.</param>
+    /// <param name="frameIndex">The index of the frame containing the tilemap to process.</param>
+    /// <param name="layers">
+    /// A collection containing the name of the layers to process.  Only cels on a layer who's name matches a name in
+    /// this collection will be processed.
+    /// </param>
+    /// <returns>The <see cref="Tilemap"/> created by this method.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when duplicate layer names are found.</exception>
+    public static Tilemap Process(AsepriteFile file, int frameIndex, ICollection<string> layers)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+
+        if (layers is null || layers.Count == 0)
+        {
+            return Tilemap.Empty;
+        }
 
         AsepriteFrame aseFrame = file.Frames[frameIndex];
 
@@ -42,11 +93,10 @@ public static class TilemapProcessor
             //  Only care about tilemap cels
             if (aseFrame.Cels[c] is not AsepriteTilemapCel aseTilemapCel) { continue; }
 
-            //  Only continue if layer is visible or if explicitly told to include non-visible layers
-            if (!aseTilemapCel.Layer.IsVisible && options.OnlyVisibleLayers) { continue; }
-
             Debug.Assert(aseTilemapCel.Layer is AsepriteTilemapLayer);
             AsepriteTilemapLayer aseTilemapLayer = (AsepriteTilemapLayer)aseTilemapCel.Layer;
+
+            if (!layers.Contains(aseTilemapLayer.Name)) { continue; }
 
             //  Need to perform a check that we don't have duplicate layer names.  This is because Aseprite allows
             //  duplicate layer names, be we require unique names from this point on.

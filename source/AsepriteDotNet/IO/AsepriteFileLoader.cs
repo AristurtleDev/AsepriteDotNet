@@ -173,11 +173,12 @@ public static partial class AsepriteFileLoader
 
                         if (currentUserData is not null)
                         {
-                            currentUserData.Text = text;
-                            currentUserData.Color = color;
-
-                            if (lastReadChunkType == ASE_CHUNK_TAGS)
+                            if (lastReadChunkType != ASE_CHUNK_TAGS)
                             {
+                                currentUserData.Text = text;
+                                currentUserData.Color = color;
+                            }
+                            else {
                                 //  Tags are a special case.  User data for tags comes all together
                                 //  (one next to the other) after the tags chunk, in the same order:
                                 //
@@ -189,7 +190,12 @@ public static partial class AsepriteFileLoader
                                 //
                                 //  So here we expect that the next user data chunk will correspond to the next tag
                                 //  int he tags collection
-                                tagIterator++;
+                                //
+                                // However, `currentUserData` is actually the one of last tags after read last chunk of ASE_CHUNK_TAGS
+                                // So here we fix the `currentUserData` to the right one
+                                currentUserData = tags[tagIterator++].UserData;
+                                currentUserData.Text = text;
+                                currentUserData.Color = color;
 
                                 if (tagIterator < tags.Count)
                                 {
@@ -510,10 +516,12 @@ public static partial class AsepriteFileLoader
                             }
                             else if (currentUserData is not null)
                             {
-                                currentUserData.Text = text;
-                                currentUserData.Color = color;
-
-                                if (lastReadChunkType == ASE_CHUNK_TAGS)
+                                if (lastReadChunkType != ASE_CHUNK_TAGS)
+                                {
+                                    currentUserData.Text = text;
+                                    currentUserData.Color = color;
+                                }
+                                else
                                 {
                                     //  Tags are a special case.  User data for tags comes all together
                                     //  (one next to the other) after the tags chunk, in the same order:
@@ -526,7 +534,12 @@ public static partial class AsepriteFileLoader
                                     //
                                     //  So here we expect that the next user data chunk will correspond to the next tag
                                     //  int he tags collection
-                                    tagIterator++;
+                                    //
+                                    // However, `currentUserData` is actually the one of last tags after read last chunk of ASE_CHUNK_TAGS
+                                    // So here we fix the `currentUserData` to the right one
+                                    currentUserData = tags[tagIterator++].UserData;
+                                    currentUserData.Text = text;
+                                    currentUserData.Color = color;
 
                                     if (tagIterator < tags.Count)
                                     {

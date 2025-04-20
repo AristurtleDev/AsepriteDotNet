@@ -72,10 +72,11 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal(1, doc.Layers[9].ChildLevel);
 
             //  Validate Tags
-            Assert.Equal(3, doc.Tags.Length);
+            Assert.Equal(4, doc.Tags.Length);
             Assert.Equal("tag0to2forward", doc.Tags[0].Name);
             Assert.Equal(0, doc.Tags[0].From);
             Assert.Equal(2, doc.Tags[0].To);
+            Assert.Equal("tag-1-user-data", doc.Tags[0].UserData.Text);
             Assert.Equal(new Rgba32(0, 0, 0, 255), doc.Tags[0].Color);
             Assert.Equal(AsepriteLoopDirection.Forward, doc.Tags[0].LoopDirection);
             Assert.Equal("tag3pingpong", doc.Tags[1].Name);
@@ -84,6 +85,7 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal(new Rgba32(11, 255, 230, 255), doc.Tags[2].Color);
             Assert.Equal(new Rgba32(11, 255, 230, 255), doc.Tags[2].UserData.Color);
             Assert.Equal("tag-4-user-data", doc.Tags[2].UserData.Text);
+            Assert.False(doc.Tags[3].UserData.HasText);
 
             //  Validate Frames
             Assert.Equal(7, doc.Frames.Length);
@@ -416,10 +418,11 @@ namespace AsepriteDotNet.Tests.IO
             string path = GetPath("read-test.aseprite");
             AsepriteTag[] tags = AsepriteFileLoader.ReadTags(path);
 
-            Assert.Equal(3, tags.Length);
+            Assert.Equal(4, tags.Length);
             Assert.Equal("tag0to2forward", tags[0].Name);
             Assert.Equal(0, tags[0].From);
             Assert.Equal(2, tags[0].To);
+            Assert.Equal("tag-1-user-data", tags[0].UserData.Text);
             Assert.Equal(new Rgba32(0, 0, 0, 255), tags[0].Color);
             Assert.Equal(AsepriteLoopDirection.Forward, tags[0].LoopDirection);
             Assert.Equal("tag3pingpong", tags[1].Name);
@@ -428,7 +431,7 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal(new Rgba32(11, 255, 230, 255), tags[2].Color);
             Assert.Equal(new Rgba32(11, 255, 230, 255), tags[2].UserData.Color);
             Assert.Equal("tag-4-user-data", tags[2].UserData.Text);
-
+            Assert.False(tags[3].UserData.HasText);
         }
 
         //  There was an issue where slice data was read incorrectly.  This test was put in place to ensure that

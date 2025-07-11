@@ -1,36 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+    </PropertyGroup>
 
-  <!-- Project level compilation properties -->
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-  </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\source\AsepriteDotNet\AsepriteDotNet.csproj" />
+    </ItemGroup>
 
-  <!-- Reference projects that need testing -->
-  <ItemGroup>
-    <ProjectReference Include="..\..\source\AsepriteDotNet\AsepriteDotNet.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Files\grayscale-pixel-test.aseprite">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\indexed-pixel-test.aseprite">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\read-test.aseprite">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\rgba-pixel-test.aseprite">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\slice-test.aseprite">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\sprite-userdata-test.aseprite">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Files\tilemap-test.aseprite">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
+    <!--
+        Test asset files copied to output directory.
+        Aseprite files used for testing various pixel formats and features.
+    -->
+    <ItemGroup>
+        <None Update="Files\*.aseprite" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>

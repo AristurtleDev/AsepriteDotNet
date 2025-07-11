@@ -1,34 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-    <!-- Project level compilation properties -->
-    <PropertyGroup>
-        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    </PropertyGroup>
-
-    <!-- Project level package properties -->
     <PropertyGroup>
         <PackageId>AsepriteDotNet</PackageId>
         <Description>AsepriteDotNet is a cross-platform C# library for reading Aseprite files.</Description>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <!-- Includes for NuGets -->
-    <ItemGroup>
-        <None Include="..\..\.images\nuget-icon.png" Pack="true" PackagePath="" />
-        <None Include="..\..\README.md" Pack="true" PackagePath="" />
-    </ItemGroup>
-
-    <!-- Allow Test project to access internals -->
+    <!--
+        Test project access configuration.
+        Allows the test project to access internal types and members for thorough testing.
+    -->
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>AsepriteDotNet.Tests</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
-    <ItemGroup>
-      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-    </ItemGroup>
-
 </Project>

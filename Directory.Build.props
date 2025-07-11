@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-
-    <!-- Set the root directory as the solution directory -->
+    <!--
+        Global compilation and language settings applied to all projects in the solution.
+        These settings ensure consistent behavior across all project types.
+    -->
     <PropertyGroup>
         <SolutionDirectory>$(MSBuildThisFileDirectory)</SolutionDirectory>
-    </PropertyGroup>
-
-    <!-- Standardize build output locations -->
-    <PropertyGroup>
-        <BaseArtifactsPath>$(SolutionDirectory).artifacts/</BaseArtifactsPath>
-        <BaseArtifactsPathSuffix>$(ProjectCategory)/$(MSBuildProjectName)</BaseArtifactsPathSuffix>
-        <BaseIntermediateOutputPath>$(BaseArtifactsPath)obj/$(BaseArtifactsPathSuffix)</BaseIntermediateOutputPath>
-        <BaseOutputPath>$(BaseArtifactsPath)bin/$(BaseArtifactsPathSuffix)</BaseOutputPath>
-        <PackageOutputPath>$(BaseArtifactsPath)pkg/$(BaseArtifactsPathSuffix)/$(Configuration)/</PackageOutputPath>
-    </PropertyGroup>
-
-    <!-- Standardize compilation settings -->
-    <PropertyGroup>
         <NeutralLanguage>en</NeutralLanguage>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Version>1.9.0</Version>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
-    <!-- Setup Code Analysis using the .editorconfig file -->
+    <!--
+        Centralized build output structure to keep the repository clean.
+        All build artifacts are placed in a single .artifacts directory with
+        organized subdirectories by project category and name.
+    -->
+    <PropertyGroup>
+        <ArtifactsPath>$(SolutionDirectory).artifacts/</ArtifactsPath>
+        <BaseIntermediateOutputPath>$(ArtifactsPath)obj/$(ProjectCategory)/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+        <BaseOutputPath>$(ArtifactsPath)bin/$(ProjectCategory)/$(MSBuildProjectName)/</BaseOutputPath>
+        <PackageOutputPath>$(ArtifactsPath)pkg/</PackageOutputPath>
+    </PropertyGroup>
+
+    <!--
+        Code analysis configuration for consistent code quality across all projects.
+        Enforces style rules during build and treats nullable warnings as errors.
+    -->
     <PropertyGroup>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
         <AnalysisLevel>latest</AnalysisLevel>
-        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-        <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
-        <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
-        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
         <WarningsAsErrors>nullable</WarningsAsErrors>
     </PropertyGroup>
 </Project>

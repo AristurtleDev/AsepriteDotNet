@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-
-    <!-- Set the project category used by the root Directory.Build.props -->
+    <!--
+        Source project configuration that inherits from the root Directory.Build.props.
+        Defines settings specific to library projects that will be packaged and distributed.
+    -->
     <PropertyGroup>
         <ProjectCategory>source</ProjectCategory>
-    </PropertyGroup>
-
-    <!-- We're a library, always generate a documentation file -->
-    <!-- (suck it prime) -->
-    <PropertyGroup>
+        <TargetFrameworks>net8.0</TargetFrameworks>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
-    <!-- Common Nuget Package Settings -->
+    <!--
+        NuGet package metadata applied to all source projects.
+        Provides consistent branding and repository information across all packages.
+    -->
     <PropertyGroup>
         <Copyright>Copyright © 2024 Christopher Whitley</Copyright>
         <Authors>Christopher Whitley and contributors</Authors>
@@ -20,7 +21,6 @@
         <PackageProjectUrl>https://github.com/AristurtleDev/AsepriteDotNet</PackageProjectUrl>
         <PackageIcon>nuget-icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageReleaseNotes></PackageReleaseNotes>
         <PackageTags>Aseprite;reader;pixel art;png;spritesheet;tilesheet</PackageTags>
         <RepositoryType>git</RepositoryType>
         <RepositoryBranch>main</RepositoryBranch>
@@ -30,6 +30,23 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
 
-    <!-- Import the root prop last -->
+    <!--
+        Shared package references for source link and debugging support.
+        Enables better debugging experience for package consumers.
+    -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+    </ItemGroup>
+
+    <!--
+        Common files included in all NuGet packages.
+        Provides consistent branding and documentation across packages.
+    -->
+    <ItemGroup>
+        <None Include="$(SolutionDirectory).images\nuget-icon.png" Pack="true" PackagePath="" />
+        <None Include="$(SolutionDirectory)README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+    <!-- Import the parent Directory.Build.props -->
     <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
 </Project>

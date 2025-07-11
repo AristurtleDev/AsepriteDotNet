@@ -1,58 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-
-  <!-- Set the project category used by the root Directory.Build.props -->
-  <PropertyGroup>
-    <ProjectCategory>test</ProjectCategory>
-  </PropertyGroup>
-
-  <!-- Never generate documentation files for test projects -->
-  <!-- (you win this time prime) -->
-  <PropertyGroup>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <!-- Common Test Project Configurations -->
-  <PropertyGroup>
-    <IsTestProject Condition="'$(IsTestProject)' == ''">true</IsTestProject>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
-  <!-- All test projects use the same NuGet references -->
-  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
-    <PackageReference Include="xunit"
-                      Version="2.6.2"
-                      IsImplicitlyDefined="true" />
-
-    <PackageReference Include="Microsoft.NET.Test.Sdk"
-                      Version="17.6.0"
-                      IsImplicitlyDefined="true" />
-
-    <PackageReference Include="xunit.runner.visualstudio"
-                      Version="2.5.6"
-                      IsImplicitlyDefined="true"
-                      IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"
-                      PrivateAssets="all" />
-
-    <PackageReference Include="coverlet.collector"
-                      Version="6.0.0"
-                      IsImplicitlyDefined="true"
-                      IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive"
-                      PrivateAssets="all" />
-  </ItemGroup>
-
-  <!-- Implicitly enable "Xunit" namespace globally if implicit using is defined -->
-  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
-    <Using Include="Xunit"
-           Condition="'$(ImplicitUsings)' == 'enable' OR '$(ImplicitUsings)' == 'true'" />
-  </ItemGroup>
-
-  <!-- Import the root prop last -->
-  <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
-
+    <!--
+        Test project configuration that inherits from the root Directory.Build.props.
+        Configures common settings and dependencies for all test projects.
+    -->
     <PropertyGroup>
-        <!-- Identifiers should not contain underscores -->
+        <ProjectCategory>test</ProjectCategory>
+        <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <!--
+        Code analysis suppressions for test projects.
+        Allows more flexible naming patterns common in test methods.
+    -->
+    <PropertyGroup>
         <NoWarn>CA1707</NoWarn>
     </PropertyGroup>
 
+    <!--
+        Standard testing framework dependencies.
+        Provides xUnit test framework, test runner, and code coverage collection.
+    -->
+    <ItemGroup>
+        <PackageReference Include="xunit" Version="2.6.2" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" PrivateAssets="all" />
+        <PackageReference Include="coverlet.collector" Version="6.0.0" PrivateAssets="all" />
+    </ItemGroup>
+
+    <!--
+        Global using statements for test projects.
+        Automatically imports Xunit namespace when implicit usings are enabled.
+    -->
+    <ItemGroup Condition="'$(ImplicitUsings)' == 'enable'">
+        <Using Include="Xunit" />
+    </ItemGroup>
+
+    <!-- Import the parent Directory.Build.props -->
+    <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />
 </Project>

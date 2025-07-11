@@ -3,7 +3,6 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Xml.Linq;
 
 namespace AsepriteDotNet;
 

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <PackageId>AsepriteDotNet.Core</PackageId>
+        <Description>Core primitives and utilities for AsepriteDotNet.</Description>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <!--
+        Test project access configuration.
+        Allows the test project to access internal types and members for thorough testing.
+    -->
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>AsepriteDotNet.Tests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+</Project>

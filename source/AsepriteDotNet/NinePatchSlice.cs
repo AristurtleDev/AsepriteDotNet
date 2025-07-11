@@ -4,7 +4,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using AsepriteDotNet.Common;
+using AsepriteDotNet.Core;
 
 namespace AsepriteDotNet;
 

@@ -3,6 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Text;
+using AsepriteDotNet.Core.IO;
 
 namespace AsepriteDotNet.Tests.IO
 {

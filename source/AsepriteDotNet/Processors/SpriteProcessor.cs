@@ -2,10 +2,8 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Runtime.Versioning;
-using AsepriteDotNet.Aseprite;
-using AsepriteDotNet.Aseprite.Types;
-using AsepriteDotNet.Common;
+using AsepriteDotNet.Core;
+using AsepriteDotNet.Core.Types;
 
 namespace AsepriteDotNet.Processors;
 

@@ -3,7 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.IO.Compression;
-using AsepriteDotNet.Compression;
+using AsepriteDotNet.Core.Compression;
 
 namespace AsepriteDotNet.Tests.Compression;
 
@@ -26,9 +26,9 @@ public class ZlibTests
     private static byte[] GetRandomBytes(int size)
     {
         byte[] data = new byte[size];
-        #pragma warning disable CA5394
+#pragma warning disable CA5394
         Random.Shared.NextBytes(data);
-        #pragma warning restore CA5394
+#pragma warning restore CA5394
         return data;
     }
 

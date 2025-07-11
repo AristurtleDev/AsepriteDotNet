@@ -3,7 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Numerics;
-using AsepriteDotNet.Common;
+using AsepriteDotNet.Core;
 
 namespace AsepriteDotNet.Tests.Common
 {

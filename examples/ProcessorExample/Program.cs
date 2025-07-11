@@ -3,8 +3,8 @@
 // See LICENSE file in the project root for full license information.
 
 using AsepriteDotNet;
-using AsepriteDotNet.Aseprite;
-using AsepriteDotNet.IO;
+using AsepriteDotNet.Core;
+using AsepriteDotNet.Core.IO;
 using AsepriteDotNet.Processors;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

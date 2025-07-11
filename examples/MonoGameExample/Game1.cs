@@ -2,10 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using AsepriteDotNet.Aseprite;
-using AsepriteDotNet.Aseprite.Types;
-using AsepriteDotNet.Common;
-using AsepriteDotNet.IO;
+using AsepriteDotNet.Core;
+using AsepriteDotNet.Core.IO;
+using AsepriteDotNet.Core.Types;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -33,7 +32,7 @@ public class Game1 : Game
         /// Load the file. In this example, we're not using the MGCB/Content Pipeline and have the Aseprite file set as
         /// a file in our project that is copied the output directory.  Because of this, we can use the
         /// TitleContainer.OpenStream to get a stream to the file and use that to load it.
-        /// 
+        ///
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         AsepriteFile aseFile;
         using (Stream stream = TitleContainer.OpenStream("adventurer.aseprite"))
@@ -44,7 +43,7 @@ public class Game1 : Game
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///
         /// Flatten a frame so that we can get the full color data of that frame.
-        /// 
+        ///
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         Rgba32[] frame0Pixels = aseFile.Frames[0].FlattenFrame();
 
@@ -61,7 +60,7 @@ public class Game1 : Game
         /// AsepriteDotNet internally uses it's own Rgba32 color struct to represent color data. This struct is
         /// compatible with MonoGame's Color struct when setting texture data so we can use it directly without
         /// needing to convert back and forth between the two.
-        /// 
+        ///
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         _texture.SetData<Rgba32>(frame0Pixels);
     }

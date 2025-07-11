@@ -3,7 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Text;
-using AsepriteDotNet.Compression;
+using AsepriteDotNet.Core.Compression;
 
 namespace AsepriteDotNet.Tests.Compression;
 

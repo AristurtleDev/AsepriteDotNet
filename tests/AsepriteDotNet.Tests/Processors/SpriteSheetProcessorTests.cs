@@ -2,11 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using System.Net.Http.Headers;
-using AsepriteDotNet.Aseprite;
-using AsepriteDotNet.Aseprite.Document;
-using AsepriteDotNet.Aseprite.Types;
-using AsepriteDotNet.Common;
+using AsepriteDotNet.Core;
+using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.Types;
 using AsepriteDotNet.Processors;
 
 namespace AsepriteDotNet.Tests.Processors;

@@ -5,6 +5,10 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\AsepriteDotNet.Core\AsepriteDotNet.Core.csproj" />
+    </ItemGroup>
+
     <!--
         Test project access configuration.
         Allows the test project to access internal types and members for thorough testing.

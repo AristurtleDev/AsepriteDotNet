@@ -36,6 +36,7 @@
     -->
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+        <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     </ItemGroup>
 
     <!--

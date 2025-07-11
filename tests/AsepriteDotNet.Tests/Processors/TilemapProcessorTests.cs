@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
+using System.Drawing;
 using AsepriteDotNet.Aseprite;
 using AsepriteDotNet.Aseprite.Document;
 using AsepriteDotNet.Aseprite.Types;

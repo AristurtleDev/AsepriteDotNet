@@ -4,6 +4,7 @@
 
 
 using System.Diagnostics;
+using System.Drawing;
 using AsepriteDotNet.Common;
 
 namespace AsepriteDotNet.Aseprite.Types;
@@ -138,7 +139,7 @@ public static class AsepriteFrameExtensions
         AsepriteTilemapLayer aseTilemapLayer = (AsepriteTilemapLayer)cel.Layer;
 
         AsepriteTileset tileset = aseTilemapLayer.Tileset;
-        Rectangle bounds;
+        Rectangle bounds = Rectangle.Empty;
         bounds.Width = cel.Size.Width * tileset.TileSize.Width;
         bounds.Height = cel.Size.Height * tileset.TileSize.Height;
         bounds.X = cel.Location.X;

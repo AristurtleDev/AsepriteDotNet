@@ -4,7 +4,7 @@
 
 using System.Drawing;
 using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 using AsepriteDotNet.Core.Types;
 using AsepriteDotNet.Processors;
 
@@ -27,14 +27,14 @@ public sealed class TilemapProcessorTestFixture
 
         List<AsepriteTileset> tilesets = new List<AsepriteTileset>()
         {
-            new AsepriteTileset(new AsepriteTilesetProperties() {Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] { Transparent, Red, Green, Blue }),
-            new AsepriteTileset(new AsepriteTilesetProperties() {Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] { Transparent, White, Gray, Black })
+            new AsepriteTileset(new TilesetData() {Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] { Transparent, Red, Green, Blue }),
+            new AsepriteTileset(new TilesetData() {Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] { Transparent, White, Gray, Black })
         };
 
         List<AsepriteLayer> layers = new List<AsepriteLayer>()
         {
-            new AsepriteTilemapLayer(new AsepriteLayerProperties() {Flags = 1, BlendMode = 0, Opacity = 255 }, "visible", tilesets[0]),
-            new AsepriteTilemapLayer(new AsepriteLayerProperties() {Flags = 0, BlendMode = 0, Opacity = 255 }, "hidden", tilesets[1])
+            new AsepriteTilemapLayer(new LayerData() {Flags = 1, BlendMode = 0, Opacity = 255 }, "visible", tilesets[0]),
+            new AsepriteTilemapLayer(new LayerData() {Flags = 0, BlendMode = 0, Opacity = 255 }, "hidden", tilesets[1])
         };
 
         List<AsepriteTile> cel0Tiles = new List<AsepriteTile>()
@@ -51,12 +51,12 @@ public sealed class TilemapProcessorTestFixture
             new AsepriteTile(3, false, false, false)
         };
 
-        AsepriteCelProperties celProperties = new AsepriteCelProperties() { Opacity = 255 };
-        AsepriteTilemapCelProperties tilemapCelProperties = new AsepriteTilemapCelProperties() { Width = 2, Height = 2 };
+        CelHeaderData celHeaderData = new CelHeaderData() { Opacity = 255 };
+        TilemapCelData tilemapCelData = new TilemapCelData() { Width = 2, Height = 2 };
         List<AsepriteCel> cels = new List<AsepriteCel>()
         {
-            new AsepriteTilemapCel(celProperties, layers[0], tilemapCelProperties, cel0Tiles.ToArray()),
-            new AsepriteTilemapCel(celProperties, layers[1], tilemapCelProperties, cel1Tiles.ToArray())
+            new AsepriteTilemapCel(celHeaderData, layers[0], tilemapCelData, cel0Tiles.ToArray()),
+            new AsepriteTilemapCel(celHeaderData, layers[1], tilemapCelData, cel1Tiles.ToArray())
         };
 
         List<AsepriteFrame> frames = new List<AsepriteFrame>()
@@ -127,12 +127,12 @@ public sealed class TilemapProcessorTests : IClassFixture<TilemapProcessorTestFi
     public void Process_Duplicate_AsepriteLayer_Names_Throws_Exception()
     {
 
-        AsepriteLayerProperties layerProperties = new AsepriteLayerProperties() { Flags = 1, BlendMode = 0, Opacity = 255 };
+        LayerData layerData = new LayerData() { Flags = 1, BlendMode = 0, Opacity = 255 };
         List<AsepriteLayer> layers = new List<AsepriteLayer>()
         {
-            new AsepriteTilemapLayer(layerProperties, "layer-0", _fixture.AsepriteFile.Tilesets[0]),
-            new AsepriteTilemapLayer(layerProperties, "layer-1", _fixture.AsepriteFile.Tilesets[0]),
-            new AsepriteTilemapLayer(layerProperties, "layer-0", _fixture.AsepriteFile.Tilesets[0])
+            new AsepriteTilemapLayer(layerData, "layer-0", _fixture.AsepriteFile.Tilesets[0]),
+            new AsepriteTilemapLayer(layerData, "layer-1", _fixture.AsepriteFile.Tilesets[0]),
+            new AsepriteTilemapLayer(layerData, "layer-0", _fixture.AsepriteFile.Tilesets[0])
         };
 
         AsepriteTile[] tiles = new AsepriteTile[]
@@ -143,13 +143,13 @@ public sealed class TilemapProcessorTests : IClassFixture<TilemapProcessorTestFi
             new AsepriteTile(3, false, false, false)
         };
 
-        AsepriteCelProperties celProperties = new AsepriteCelProperties() { Opacity = 255 };
-        AsepriteTilemapCelProperties tilemapCelProperties = new AsepriteTilemapCelProperties() { Width = 2, Height = 2 };
+        CelHeaderData celHeaderData = new CelHeaderData() { Opacity = 255 };
+        TilemapCelData tilemapCelData = new TilemapCelData() { Width = 2, Height = 2 };
         List<AsepriteCel> cels = new List<AsepriteCel>()
         {
-            new AsepriteTilemapCel(celProperties, layers[0], tilemapCelProperties, tiles),
-            new AsepriteTilemapCel(celProperties, layers[1], tilemapCelProperties, tiles),
-            new AsepriteTilemapCel(celProperties, layers[2], tilemapCelProperties, tiles)
+            new AsepriteTilemapCel(celHeaderData, layers[0], tilemapCelData, tiles),
+            new AsepriteTilemapCel(celHeaderData, layers[1], tilemapCelData, tiles),
+            new AsepriteTilemapCel(celHeaderData, layers[2], tilemapCelData, tiles)
         };
 
         List<AsepriteFrame> frames = new List<AsepriteFrame>()

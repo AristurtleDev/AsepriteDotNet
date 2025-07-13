@@ -3,7 +3,7 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Drawing;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -26,10 +26,10 @@ public sealed class AsepriteImageCel : AsepriteCel
     /// </summary>
     public ReadOnlySpan<Rgba32> Pixels => _pixels;
 
-    internal AsepriteImageCel(AsepriteCelProperties celProperties, AsepriteLayer layer, AsepriteImageCelProperties imageCelProperties, Rgba32[] pixels)
-        : base(celProperties, layer)
+    internal AsepriteImageCel(CelHeaderData celHeaderData, AsepriteLayer layer, ImageCelData imageCel, Rgba32[] pixels)
+        : base(celHeaderData, layer)
     {
-        Size = new Size(imageCelProperties.Width, imageCelProperties.Height);
+        Size = new Size(imageCel.Width, imageCel.Height);
         _pixels = pixels;
     }
 }

@@ -4,15 +4,12 @@
 
 using System.Runtime.InteropServices;
 
-namespace AsepriteDotNet.Core.Document;
+namespace AsepriteDotNet.Core.FileFormat.Data;
 
-[StructLayout(LayoutKind.Explicit)]
-internal struct AsepriteSliceProperties
+[StructLayout(LayoutKind.Explicit, Pack = 1)]
+internal struct SliceData
 {
-    internal const int StructSize = sizeof(uint) +  //  KeyCount
-                                    sizeof(uint) +  //  Flags
-                                    sizeof(uint) +  //  Reserved
-                                    sizeof(ushort); //  NameLen
+    internal static readonly int SizeInBytes = Marshal.SizeOf<SliceData>();
 
     [FieldOffset(0)]
     internal uint KeyCount;

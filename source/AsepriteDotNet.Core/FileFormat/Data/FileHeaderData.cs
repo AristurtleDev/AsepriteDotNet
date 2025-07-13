@@ -4,12 +4,12 @@
 
 using System.Runtime.InteropServices;
 
-namespace AsepriteDotNet.Core.Document;
+namespace AsepriteDotNet.Core.FileFormat.Data;
 
 [StructLayout(LayoutKind.Explicit)]
-internal unsafe struct AsepriteFileHeader
+internal unsafe struct FileHeaderData
 {
-    public const int StructSize = 128;
+    internal static readonly int SizeInBytes = Marshal.SizeOf<FileHeaderData>();
 
     [FieldOffset(0)]
     public uint FileSize;
@@ -35,17 +35,17 @@ internal unsafe struct AsepriteFileHeader
     [FieldOffset(18)]
     public ushort Speed;
 
-    //[FieldOffset(20)]
-    //public uint Reserved1;
+    [FieldOffset(20)]
+    public uint Reserved1;
 
-    //[FieldOffset(24)]
-    //public uint Reserved2;
+    [FieldOffset(24)]
+    public uint Reserved2;
 
     [FieldOffset(28)]
     public byte TransparentIndex;
 
-    //[FieldOffset(29)]
-    //public fixed byte IgnoredBytes[3];
+    [FieldOffset(29)]
+    public fixed byte IgnoredBytes[3];
 
     [FieldOffset(32)]
     public ushort NumberOfColors;
@@ -68,6 +68,6 @@ internal unsafe struct AsepriteFileHeader
     [FieldOffset(42)]
     public ushort GridHeight;
 
-    //[FieldOffset(44)]
-    //public fixed byte FutureBytes[84];
+    [FieldOffset(44)]
+    public fixed byte FutureBytes[84];
 }

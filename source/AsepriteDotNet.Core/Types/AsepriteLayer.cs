@@ -2,7 +2,7 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -55,14 +55,14 @@ public abstract class AsepriteLayer
     /// </summary>
     public AsepriteUserData UserData { get; } = new AsepriteUserData();
 
-    internal AsepriteLayer(AsepriteLayerProperties header, string name)
+    internal AsepriteLayer(LayerData layerData, string name)
     {
         Name = name;
-        IsVisible = (header.Flags & 1) != 0;
-        IsBackgroundLayer = (header.Flags & 8) != 0;
-        IsReferenceLayer = (header.Flags & 64) != 0;
-        ChildLevel = header.Level;
-        BlendMode = (AsepriteBlendMode)header.BlendMode;
-        Opacity = header.Opacity;
+        IsVisible = (layerData.Flags & 1) != 0;
+        IsBackgroundLayer = (layerData.Flags & 8) != 0;
+        IsReferenceLayer = (layerData.Flags & 64) != 0;
+        ChildLevel = layerData.Level;
+        BlendMode = (AsepriteBlendMode)layerData.BlendMode;
+        Opacity = layerData.Opacity;
     }
 }

@@ -4,13 +4,12 @@
 
 using System.Runtime.InteropServices;
 
-namespace AsepriteDotNet.Core.Document;
+namespace AsepriteDotNet.Core.FileFormat.Data;
 
-[StructLayout(LayoutKind.Explicit)]
-internal struct AsepriteChunkHeader
+[StructLayout(LayoutKind.Explicit, Pack = 1)]
+internal struct ChunkHeaderData
 {
-    internal const int StructSize = sizeof(uint) +  //  ChunkSize
-                                    sizeof(ushort); //  ChunkType
+    internal static readonly int SizeInBytes = Marshal.SizeOf<ChunkHeaderData>();
 
     [FieldOffset(0)]
     internal uint ChunkSize;

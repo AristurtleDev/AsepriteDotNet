@@ -3,7 +3,7 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Drawing;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -32,17 +32,17 @@ public sealed class AsepriteSliceKey
     /// </summary>
     public Point Pivot { get; }
 
-    internal AsepriteSliceKey(AsepriteSliceKeyProperties keyProperties, AsepriteNinePatchProperties? ninePatchProperties, AsepritePivotProperties? pivotProperties)
+    internal AsepriteSliceKey(SliceKeyData sliceKeyData, NinePatchData? ninePatchData, PivotData? pivotData)
     {
-        FrameIndex = (int)keyProperties.FrameNumber;
+        FrameIndex = (int)sliceKeyData.FrameNumber;
 
-        Bounds = new Rectangle((int)keyProperties.X, (int)keyProperties.Y, (int)keyProperties.Width, (int)keyProperties.Height);
+        Bounds = new Rectangle((int)sliceKeyData.X, (int)sliceKeyData.Y, (int)sliceKeyData.Width, (int)sliceKeyData.Height);
 
         //  If this is not a nine patch, make the center bounds equal to the key bounds.
         //  NOTE: Might want to make this all 0's instead. See what users say and update accordingly.
-        CenterBounds = new Rectangle((int)(ninePatchProperties?.X ?? 0), (int)(ninePatchProperties?.Y ?? 0), (int)(ninePatchProperties?.Width ?? 0), (int)(ninePatchProperties?.Height ?? 0));
+        CenterBounds = new Rectangle((int)(ninePatchData?.X ?? 0), (int)(ninePatchData?.Y ?? 0), (int)(ninePatchData?.Width ?? 0), (int)(ninePatchData?.Height ?? 0));
 
         //  If this did not have pivot data, make pivot (0, 0)
-        Pivot = new Point((int)(pivotProperties?.X ?? 0), (int)(pivotProperties?.Y ?? 0));
+        Pivot = new Point((int)(pivotData?.X ?? 0), (int)(pivotData?.Y ?? 0));
     }
 }

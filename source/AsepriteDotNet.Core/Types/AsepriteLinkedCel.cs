@@ -7,7 +7,7 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -21,7 +21,7 @@ public sealed class AsepriteLinkedCel : AsepriteCel
     /// </summary>
     public AsepriteCel Cel { get; }
 
-    internal AsepriteLinkedCel(AsepriteCelProperties celProperties, AsepriteCel otherCel) : base(celProperties, otherCel.Layer)
+    internal AsepriteLinkedCel(CelHeaderData celHeaderData, AsepriteCel otherCel) : base(celHeaderData, otherCel.Layer)
     {
         Cel = otherCel;
     }

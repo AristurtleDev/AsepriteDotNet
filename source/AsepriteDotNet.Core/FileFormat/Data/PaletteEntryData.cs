@@ -4,17 +4,16 @@
 
 using System.Runtime.InteropServices;
 
-namespace AsepriteDotNet.Core.Document;
+namespace AsepriteDotNet.Core.FileFormat.Data;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct AsepritePivotProperties
+internal struct PaletteEntryData
 {
-    internal const int StructSize = sizeof(int) +  //  X
-                                    sizeof(int);   //  Y
+    internal static readonly int SizeInBytes = Marshal.SizeOf<PaletteEntryData>();
 
     [FieldOffset(0)]
-    internal int X;
+    internal ushort Flags;
 
-    [FieldOffset(4)]
-    internal int Y;
+    [FieldOffset(2)]
+    internal Rgba32 Color;
 }

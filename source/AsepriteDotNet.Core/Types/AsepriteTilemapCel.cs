@@ -8,7 +8,7 @@
 //  See LICENSE file in the project root for full license information
 
 using System.Drawing;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -30,10 +30,10 @@ public sealed class AsepriteTilemapCel : AsepriteCel
     /// </summary>
     public ReadOnlySpan<AsepriteTile> Tiles => _tiles;
 
-    internal AsepriteTilemapCel(AsepriteCelProperties celProperties, AsepriteLayer layer, AsepriteTilemapCelProperties tilemapCelProperties, AsepriteTile[] tiles)
-        : base(celProperties, layer)
+    internal AsepriteTilemapCel(CelHeaderData celHeaderData, AsepriteLayer layer, TilemapCelData tilemapCelData, AsepriteTile[] tiles)
+        : base(celHeaderData, layer)
     {
-        Size = new Size(tilemapCelProperties.Width, tilemapCelProperties.Height);
+        Size = new Size(tilemapCelData.Width, tilemapCelData.Height);
         _tiles = tiles;
     }
 

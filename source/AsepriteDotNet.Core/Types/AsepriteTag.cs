@@ -2,7 +2,7 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -46,13 +46,13 @@ public sealed class AsepriteTag
     /// </summary>
     public AsepriteUserData UserData { get; } = new AsepriteUserData();
 
-    internal unsafe AsepriteTag(AsepriteTagProperties properties, string name)
+    internal unsafe AsepriteTag(TagData tagData, string name)
     {
-        From = properties.From;
-        To = properties.To;
-        LoopDirection = (AsepriteLoopDirection)properties.Direction;
+        From = tagData.From;
+        To = tagData.To;
+        LoopDirection = (AsepriteLoopDirection)tagData.Direction;
         Name = name;
-        Repeat = properties.Repeat;
-        Color = new Rgba32(properties.R, properties.G, properties.B);
+        Repeat = tagData.Repeat;
+        Color = new Rgba32(tagData.R, tagData.G, tagData.B);
     }
 }

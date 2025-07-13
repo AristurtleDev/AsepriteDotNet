@@ -3,7 +3,8 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Drawing;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
+
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -32,11 +33,11 @@ public abstract class AsepriteCel
     /// </summary>
     public AsepriteUserData UserData { get; }
 
-    internal AsepriteCel(AsepriteCelProperties celProperties, AsepriteLayer layer)
+    internal AsepriteCel(CelHeaderData celHeaderData, AsepriteLayer layer)
     {
         Layer = layer;
-        Location = new Point(celProperties.X, celProperties.Y);
-        Opacity = celProperties.Opacity;
+        Location = new Point(celHeaderData.X, celHeaderData.Y);
+        Opacity = celHeaderData.Opacity;
         UserData = new AsepriteUserData();
     }
 }

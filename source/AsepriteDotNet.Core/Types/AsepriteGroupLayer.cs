@@ -3,7 +3,7 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Runtime.InteropServices;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -20,7 +20,7 @@ public sealed class AsepriteGroupLayer : AsepriteLayer
     /// </summary>
     public ReadOnlySpan<AsepriteLayer> Children => CollectionsMarshal.AsSpan(_children);
 
-    internal AsepriteGroupLayer(AsepriteLayerProperties header, string name) : base(header, name) { }
+    internal AsepriteGroupLayer(LayerData layerData, string name) : base(layerData, name) { }
 
     internal void AddChild(AsepriteLayer layer) => _children.Add(layer);
 }

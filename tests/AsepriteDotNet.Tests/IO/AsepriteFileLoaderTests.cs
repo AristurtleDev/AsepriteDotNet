@@ -4,7 +4,7 @@
 
 using System.Drawing;
 using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 using AsepriteDotNet.Core.IO;
 using AsepriteDotNet.Core.Types;
 
@@ -439,7 +439,7 @@ namespace AsepriteDotNet.Tests.IO
         [Fact]
         public void AsepriteFileReader_SliceTest()
         {
-            AsepriteSliceKeyProperties sliceKeyProperties = new AsepriteSliceKeyProperties()
+            SliceKeyData sliceKeyData = new SliceKeyData()
             {
                 FrameNumber = 0,
                 X = 2,
@@ -448,7 +448,7 @@ namespace AsepriteDotNet.Tests.IO
                 Height = 27
             };
 
-            AsepriteSliceKey expected = new AsepriteSliceKey(sliceKeyProperties, null, null);
+            AsepriteSliceKey expected = new AsepriteSliceKey(sliceKeyData, null, null);
 
             string path = GetPath("slice-test.aseprite");
             AsepriteFile aseFile = AsepriteFileLoader.FromFile(path);

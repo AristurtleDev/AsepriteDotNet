@@ -2,7 +2,7 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -13,5 +13,5 @@ namespace AsepriteDotNet.Core.Types;
 /// </summary>
 public sealed class AsepriteImageLayer : AsepriteLayer
 {
-    internal AsepriteImageLayer(AsepriteLayerProperties header, string name) : base(header, name) { }
+    internal AsepriteImageLayer(LayerData layerData, string name) : base(layerData, name) { }
 }

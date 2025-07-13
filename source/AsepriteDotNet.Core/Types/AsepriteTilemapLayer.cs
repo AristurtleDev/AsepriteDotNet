@@ -7,7 +7,7 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -22,8 +22,8 @@ public sealed class AsepriteTilemapLayer : AsepriteLayer
     /// </summary>
     public AsepriteTileset Tileset { get; }
 
-    internal AsepriteTilemapLayer(AsepriteLayerProperties header, string name, AsepriteTileset tileset)
-        : base(header, name)
+    internal AsepriteTilemapLayer(LayerData layerData, string name, AsepriteTileset tileset)
+        : base(layerData, name)
     {
         Tileset = tileset;
     }

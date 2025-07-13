@@ -4,17 +4,16 @@
 
 using System.Runtime.InteropServices;
 
-namespace AsepriteDotNet.Core.Document;
+namespace AsepriteDotNet.Core.FileFormat.Data;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct AsepritePaletteEntry
+internal struct ImageCelData
 {
-    internal const int StructSize = sizeof(ushort) +        //  NewSize
-                                    Rgba32.StructSize;    //  FirstIndex
+    internal static readonly int SizeInBytes = Marshal.SizeOf<ImageCelData>();
 
     [FieldOffset(0)]
-    internal ushort Flags;
+    internal ushort Width;
 
     [FieldOffset(2)]
-    internal Rgba32 Color;
+    internal ushort Height;
 }

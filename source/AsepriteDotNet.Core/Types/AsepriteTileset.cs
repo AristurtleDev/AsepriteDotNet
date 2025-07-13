@@ -3,7 +3,7 @@
 //  See LICENSE file in the project root for full license information
 
 using System.Drawing;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -47,14 +47,14 @@ public sealed class AsepriteTileset
     /// </summary>
     public ReadOnlySpan<Rgba32> Pixels => _pixels;
 
-    internal AsepriteTileset(AsepriteTilesetProperties tilesetProperties, string name, Rgba32[] pixels)
+    internal AsepriteTileset(TilesetData tilesetData, string name, Rgba32[] pixels)
     {
-        ID = (int)tilesetProperties.Id;
-        TileCount = (int)tilesetProperties.NumberOfTiles;
+        ID = (int)tilesetData.Id;
+        TileCount = (int)tilesetData.NumberOfTiles;
 #pragma warning disable CS0618 // Type or member is obsolete
-        Size = new Size(tilesetProperties.TileWidth, tilesetProperties.TileHeight);
+        Size = new Size(tilesetData.TileWidth, tilesetData.TileHeight);
 #pragma warning restore CS0618 // Type or member is obsolete
-        TileSize = new Size(tilesetProperties.TileWidth, tilesetProperties.TileHeight);
+        TileSize = new Size(tilesetData.TileWidth, tilesetData.TileHeight);
         Name = name;
         _pixels = pixels;
     }

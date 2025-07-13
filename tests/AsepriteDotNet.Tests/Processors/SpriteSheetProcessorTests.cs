@@ -3,7 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 using AsepriteDotNet.Core.Types;
 using AsepriteDotNet.Processors;
 
@@ -31,32 +31,32 @@ public sealed class SpriteSheetProcessorTestFixture
         palette[2] = Blue;
         palette[3] = Yellow;
 
-        AsepriteLayerProperties layerProperties = new AsepriteLayerProperties() { Flags = 1, Opacity = 255, BlendMode = 0 };
+        LayerData layerData = new LayerData() { Flags = 1, Opacity = 255, BlendMode = 0 };
         List<AsepriteLayer> layers = new List<AsepriteLayer>()
         {
-            new AsepriteImageLayer(layerProperties, "layer")
+            new AsepriteImageLayer(layerData, "layer")
         };
 
-        AsepriteCelProperties celProperties = new AsepriteCelProperties() { Opacity = 255, };
-        AsepriteImageCelProperties imageCelPropertes = new AsepriteImageCelProperties() { Width = 2, Height = 2 };
+        CelHeaderData celheaderData = new CelHeaderData() { Opacity = 255, };
+        ImageCelData imageCelData = new ImageCelData() { Width = 2, Height = 2 };
         List<AsepriteCel> frame0Cels = new List<AsepriteCel>()
         {
-            new AsepriteImageCel(celProperties, layers[0], imageCelPropertes, new Rgba32[] {Red, Red, Red, Red })
+            new AsepriteImageCel(celheaderData, layers[0], imageCelData, new Rgba32[] {Red, Red, Red, Red })
         };
 
         List<AsepriteCel> frame1Cels = new List<AsepriteCel>()
         {
-            new AsepriteImageCel(celProperties, layers[0], imageCelPropertes, new Rgba32[] {Green, Green, Green, Green})
+            new AsepriteImageCel(celheaderData, layers[0], imageCelData, new Rgba32[] {Green, Green, Green, Green})
         };
 
         List<AsepriteCel> frame2Cels = new List<AsepriteCel>()
         {
-            new AsepriteImageCel(celProperties, layers[0], imageCelPropertes, new Rgba32[] { Blue, Blue, Blue, Blue})
+            new AsepriteImageCel(celheaderData, layers[0], imageCelData, new Rgba32[] { Blue, Blue, Blue, Blue})
         };
 
         List<AsepriteCel> frame3Cels = new List<AsepriteCel>()
         {
-            new AsepriteImageCel(celProperties, layers[0], imageCelPropertes, new Rgba32[] { Red, Red, Red, Red})
+            new AsepriteImageCel(celheaderData, layers[0], imageCelData, new Rgba32[] { Red, Red, Red, Red})
         };
 
         List<AsepriteFrame> frames = new List<AsepriteFrame>()
@@ -69,9 +69,9 @@ public sealed class SpriteSheetProcessorTestFixture
 
         List<AsepriteTag> tags = new List<AsepriteTag>()
         {
-            new AsepriteTag(new AsepriteTagProperties() {Direction = 0, From = 0, To = 0}, "tag-0"),
-            new AsepriteTag(new AsepriteTagProperties() {Direction = 0, From = 0, To = 1}, "tag-1"),
-            new AsepriteTag(new AsepriteTagProperties() {Direction = 2, From = 1, To = 2}, "tag-2"),
+            new AsepriteTag(new TagData() {Direction = 0, From = 0, To = 0}, "tag-0"),
+            new AsepriteTag(new TagData() {Direction = 0, From = 0, To = 1}, "tag-1"),
+            new AsepriteTag(new TagData() {Direction = 2, From = 1, To = 2}, "tag-2"),
         };
 
         AsepriteFile = new AsepriteFile(Name, palette, width, height, AsepriteColorDepth.RGBA, frames, layers, tags, [], [], new AsepriteUserData(), []);
@@ -125,9 +125,9 @@ public sealed class SpriteSheetProcessorTests : IClassFixture<SpriteSheetProcess
     {
         List<AsepriteTag> tags = new List<AsepriteTag>()
         {
-            new AsepriteTag(new AsepriteTagProperties(), "tag-0"),
-            new AsepriteTag(new AsepriteTagProperties(), "tag-1"),
-            new AsepriteTag(new AsepriteTagProperties(), "tag-0"),
+            new AsepriteTag(new TagData(), "tag-0"),
+            new AsepriteTag(new TagData(), "tag-1"),
+            new AsepriteTag(new TagData(), "tag-0"),
         };
 
         //  Reuse the fixture, but use the tags array from above with duplicate tag names

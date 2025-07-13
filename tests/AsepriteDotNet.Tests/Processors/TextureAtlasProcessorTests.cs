@@ -4,7 +4,7 @@
 
 using System.Drawing;
 using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 using AsepriteDotNet.Core.Types;
 using AsepriteDotNet.Processors;
 
@@ -35,29 +35,29 @@ public sealed class TextureAtlasProcessorTestFixture
 
         List<AsepriteLayer> layers = new List<AsepriteLayer>()
         {
-            new AsepriteImageLayer(new AsepriteLayerProperties() {Flags = 1, BlendMode = 0, Opacity = 255 }, "layer")
+            new AsepriteImageLayer(new LayerData() {Flags = 1, BlendMode = 0, Opacity = 255 }, "layer")
         };
 
-        AsepriteCelProperties celProperties = new AsepriteCelProperties() { Opacity = 255, LayerIndex = 0 };
-        AsepriteImageCelProperties imageCelProperties = new AsepriteImageCelProperties() { Width = 2, Height = 2 };
+        CelHeaderData celHeaderData = new CelHeaderData() { Opacity = 255, LayerIndex = 0 };
+        ImageCelData imageCelData = new ImageCelData() { Width = 2, Height = 2 };
         List<AsepriteCel> frame0Cels = new List<AsepriteCel>()
         {
-            new AsepriteImageCel(celProperties, layers[0], imageCelProperties, new Rgba32[] {Red, Red, Red, Red })
+            new AsepriteImageCel(celHeaderData, layers[0], imageCelData, new Rgba32[] {Red, Red, Red, Red })
         };
 
         List<AsepriteCel> frame1Cels = new List<AsepriteCel>()
         {
-            new AsepriteImageCel(celProperties, layers[0], imageCelProperties, new Rgba32[] { Green, Green, Green, Green })
+            new AsepriteImageCel(celHeaderData, layers[0], imageCelData, new Rgba32[] { Green, Green, Green, Green })
         };
 
         List<AsepriteCel> frame2Cels = new List<AsepriteCel>()
         {
-            new AsepriteImageCel(celProperties, layers[0], imageCelProperties, new Rgba32[] { Blue, Blue, Blue, Blue })
+            new AsepriteImageCel(celHeaderData, layers[0], imageCelData, new Rgba32[] { Blue, Blue, Blue, Blue })
         };
 
         List<AsepriteCel> frame3Cels = new List<AsepriteCel>()
         {
-            new AsepriteImageCel(celProperties, layers[0], imageCelProperties, new Rgba32[] { Red, Red, Red, Red })
+            new AsepriteImageCel(celHeaderData, layers[0], imageCelData, new Rgba32[] { Red, Red, Red, Red })
         };
 
         List<AsepriteFrame> frames = new List<AsepriteFrame>()

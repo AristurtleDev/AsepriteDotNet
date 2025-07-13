@@ -4,15 +4,12 @@
 
 using System.Runtime.InteropServices;
 
-namespace AsepriteDotNet.Core.Document;
+namespace AsepriteDotNet.Core.FileFormat.Data;
 
-[StructLayout(LayoutKind.Explicit)]
-internal struct AsepriteNinePatchProperties
+[StructLayout(LayoutKind.Explicit, Pack = 1)]
+internal struct NinePatchData
 {
-    internal const int StructSize = sizeof(int) +  //  X
-                                    sizeof(int) +  //  Y
-                                    sizeof(uint) +  //  Width
-                                    sizeof(uint);   //  Height
+    internal static readonly int SizeInBytes = Marshal.SizeOf<NinePatchData>();
 
     [FieldOffset(0)]
     internal int X;

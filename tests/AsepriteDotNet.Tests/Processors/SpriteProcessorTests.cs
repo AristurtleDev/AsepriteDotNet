@@ -4,7 +4,7 @@
 
 using System.Drawing;
 using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 using AsepriteDotNet.Core.Types;
 using AsepriteDotNet.Processors;
 
@@ -27,23 +27,23 @@ public sealed class SpriteProcessorTestsFixture
 
         AsepriteTileset[] tilesets = Array.Empty<AsepriteTileset>();
 
-        AsepriteLayerProperties layerProperties = new AsepriteLayerProperties() { Flags = 1, BlendMode = 0, Opacity = 255 };
+        LayerData layerData = new LayerData() { Flags = 1, BlendMode = 0, Opacity = 255 };
         AsepriteLayer[] layers = new AsepriteLayer[]
         {
-            new AsepriteImageLayer(layerProperties, "layer")
+            new AsepriteImageLayer(layerData, "layer")
         };
 
-        AsepriteCelProperties celProperties1 = new AsepriteCelProperties() { LayerIndex = 0, Opacity = 255, Type = 3, X = 0, Y = 0, ZIndex = 0 };
-        AsepriteCelProperties celProperties2 = new AsepriteCelProperties() { LayerIndex = 1, Opacity = 255, Type = 3, X = 0, Y = 1, ZIndex = 0 };
-        AsepriteImageCelProperties imageCelProperties = new AsepriteImageCelProperties() { Width = 2, Height = 2 };
+        CelHeaderData celHeaderData1 = new CelHeaderData() { LayerIndex = 0, Opacity = 255, Type = 3, X = 0, Y = 0, ZIndex = 0 };
+        CelHeaderData celHeaderData2 = new CelHeaderData() { LayerIndex = 1, Opacity = 255, Type = 3, X = 0, Y = 1, ZIndex = 0 };
+        ImageCelData imageCelData = new ImageCelData() { Width = 2, Height = 2 };
         AsepriteCel[] frame0Cels = new AsepriteCel[]
         {
-            new AsepriteImageCel(celProperties1, layers[0], imageCelProperties, new Rgba32[] {Black, Black, Black, Black })
+            new AsepriteImageCel(celHeaderData1, layers[0], imageCelData, new Rgba32[] {Black, Black, Black, Black })
         };
 
         AsepriteCel[] frame1Cels = new AsepriteCel[]
         {
-            new AsepriteImageCel(celProperties1, layers[0], imageCelProperties, new Rgba32[] {White, White, White, White })
+            new AsepriteImageCel(celHeaderData1, layers[0], imageCelData, new Rgba32[] {White, White, White, White })
         };
 
 

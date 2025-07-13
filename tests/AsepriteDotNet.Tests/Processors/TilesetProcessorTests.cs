@@ -3,7 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.Document;
+using AsepriteDotNet.Core.FileFormat.Data;
 using AsepriteDotNet.Core.Types;
 using AsepriteDotNet.Processors;
 
@@ -25,8 +25,8 @@ public sealed class TilesetProcessorTestFixture
         AsepritePalette palette = new AsepritePalette(0);
         List<AsepriteTileset> tilesets = new List<AsepriteTileset>()
         {
-            new AsepriteTileset(new AsepriteTilesetProperties(){Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] {Transparent, Red, Green, Blue}),
-            new AsepriteTileset(new AsepriteTilesetProperties(){Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-1", new Rgba32[] {Transparent, White, Gray, Black}),
+            new AsepriteTileset(new TilesetData(){Id = 0, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-0", new Rgba32[] {Transparent, Red, Green, Blue}),
+            new AsepriteTileset(new TilesetData(){Id = 1, NumberOfTiles = 4, TileWidth = 1, TileHeight = 1 }, "tileset-1", new Rgba32[] {Transparent, White, Gray, Black}),
         };
 
         AsepriteFile = new("file", palette, 0, 0, AsepriteColorDepth.RGBA, [], [], [], [], tilesets, new AsepriteUserData(), []);

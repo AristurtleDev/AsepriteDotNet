@@ -25,7 +25,7 @@ public static partial class AsepriteFileLoader
 
     public static AsepriteFile FromStream(string fileName, Stream stream, bool leaveOpen = false)
     {
-        using AsepriteBinaryReader reader = new AsepriteBinaryReader(stream, leaveOpen);
+        using BinaryReader reader = new(stream, Encoding.UTF8, leaveOpen);
         return LoadFile(fileName, reader);
     }
 
@@ -42,7 +42,7 @@ public static partial class AsepriteFileLoader
             context.CurrentUserData = null;
             context.TagIterator = 0;
 
-            uint frameLen = reader.ReadDword();
+            uint frameLen = reader.ReadUInt32();
 
             // Since the total frame size includes the DWORD we've already just read
             // we can subtract the size fo the DWORD from the length;

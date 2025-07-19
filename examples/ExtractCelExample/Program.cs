@@ -1,6 +1,6 @@
 ﻿using AsepriteDotNet;
-using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.IO;
+using AsepriteDotNet;
+using AsepriteDotNet.IO;
 
 AsepriteFile aseFile = AsepriteFileLoader.FromFile("adventurer.aseprite");
 // Texture head = aseFile.ExtractCel(0, "head");

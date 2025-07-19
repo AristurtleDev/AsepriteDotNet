@@ -3,9 +3,9 @@
 // See LICENSE file in the project root for full license information.
 
 using System.Drawing;
-using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.IO;
-using AsepriteDotNet.Core.Types;
+using AsepriteDotNet;
+using AsepriteDotNet.IO;
+using AsepriteDotNet.Types;
 
 namespace AsepriteDotNet.Tests.IO
 {

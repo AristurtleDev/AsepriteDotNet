@@ -19,7 +19,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\source\AsepriteDotNet\AsepriteDotNet.csproj" />
-        <ProjectReference Include="..\..\source\AsepriteDotNet.Core\AsepriteDotNet.Core.csproj" />
+        <ProjectReference Include="..\..\source\AsepriteDotNet\AsepriteDotNet.csproj" />
     </ItemGroup>
 
     <Import Project="$(MSBuildThisFileDirectory)..\Directory.Build.props" />

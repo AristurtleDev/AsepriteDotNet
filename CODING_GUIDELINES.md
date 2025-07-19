@@ -102,8 +102,8 @@ These guidelines follow the general principle of "use Visual Studio defaults" an
      using System.Drawing;
      using System.IO;
 
-     using AsepriteDotNet.Core.Types;
-     using AsepriteDotNet.Core.IO;
+     using AsepriteDotNet.Types;
+     using AsepriteDotNet.IO;
      ```
 
 3. **Type References**:
@@ -233,7 +233,7 @@ Below is an example following our style guidelines:
 using System;
 using System.Drawing;
 
-namespace AsepriteDotNet.Core.Types
+namespace AsepriteDotNet.Types
 {
     /// <summary>
     /// Defines the properties of a cel in an Aseprite file that contains image data.

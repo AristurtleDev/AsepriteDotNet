@@ -3,9 +3,9 @@
 // // See LICENSE file in the project root for full license information.
 
 // using System.Drawing;
-// using AsepriteDotNet.Core;
-// using AsepriteDotNet.Core.FileFormat.Data;
-// using AsepriteDotNet.Core.Types;
+// using AsepriteDotNet;
+// using AsepriteDotNet.FileFormat.Data;
+// using AsepriteDotNet.Types;
 // using AsepriteDotNet.Processors;
 
 // namespace AsepriteDotNet.Tests.Processors;

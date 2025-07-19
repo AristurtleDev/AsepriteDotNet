@@ -4,7 +4,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\source\AsepriteDotNet.Core\AsepriteDotNet.Core.csproj" />
+        <ProjectReference Include="..\..\src\AsepriteDotNet\AsepriteDotNet.csproj" />
     </ItemGroup>
 
     <!--

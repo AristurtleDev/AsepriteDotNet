@@ -1,45 +1,53 @@
+// Copyright (c) Christopher Whitley. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
 using AsepriteDotNet.Core.Types;
 
 namespace AsepriteDotNet.Core;
 
 /// <summary>
-/// Provides strategies for selecting layers from an Aseprite file.
+/// Provides layer filtering strategies for selecting subsets of layers from Aseprite files.
 /// </summary>
+/// <remarks>
+/// All selector implementations return new arrays containing references to the original layers,
+/// preserving the original layer order while filtering based on specific criteria.
+/// </remarks>
 public abstract class LayerSelector
 {
     /// <summary>
-    /// Creates a selector that includes all layers.
+    /// Creates a selector that returns all layers without filtering.
     /// </summary>
-    /// <returns>A layer selector that selects all layers.</returns>
+    /// <returns>A <see cref="LayerSelector"/> that selects every layer.</returns>
     public static LayerSelector AllLayers() => new AllLayerSelector();
 
     /// <summary>
-    /// Creates a selector that includes only visible layers.
+    /// Creates a selector that returns only layers marked as visible.
     /// </summary>
-    /// <returns>A layer selector that selects only visible layers.</returns>
+    /// <returns>A <see cref="LayerSelector"/> that filters layers based on their visibility state.</returns>
     public static LayerSelector VisibleLayers() => new VisibleLayerSelector();
 
     /// <summary>
-    /// Creates a selector that includes layers with the specified names.
+    /// Creates a selector that returns layers whose names match any of the specified values.
     /// </summary>
-    /// <param name="layerNames">The names of layers to select.</param>
-    /// <returns>A layer selector that selects layers by name.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="layerNames"/> is <see langword="null"/>.</exception>
+    /// <param name="layerNames">The layer names to match against.</param>
+    /// <returns>A <see cref="LayerSelector"/> that filters layers by exact name matching.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="layerNames"/> is null.</exception>
     public static LayerSelector ByName(params string[] layerNames) => new NameLayerSelector(layerNames);
 
     /// <summary>
-    /// Creates a selector that includes layers matching the specified predicate.
+    /// Creates a selector that returns layers matching the specified predicate function.
     /// </summary>
-    /// <param name="predicate">A function to test each layer for inclusion.</param>
-    /// <returns>A layer selector that selects layers using the predicate.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="predicate"/> is <see langword="null"/>.</exception>
+    /// <param name="predicate">The function that determines whether a layer should be selected.</param>
+    /// <returns>A <see cref="LayerSelector"/> that filters layers using the provided predicate.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="predicate"/> is null.</exception>
     public static LayerSelector Predicate(Func<AsepriteLayer, bool> predicate) => new PredicateLayerSelector(predicate);
 
     /// <summary>
-    /// Selects layers from the provided collection based on the selector's criteria.
+    /// Selects layers from the provided collection based on the selector's filtering criteria.
     /// </summary>
-    /// <param name="layers">The layers to select from.</param>
-    /// <returns>A span of selected layers maintaining the original order.</returns>
+    /// <param name="layers">The collection of layers to filter.</param>
+    /// <returns>A span containing the selected layers in their original order.</returns>
     public abstract ReadOnlySpan<AsepriteLayer> SelectLayers(ReadOnlySpan<AsepriteLayer> layers);
 
     private sealed class AllLayerSelector : LayerSelector

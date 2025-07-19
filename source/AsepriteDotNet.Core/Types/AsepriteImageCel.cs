@@ -7,22 +7,34 @@ using System.Drawing;
 namespace AsepriteDotNet.Core.Types;
 
 /// <summary>
-/// Defines the properties of a cel in an Aseprite file that contains image data.  This class cannot be inherited.
+/// Represents an image cel containing RGBA pixel data for traditional sprite artwork.
 /// </summary>
+/// <remarks>
+/// Image cels store pixel data that can be painted, transformed, and composited using various blend modes.
+/// The pixel data is stored in row-major order from top-left to bottom-right, with each pixel containing
+/// red, green, blue, and alpha components as specified in the Aseprite file format.
+/// </remarks>
 public sealed class AsepriteImageCel : AsepriteCel
 {
-    internal Rgba32[] InternalPixels { get;  set; }
+    internal Rgba32[] InternalPixels { get; set; }
 
     /// <summary>
-    /// Gets the size of this image cel.
+    /// Gets the dimensions of the cel's pixel data in pixels.
     /// </summary>
+    /// <remarks>
+    /// The size represents the actual dimensions of the pixel array and may differ from the layer's
+    /// canvas size. Cel positioning is handled separately through the inherited Location property.
+    /// </remarks>
     public Size Size { get; internal set; }
 
     /// <summary>
-    /// Gets the collection of color data that represents the pixels that make up the image for this image cel.
-    /// The order of color elements starts with the top-left most pixel in the image and is read left-to-right from
-    /// top-to-bottom.
+    /// Gets the pixel data contained in this cel.
     /// </summary>
+    /// <remarks>
+    /// Pixels are stored from top-left to bottom-right, with each row containing pixels from left to right.
+    /// The total number of pixels equals Size.Width × Size.Height. Each pixel contains 8-bit red, green,
+    /// blue, and alpha components as defined in the RGBA color format specification.
+    /// </remarks>
     public ReadOnlySpan<Rgba32> Pixels => InternalPixels;
 
     internal AsepriteImageCel() { }

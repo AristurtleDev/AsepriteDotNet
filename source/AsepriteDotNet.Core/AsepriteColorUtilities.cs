@@ -2,19 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-using AsepriteDotNet.Core.Types;
-
 namespace AsepriteDotNet.Core;
 
 internal static class AsepriteColorUtilities
 {
-    /// <summary>
-    /// Calculates the saturation value based on the given RGB color component values.
-    /// </summary>
-    /// <param name="r">The red color component value (0 to 1).</param>
-    /// <param name="g">The green color component value (0 to 1).</param>
-    /// <param name="b">The blue color component value (0 to 1).</param>
-    /// <returns>The saturation value calculated.</returns>
     internal static double CalculateSaturation(double r, double g, double b)
     {
         double max = Math.Max(r, Math.Max(g, b));
@@ -22,13 +13,6 @@ internal static class AsepriteColorUtilities
         return max - min;
     }
 
-    /// <summary>
-    /// Calculates the luminance value based on the given RGB color component values.
-    /// </summary>
-    /// <param name="r">The red color component value (0 to 1).</param>
-    /// <param name="g">The green color component value (0 to 1).</param>
-    /// <param name="b">The blue color component value (0 to 1).</param>
-    /// <returns></returns>
     internal static double CalculateLuminance(double r, double g, double b)
     {
         //  Primary coefficients for Rec. 601
@@ -44,13 +28,6 @@ internal static class AsepriteColorUtilities
         return r + g + b;
     }
 
-    /// <summary>
-    /// Modifies the saturation of the specified RGB color component values.
-    /// </summary>
-    /// <param name="r">The red color component value (0 to 1).</param>
-    /// <param name="g">The green color component value (0 to 1).</param>
-    /// <param name="b">The blue color component value (0 to 1).</param>
-    /// <param name="s">The saturation factor to adjust the color components by.</param>
     internal static void AdjustSaturation(ref double r, ref double g, ref double b, double s)
     {
         ref double min = ref Calc.RefMin(ref Calc.RefMin(ref r, ref g), ref b);
@@ -70,13 +47,6 @@ internal static class AsepriteColorUtilities
         min = 0;
     }
 
-    /// <summary>
-    /// Modifies the luminosity of the specified RGB color component values.
-    /// </summary>
-    /// <param name="r">The red color component value (0 to 1).</param>
-    /// <param name="g">The green color component value (0 to 1).</param>
-    /// <param name="b">The blue color component value (0 to 1).</param>
-    /// <param name="l">The desired luminosity value to apply.</param>
     internal static void AdjustLumanice(ref double r, ref double g, ref double b, double l)
     {
         double current = CalculateLuminance(r, g, b);
@@ -87,13 +57,6 @@ internal static class AsepriteColorUtilities
         NormalizeColor(ref r, ref g, ref b);
     }
 
-    /// <summary>
-    /// Normalizes the specified RGB color component values to ensure they are within the valid range of 0 to 1.
-    /// Clips the values of the specified RGB color
-    /// </summary>
-    /// <param name="r">The red color component value.</param>
-    /// <param name="g">The green color component value.</param>
-    /// <param name="b">The blue color component value.</param>
     internal static void NormalizeColor(ref double r, ref double g, ref double b)
     {
         double luminosity = CalculateLuminance(r, g, b);
@@ -117,17 +80,6 @@ internal static class AsepriteColorUtilities
         }
     }
 
-    /// <summary>
-    /// Blends two <see cref="Rgba32"/> values using the specified <see cref="AsepriteBlendMode"/> and opacity.
-    /// </summary>
-    /// <param name="backdrop">The backdrop color.</param>
-    /// <param name="source">The source color to be blended onto the <paramref name="backdrop"/>.</param>
-    /// <param name="opacity">The opacity of the blending operation.</param>
-    /// <param name="blendMode">The <see cref="AsepriteBlendMode"/> to use for the blending operation.</param>
-    /// <returns>The resulting <see cref="Rgba32"/> value created from the blending.</returns>
-    /// <exception cref="InvalidOperationException">
-    /// <paramref name="blendMode"/> is an unknown <see cref="AsepriteBlendMode"/> value.
-    /// </exception>
     internal static Rgba32 Blend(Rgba32 backdrop, Rgba32 source, int opacity, AsepriteBlendMode blendMode)
     {
         //  Exit early depending on alpha

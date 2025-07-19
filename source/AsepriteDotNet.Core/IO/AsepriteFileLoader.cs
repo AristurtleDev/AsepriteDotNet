@@ -2,8 +2,8 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-using System.Diagnostics;
 using System.Drawing;
+using System.Text;
 using AsepriteDotNet.Core.Compression;
 using AsepriteDotNet.Core.FileFormat;
 using AsepriteDotNet.Core.Types;
@@ -11,11 +11,26 @@ using AsepriteDotNet.Core.Types;
 namespace AsepriteDotNet.Core.IO;
 
 /// <summary>
-/// Defines a utility class used for loading an Aseprite file.
+/// Provides static methods for loading and parsing Aseprite files (.ase/.aseprite) into structured data.
 /// </summary>
+/// <remarks>
+/// Implements the complete Aseprite file format specification including header parsing, frame processing,
+/// chunk interpretation, and data validation. Supports all chunk types defined in the format specification
+/// and handles both legacy and modern palette formats for maximum compatibility.
+/// </remarks>
 public static partial class AsepriteFileLoader
 {
 
+    /// <summary>
+    /// Loads an Aseprite file from the specified file path.
+    /// </summary>
+    /// <param name="path">The file path to the Aseprite file (.ase or .aseprite).</param>
+    /// <returns>A fully parsed <see cref="AsepriteFile"/> containing all sprite data and metadata.</returns>
+    /// <exception cref="FileNotFoundException">Thrown when the specified file does not exist.</exception>
+    /// <exception cref="InvalidDataException">Thrown when the file is not a valid Aseprite file or is corrupted.</exception>
+    /// <remarks>
+    /// Automatically extracts the filename for sprite identification and handles file stream management.
+    /// </remarks>
     public static AsepriteFile FromFile(string path)
     {
         string fileName = Path.GetFileNameWithoutExtension(path);
@@ -23,13 +38,31 @@ public static partial class AsepriteFileLoader
         return FromStream(fileName, stream, true);
     }
 
+    /// <summary>
+    /// Loads an Aseprite file from a stream with the specified filename for identification.
+    /// </summary>
+    /// <param name="fileName">The name to assign to the sprite for identification purposes.</param>
+    /// <param name="stream">The stream containing Aseprite file data positioned at the beginning.</param>
+    /// <param name="leaveOpen">Whether to leave the stream open after reading completes.</param>
+    /// <returns>A fully parsed <see cref="AsepriteFile"/> containing all sprite data and metadata.</returns>
+    /// <exception cref="InvalidDataException">Thrown when the stream does not contain valid Aseprite data or is corrupted.</exception>
+    /// <remarks>
+    /// Enables loading from embedded resources, network streams, or memory streams while maintaining
+    /// full format validation and compatibility with all Aseprite file versions.
+    /// </remarks>
     public static AsepriteFile FromStream(string fileName, Stream stream, bool leaveOpen = false)
     {
         using BinaryReader reader = new(stream, Encoding.UTF8, leaveOpen);
         return LoadFile(fileName, reader);
     }
 
-    private static AsepriteFile LoadFile(string fileName, AsepriteBinaryReader reader)
+    /// <summary>
+    /// Performs the complete file parsing process including header validation and chunk processing.
+    /// </summary>
+    /// <param name="fileName">The name to assign to the resulting sprite.</param>
+    /// <param name="reader">The binary reader positioned at the start of the file data.</param>
+    /// <returns>A fully constructed <see cref="AsepriteFile"/> with all components populated.</returns>
+    private static AsepriteFile LoadFile(string fileName, BinaryReader reader)
     {
         AsepriteReaderContext context = new();
 
@@ -67,6 +100,12 @@ public static partial class AsepriteFileLoader
         return file;
     }
 
+    /// <summary>
+    /// Parses and validates the 128-byte file header according to the Aseprite specification.
+    /// </summary>
+    /// <param name="fileHeaderData">The raw header bytes from the file.</param>
+    /// <param name="context">The parsing context to populate with header information.</param>
+    /// <exception cref="InvalidDataException">Thrown when the header contains invalid magic numbers, color depths, or other format violations.</exception>
     private static void ReadFileHeader(ReadOnlySpan<byte> fileHeaderData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(fileHeaderData);
@@ -126,6 +165,13 @@ public static partial class AsepriteFileLoader
         // reading the rest and just returning here.
     }
 
+    /// <summary>
+    /// Processes a single frame including header validation and chunk iteration.
+    /// </summary>
+    /// <param name="frameIndex">The zero-based index of the frame being processed.</param>
+    /// <param name="frameData">The raw frame data including header and all chunks.</param>
+    /// <param name="context">The parsing context for maintaining state across chunks.</param>
+    /// <exception cref="InvalidDataException">Thrown when the frame header contains invalid magic numbers or corruption.</exception>
     private static void ReadFrame(int frameIndex, ReadOnlySpan<byte> frameData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(frameData);
@@ -170,6 +216,15 @@ public static partial class AsepriteFileLoader
         context.Frames.Add(context.CurrentFrame);
     }
 
+    /// <summary>
+    /// Dispatches chunk processing to the appropriate handler based on chunk type.
+    /// </summary>
+    /// <param name="chunkType">The chunk type identifier from the chunk header.</param>
+    /// <param name="chunkData">The raw chunk data excluding the size and type fields.</param>
+    /// <param name="context">The parsing context for maintaining state and collecting results.</param>
+    /// <remarks>
+    /// Ignores unsupported or reserved chunk types for forward compatibility.
+    /// </remarks>
     private static void ProcessChunk(ChunkType chunkType, ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         switch (chunkType)
@@ -212,6 +267,16 @@ public static partial class AsepriteFileLoader
         }
     }
 
+    /// <summary>
+    /// Processes legacy palette chunk (0x0004) with RGB values in 0-255 range.
+    /// </summary>
+    /// <param name="chunkData">The raw palette chunk data.</param>
+    /// <param name="context">The parsing context containing palette state.</param>
+    /// <remarks>
+    /// Skipped if a modern palette chunk (0x2019) has already been processed. Uses packet-based
+    /// encoding where each packet specifies a skip count and color count for efficient palette updates.
+    /// Sets alpha to 255 for all colors since legacy palettes don't support transparency.
+    /// </remarks>
     private static void ReadAsepriteOldPalette1Chunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         if (context.PaletteRead)
@@ -253,6 +318,15 @@ public static partial class AsepriteFileLoader
         context.LastReadChunkType = ChunkType.OldPalette1;
     }
 
+    /// <summary>
+    /// Processes legacy palette chunk (0x0011) with RGB values in 0-63 range requiring expansion.
+    /// </summary>
+    /// <param name="chunkData">The raw palette chunk data.</param>
+    /// <param name="context">The parsing context containing palette state.</param>
+    /// <remarks>
+    /// Skipped if a modern palette chunk (0x2019) has already been processed. RGB values are
+    /// 6-bit (0-63) and must be expanded to 8-bit using bit shifting.
+    /// </remarks>
     private static void ReadAsepriteOldPalette2Chunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         if (context.PaletteRead)
@@ -300,6 +374,16 @@ public static partial class AsepriteFileLoader
         context.LastReadChunkType = ChunkType.OldPalette2;
     }
 
+    /// <summary>
+    /// Processes layer chunk (0x2004) creating the appropriate layer type with hierarchy relationships.
+    /// </summary>
+    /// <param name="chunkData">The raw layer chunk data.</param>
+    /// <param name="context">The parsing context for layer collection and hierarchy tracking.</param>
+    /// <exception cref="InvalidDataException">Thrown when the layer type is invalid or unsupported.</exception>
+    /// <remarks>
+    /// Establishes parent-child relationships using child levels and maintains group references
+    /// for proper hierarchy construction during final sprite assembly.
+    /// </remarks>
     private static void ReadAsepriteLayerChunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(chunkData);
@@ -381,6 +465,12 @@ public static partial class AsepriteFileLoader
         }
     }
 
+    /// <summary>
+    /// Processes cel chunk (0x2005) creating the appropriate cel type with positioning and content data.
+    /// </summary>
+    /// <param name="chunkData">The raw cel chunk data.</param>
+    /// <param name="context">The parsing context containing layers and frames for cel association.</param>
+    /// <exception cref="InvalidDataException">Thrown when cel type is invalid or linked cel references are broken.</exception>
     private static void ReadAsepriteCelChunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(chunkData);
@@ -519,6 +609,11 @@ public static partial class AsepriteFileLoader
         }
     }
 
+    /// <summary>
+    /// Processes tags chunk (0x2018) creating animation tags with frame ranges and playback properties.
+    /// </summary>
+    /// <param name="chunkData">The raw tags chunk data.</param>
+    /// <param name="context">The parsing context for tag collection and user data preparation.</param>
     private static void ReadAsepriteTagChunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(chunkData);
@@ -558,6 +653,11 @@ public static partial class AsepriteFileLoader
         context.LastReadChunkType = ChunkType.Tags;
     }
 
+    /// <summary>
+    /// Processes modern palette chunk (0x2019) with full RGBA support and optional color names.
+    /// </summary>
+    /// <param name="chunkData">The raw palette chunk data.</param>
+    /// <param name="context">The parsing context containing palette state.</param>
     private static void ReadAsepritePaletteChunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(chunkData);
@@ -596,6 +696,11 @@ public static partial class AsepriteFileLoader
         context.LastReadChunkType = ChunkType.Palette;
     }
 
+    /// <summary>
+    /// Processes user data chunk (0x2020) associating metadata with the previously read chunk or handling special cases.
+    /// </summary>
+    /// <param name="chunkData">The raw user data chunk data.</param>
+    /// <param name="context">The parsing context maintaining user data association state.</param>
     private static void ReadAsepriteUserDataChunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(chunkData);
@@ -663,6 +768,11 @@ public static partial class AsepriteFileLoader
         }
     }
 
+    /// <summary>
+    /// Processes slice chunk (0x2022) creating named sprite regions with optional 9-patch and pivot data.
+    /// </summary>
+    /// <param name="chunkData">The raw slice chunk data.</param>
+    /// <param name="context">The parsing context for slice collection.</param>
     private static void ReadAsepriteSliceChunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(chunkData);
@@ -717,6 +827,15 @@ public static partial class AsepriteFileLoader
         context.LastReadChunkType = ChunkType.Slice;
     }
 
+    /// <summary>
+    /// Processes tileset chunk (0x2023) creating tilesets with embedded compressed tile image data.
+    /// </summary>
+    /// <param name="chunkData">The raw tileset chunk data.</param>
+    /// <param name="context">The parsing context for tileset collection.</param>
+    /// <exception cref="NotSupportedException">Thrown when external file references are encountered or embedded data is missing.</exception>
+    /// <remarks>
+    /// Currently supports only embedded tilesets due to external file complexity.
+    /// </remarks>
     private static void ReadAsepriteTilesetChunk(ReadOnlySpan<byte> chunkData, AsepriteReaderContext context)
     {
         SpanBinaryReader reader = new(chunkData);
@@ -768,6 +887,17 @@ public static partial class AsepriteFileLoader
         context.LastReadChunkType = ChunkType.Tileset;
     }
 
+    /// <summary>
+    /// Converts raw pixel data to RGBA color values based on the sprite's color depth and palette.
+    /// </summary>
+    /// <param name="pixels">The raw pixel data from cel or tileset chunks.</param>
+    /// <param name="depth">The color depth specifying pixel format and byte layout.</param>
+    /// <param name="palette">The palette for indexed color mode conversion.</param>
+    /// <returns>An array of RGBA colors corresponding to the input pixel data.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when an unsupported color depth is encountered.</exception>
+    /// <remarks>
+    /// For indexed mode, transparent index pixels remain transparent regardless of palette content.
+    /// </remarks>
     private static Rgba32[] PixelsToColor(ReadOnlySpan<byte> pixels, AsepriteColorDepth depth, AsepritePalette palette)
     {
         const int BITS_PER_PIXEL = 8;

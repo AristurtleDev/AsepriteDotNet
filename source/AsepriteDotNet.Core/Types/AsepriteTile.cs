@@ -5,27 +5,29 @@
 namespace AsepriteDotNet.Core.Types;
 
 /// <summary>
-/// Defines the properties of a tile in an Aseprite file.  This class cannot be inherited.
+/// Represents a single tile entry in a tilemap with transformation flags and tileset reference.
 /// </summary>
 public sealed class AsepriteTile
 {
     /// <summary>
-    /// Gets the ID of the tile in the tileset that is represented by this tile.
+    /// Gets the identifier that references a specific tile within the associated tileset.
     /// </summary>
     public int ID { get; internal set; }
 
     /// <summary>
-    /// Gets a value that indicates whether this tile is flipped horizontally.
+    /// Gets a value indicating whether the tile should be rendered with horizontal mirroring.
     /// </summary>
     public bool FlipHorizontally { get; internal set; }
 
     /// <summary>
-    /// Gets a value that indicates whether this tile is flipped vertically.
+    /// Gets a value indicating whether the tile should be rendered with vertical mirroring.
     /// </summary>
     public bool FlipVertically { get; internal set; }
 
     /// <summary>
-    /// Gets a value that indicates whether this tile is flipped diagonally.
+    /// Gets a value indicating whether the tile should be rendered with diagonal mirroring.
     /// </summary>
     public bool FlipDiagonally { get; internal set; }
+
+    internal AsepriteTile() { }
 }

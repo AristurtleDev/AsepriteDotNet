@@ -5,10 +5,13 @@
 namespace AsepriteDotNet.Core.Types;
 
 /// <summary>
-/// Defines the properties of a layer in an Aseprite file that
-/// Defines the properties of a layer in an Aseprite file that image cels are placed on.  This class cannot be
-/// inherited.
+/// Represents a normal image layer that contains pixel-based artwork and supports full RGBA color blending.
 /// </summary>
+/// <remarks>
+/// Image layers are the standard layer type for traditional sprite artwork and animation frames.
+/// They support compressed or raw image data that can be painted, transformed, and composited using
+/// various blend modes. Each cel within this layer contains RGBA pixel data organized in row-major format.
+/// </remarks>
 public sealed class AsepriteImageLayer : AsepriteLayer
 {
     internal AsepriteImageLayer() { }

@@ -9,10 +9,15 @@ using AsepriteDotNet.Core.Compression;
 
 namespace AsepriteDotNet.Core.IO;
 
-//  Reference: https://www.w3.org/TR/png-3
 /// <summary>
-/// Write <see cref="Rgba32"/> color data to a png file.
+/// Provides PNG file creation functionality for exporting sprite data as compressed raster images.
 /// </summary>
+/// <remarks>
+/// Implements the PNG specification (ISO/IEC 15948) for creating truecolor images with alpha transparency.
+/// Uses DEFLATE compression with ZLIB wrapper and CRC-32 integrity checking as required by the PNG standard.
+/// Optimized for sprite export workflows with fixed 8-bit per channel RGBA color depth.
+/// </remarks>
+//  Reference: https://www.w3.org/TR/png-3
 public static class PngWriter
 {
     //  Common IDAT chunk sizes are between 8 and 32 Kib.  Opting to use
@@ -20,12 +25,14 @@ public static class PngWriter
     private const int MAX_IDAT_LEN = 8192;
 
     /// <summary>
-    /// Saves the given color data to disk at the specified path as a PNG image file.
+    /// Saves RGBA pixel data as a PNG file at the specified path.
     /// </summary>
-    /// <param name="path">The absolute path to where the file should be saved.</param>
-    /// <param name="width">The width of the image, in pixels.</param>
-    /// <param name="height">The height of the image, in pixels.</param>
-    /// <param name="data">The color data of the image.</param>
+    /// <param name="path">The file path where the PNG image will be saved.</param>
+    /// <param name="width">The width of the image in pixels.</param>
+    /// <param name="height">The height of the image in pixels.</param>
+    /// <param name="data">The pixel data array containing RGBA values in row-major order.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="data"/> is null.</exception>
+    /// <exception cref="PngException">Thrown when PNG creation fails due to I/O errors or compression issues.</exception>
     public static void SaveTo(string path, int width, int height, Rgba32[] data)
     {
         ArgumentNullException.ThrowIfNull(data);

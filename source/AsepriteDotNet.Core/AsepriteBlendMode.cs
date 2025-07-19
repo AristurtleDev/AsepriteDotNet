@@ -5,148 +5,162 @@
 namespace AsepriteDotNet.Core;
 
 /// <summary>
-/// Defines the blend mode used by <see cref="Types.AsepriteLayer"/> elements when blending <see cref="Types.AsepriteCel"/>
-/// elements.
+/// Defines blend modes for layer composition that control how pixels are mathematically combined during rendering.
 /// </summary>
+/// <remarks>
+/// Blend modes determine the mathematical operations applied when combining layer pixels with underlying layers.
+/// </remarks>
 public enum AsepriteBlendMode
 {
     /// <summary>
-    /// Normal blend mode is the standard blend mode that takes the top layer alone without mixing any color from the
-    /// layer beneath it.
-    /// <code>f(a,b) = b</code>
+    /// Standard alpha blending where the source pixel replaces the destination based on alpha values.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = Source × SourceAlpha + Destination × (1 - SourceAlpha)
+    /// </remarks>
     Normal = 0,
 
     /// <summary>
-    /// Multiply blend mode that takes the RGB component values of each pixel from the top layer and multiplies them
-    /// with the RGB component values of the corresponding pixel from the bottom layer.
-    /// <code>f(a,b) = ab</code>
+    /// Darkens the image by multiplying source and destination color values.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = Source × Destination
+    /// </remarks>
     Multiply = 1,
 
     /// <summary>
-    /// Screen blend mode takes the RGB component values of each pixel from the top and bottom layer and inverts them,
-    /// then multiples the RGB component values of each pixel from the top layer with the RGB component values of the
-    /// corresponding pixel from the bottom layer, then the RGB component value of each resulting pixel is inverted
-    /// again.
-    /// <code>f(a,b) = 1-(1-a)(1-b)</code>
+    /// Lightens the image by inverting, multiplying, and inverting again.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = 1 - (1 - Source) × (1 - Destination)
+    /// </remarks>
     Screen = 2,
 
     /// <summary>
-    /// Overlay blend combines the Multiply and Screen blend modes based on the tonal value of the bottom layer. If the
-    /// bottom layer is darker than 50% gray, then the tonal values are multiplied; otherwise, they get screened.
-    /// In both cases the resulting value is doubled after.
-    /// <code>f(a,b) = 2ab when a less than 0.5</code>
-    /// <code>f(a,b) = 1-2(1-a)(1-b) when a equal to or greater than 0.5</code>
+    /// Combines multiply and screen blend modes based on destination brightness.
     /// </summary>
+    /// <remarks>
+    /// Uses multiply for destination values below 0.5, screen for values above 0.5.
+    /// </remarks>
     Overlay = 3,
 
     /// <summary>
-    /// Darken blend retains the smallest of each RGB component for each corresponding pixel from the top and bottom
-    /// layer.
-    /// <code>f((r1,g1,b1), (r2,b2,g2)) = [min(r1,r2), min(g1,g2), min(b1,b2)]</code>
+    /// Selects the darker color value between source and destination for each channel.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = min(Source, Destination)
+    /// </remarks>
     Darken = 4,
 
     /// <summary>
-    /// Lighten blend retains the largest of each RGB component for each corresponding pixel from the top and bottom
-    /// layer.
-    /// <code>f((r1,g1,b1), (r2,b2,g2)) = [max(r1,r2), max(g1,g2), max(b1,b2)]</code>
+    /// Selects the lighter color value between source and destination for each channel.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = max(Source, Destination)
+    /// </remarks>
     Lighten = 5,
 
     /// <summary>
-    /// Color Dodge blend divides each pixel from the bottom layer with the corresponding inverted pixel from the top
-    /// layer.
-    /// <code>f(a,b) = a/(1-b)</code>
+    /// Brightens the destination based on the source color through division-based calculations.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = Destination ÷ (1 - Source)
+    /// </remarks>
     ColorDodge = 6,
 
     /// <summary>
-    /// Color Burn blend divides each inverted pixel from the bottom layer with the corresponding pixel from the top
-    /// layer, then inverts the resulting value.
-    /// <code>f(a,b) = 1-(1-a)/b</code>
+    /// Darkens the destination based on the source color through inverse division.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = 1 - (1 - Destination) ÷ Source
+    /// </remarks>
     ColorBurn = 7,
 
     /// <summary>
-    /// Hard Light blend combines the Multiply and Screen blend modes based on the tonal value of the top layer. If the
-    /// top layer is darker than 50% gray, then the tonal values are multiplied; otherwise, they get screened.  In both
-    /// cases the resulting value is doubled after.
-    /// <code>f(a,b) = 2ab when b less than 0.5</code>
-    /// <code>f(a,b) = 1-2(1-a)(1-b) when b equal to or greater than 0.5</code>
+    /// Combines multiply and screen based on source brightness for dramatic contrast.
     /// </summary>
+    /// <remarks>
+    /// Uses multiply for source values below 0.5, screen for values above 0.5.
+    /// </remarks>
     HardLight = 8,
 
     /// <summary>
-    /// Soft Light blend modulates the tonal values of the bottom layer by the tonal values of the top layer.
-    /// <code>f(a,b) = (2b-1)(a-a^2)+a when b is less than 0.5</code>
-    /// <code>f(a,b) = (2b-1)(sqrt(a)-a)+a when b is equal to or greater than 0.5</code>
+    /// Applies subtle dodge and burn effects based on source brightness.
     /// </summary>
+    /// <remarks>
+    /// Uses color burn for source values below 0.5, color dodge for values above 0.5.
+    /// </remarks>
     SoftLight = 9,
 
     /// <summary>
-    /// Difference blend returns the absolute value in the difference between RGB component value of each pixel in the
-    /// top layer from the RGB component value in the corresponding pixel in the bottom layer.
-    /// <code>f(a,b) = |a-b|</code>
+    /// Subtracts the smaller value from the larger value for each color channel.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = |Source - Destination|
+    /// </remarks>
     Difference = 10,
 
     /// <summary>
-    /// Exclusion blend mode takes the sum of the RGB component values of each pixel in the top layer with the RGB
-    /// component value of each corresponding pixel in the bottom layer, then subtracts the doubled product of top and
-    /// bottom layer.
-    /// <code>f(a,b) = a+b-2ab</code>
+    /// Similar to difference but with lower contrast and smoother transitions.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = Source + Destination - 2 × Source × Destination
+    /// </remarks>
     Exclusion = 11,
 
     /// <summary>
-    /// Hue blend mode preserves the luma and chroma of each pixel in the bottom layer and adopts the hue of the
-    /// corresponding pixel in the top layer.
-    /// <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Hb, Sa, La)</code>
+    /// Preserves the hue of the source while using saturation and luminosity from destination.
     /// </summary>
+    /// <remarks>
+    /// Converts colors to HSL space, replaces hue component, and converts back to RGB.
+    /// </remarks>
     Hue = 12,
 
     /// <summary>
-    /// Saturation blend mode preserves the luma and hue of each pixel in the bottom layer and adopts the chroma of
-    /// the corresponding pixel in the top layer.
-    /// <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Ha, Sb, La)</code>
+    /// Preserves the saturation of the source while using hue and luminosity from destination.
     /// </summary>
+    /// <remarks>
+    /// Converts colors to HSL space, replaces saturation component, and converts back to RGB.
+    /// </remarks>
     Saturation = 13,
 
     /// <summary>
-    /// The color blend mode preserves the luma of each pixel in the bottom layer and adopts the hue and chroma of the
-    /// corresponding pixel in the top layer.
-    /// <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Hb, Sb, La)</code>
+    /// Preserves the hue and saturation of the source while using luminosity from destination.
     /// </summary>
+    /// <remarks>
+    /// Converts colors to HSL space, replaces hue and saturation components, and converts back to RGB.
+    /// </remarks>
     Color = 14,
 
     /// <summary>
-    /// Luminosity blend mode preserves the hue and chroma of each pixel in the bottom layer and adopts the luma of the
-    /// corresponding pixel in then top layer.
-    /// <code>f((Ha,Sa,La),(Hb,Sb,Lb)) = (Ha, Sa, Lb)</code>
+    /// Preserves the luminosity of the source while using hue and saturation from destination.
     /// </summary>
+    /// <remarks>
+    /// Converts colors to HSL space, replaces luminosity component, and converts back to RGB.
+    /// </remarks>
     Luminosity = 15,
 
     /// <summary>
-    /// Addition blend mode adds the RGB component values of each pixel from the top layer with the RGB component values
-    /// of each corresponding pixel in the bottom layer.
-    /// <code>f(a,b) = a + b</code>
+    /// Adds source and destination color values together with clamping to prevent overflow.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = min(Source + Destination, 1.0)
+    /// </remarks>
     Addition = 16,
 
     /// <summary>
-    /// Subtract blend mode subtracts the RGB component values of each pixel from the top layer from the RGB component
-    /// values of each corresponding pixel in the bottom layer.
-    /// <code>f(a,b) = a - b</code>
+    /// Subtracts source color values from destination with clamping to prevent underflow.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = max(Destination - Source, 0.0)
+    /// </remarks>
     Subtract = 17,
 
     /// <summary>
-    /// Divide blend mode divides the RGB component values of each pixel from the bottom layer by the RGB component
-    /// values of each corresponding pixel from the top layer.
-    /// <code>f(a,b) = a/b</code>
+    /// Divides destination color values by source color values.
     /// </summary>
+    /// <remarks>
+    /// Formula: Result = Destination ÷ Source
+    /// </remarks>
     Divide = 18
 }

@@ -5,8 +5,14 @@
 namespace AsepriteDotNet.Core.Compression;
 
 /// <summary>
-/// Utility class for calculating an Adler-32 checksum
+/// Implements the Adler-32 checksum algorithm for data integrity verification.
 /// </summary>
+/// <remarks>
+/// Adler-32 is a checksum algorithm that combines two 16-bit sums: a running sum of bytes
+/// and a running sum of the first sum values. It provides better error detection than simple
+/// checksums while being faster than CRC32. The algorithm uses modulo 65521 (largest prime
+/// less than 65536) to maintain the sums within 16-bit ranges and prevent overflow.
+/// </remarks>
 internal class Adler32
 {
     private const uint BASE = 65521;    //  Largest prime smaller than 65536
@@ -15,47 +21,40 @@ internal class Adler32
     private uint _value;
 
     /// <summary>
-    /// Gets the current checksum value.
+    /// Gets the current 32-bit Adler-32 checksum value.
     /// </summary>
     internal uint CurrentValue => _value;
 
     /// <summary>
-    /// Creates a new instance of the <see cref="Adler32"/> class.
+    /// Initializes a new instance of the <see cref="Adler32"/> class with the standard initial value.
     /// </summary>
-    /// <remarks>
-    /// This will initialize the underlying checksum value to 1
-    /// </remarks>
     internal Adler32() => _value = 1U;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Adler32"/> class.
+    /// Initializes a new instance of the <see cref="Adler32"/> class with a specified initial value.
     /// </summary>
-    /// <param name="initial">
-    /// The initial checksum value to start with.
-    /// </param>
+    /// <param name="initial">The initial checksum value to start with.</param>
     internal Adler32(uint initial) => _value = initial;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Adler32"/> class.
+    /// Initializes a new instance of the <see cref="Adler32"/> class and immediately processes the provided data.
     /// </summary>
-    /// <param name="initial">
-    /// A <see cref="ReadOnlySpan{T}"/> of <see cref="byte"/> elements that the initial checksum value will be
-    /// calculated from
-    /// </param>
+    /// <param name="initial">The initial data to process for checksum calculation.</param>
     internal Adler32(ReadOnlySpan<byte> initial) : this() => _ = Update(initial);
 
     /// <summary>
-    /// Resets the underlying checksum value of this instance of the <see cref="Adler32"/> class to 1.
+    /// Resets the checksum to the standard initial value.
     /// </summary>
+    /// <remarks>
+    /// Sets the internal value back to 1, allowing the instance to be reused for new checksum calculations.
+    /// </remarks>
     internal void Reset() => _value = 1U;
 
     /// <summary>
-    /// Updates and returns the underlying checksum value using the  specified <paramref name="buffer"/>.
+    /// Updates the checksum with the provided data buffer.
     /// </summary>
-    /// <param name="buffer">
-    /// A <see cref="ReadOnlySpan{T}"/> of <see cref="byte"/> elements that will be added to the underlying checksum value.
-    /// </param>
-    /// <returns>The updated checksum value.</returns>
+    /// <param name="buffer">The data to include in the checksum calculation.</param>
+    /// <returns>The updated 32-bit Adler-32 checksum value.</returns>
     internal uint Update(ReadOnlySpan<byte> buffer)
     {
         uint sum2;

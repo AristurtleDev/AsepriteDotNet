@@ -5,22 +5,25 @@
 namespace AsepriteDotNet.Core;
 
 /// <summary>
-///	Defines the color depth mode used by an Aseprite sprite.
+/// Defines the color depth and pixel format used by Aseprite sprites for color representation.
 /// </summary>
+/// <remarks>
+/// Color depth determines both the bits per pixel and the color format used throughout the sprite.
+/// </remarks>
 public enum AsepriteColorDepth
 {
     /// <summary>
-    /// Defines that the Aseprite sprite uses an Indexed mode of 8-bits per pixel.
+    /// 8-bit indexed color mode using palette references for color representation.
     /// </summary>
     Indexed = 8,
 
     /// <summary>
-    ///	Defines that the Aseprite sprite uses a Grayscale mode of 16-bits per pixel.
+    /// 16-bit grayscale mode storing luminance and alpha channel information.
     /// </summary>
     Grayscale = 16,
 
     /// <summary>
-    ///	Defines that the Aseprite sprite uses an RGBA mode of 32-bits per pixel.
+    /// 32-bit RGBA color mode with full color and alpha channel support.
     /// </summary>
     RGBA = 32
 }

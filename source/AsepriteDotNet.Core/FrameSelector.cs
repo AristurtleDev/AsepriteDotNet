@@ -1,76 +1,72 @@
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
+// Copyright (c) Christopher Whitley. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
 using AsepriteDotNet.Core.Types;
 
 namespace AsepriteDotNet.Core;
 
 /// <summary>
-/// Defines a predicate function for evaluating frames during selection operations.
+/// Represents a method that determines whether a frame should be selected based on frame data, index, and associated tags.
 /// </summary>
-/// <param name="frame">The frame being evaluated.</param>
-/// <param name="index">The zero-based index of the frame within the sprite.</param>
-/// <param name="tags">All tags associated with the sprite for contextual evaluation.</param>
-/// <returns><see langword="true"/> if the frame matches the selection criteria; otherwise, <see langword="false"/>.</returns>
+/// <param name="frame">The frame to evaluate.</param>
+/// <param name="index">The zero-based index of the frame in the collection.</param>
+/// <param name="tags">The collection of tags associated with the frame sequence.</param>
+/// <returns><c>true</c> if the frame should be selected; otherwise, <c>false</c>.</returns>
 public delegate bool FramePredicate(AsepriteFrame frame, int index, ReadOnlySpan<AsepriteTag> tags);
 
 /// <summary>
-/// Provides frame selection strategies for filtering frames from Aseprite sprites based on various criteria.
+/// Provides frame filtering strategies for selecting subsets of frames from Aseprite animations.
 /// </summary>
 /// <remarks>
-/// Frame selectors use different strategies to filter frames: by index, by tag association, or by custom predicates.
-/// All selection operations maintain the original frame order from the sprite.
+/// All selector implementations return new arrays containing references to the original frames,
+/// preserving the original frame order while filtering based on specific criteria such as indices, tags, or custom predicates.
 /// </remarks>
 public abstract class FrameSelector
 {
     /// <summary>
     /// Creates a selector that returns all frames without filtering.
     /// </summary>
-    /// <returns>A selector that includes every frame in the sprite.</returns>
+    /// <returns>A <see cref="FrameSelector"/> that selects every frame in the sequence.</returns>
     public static FrameSelector AllFrames() => new AllFramesSelector();
 
     /// <summary>
-    /// Creates a selector that returns frames at specific zero-based indices.
+    /// Creates a selector that returns frames at the specified zero-based indices.
     /// </summary>
-    /// <param name="frameIndices">The zero-based indices of frames to select. Invalid indices are ignored.</param>
-    /// <returns>A selector that includes only frames at the specified indices.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="frameIndices"/> is <see langword="null"/>.</exception>
+    /// <param name="frameIndices">The indices of frames to select.</param>
+    /// <returns>A <see cref="FrameSelector"/> that filters frames by their position in the sequence.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="frameIndices"/> is null.</exception>
     public static FrameSelector ByIndices(params int[] frameIndices) => new IndexFrameSelector(frameIndices);
 
     /// <summary>
-    /// Creates a selector that returns frames within a specific animation tag.
+    /// Creates a selector that returns frames within the specified tag's range.
     /// </summary>
-    /// <param name="tagName">The exact name of the tag to match. Comparison is case-sensitive.</param>
-    /// <returns>A selector that includes frames from the first matching tag's range.</returns>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="tagName"/> is <see langword="null"/> or empty.</exception>
-    /// <remarks>
-    /// Only the first tag with the specified name is processed. If multiple tags share the same name, subsequent tags are ignored.
-    /// </remarks>
+    /// <param name="tagName">The name of the tag whose frame range should be selected.</param>
+    /// <returns>A <see cref="FrameSelector"/> that selects frames covered by the named tag.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="tagName"/> is null or empty.</exception>
     public static FrameSelector ByTag(string tagName) => new TagFrameSelector(tagName);
 
     /// <summary>
-    /// Creates a selector that returns frames within any of the specified animation tags.
+    /// Creates a selector that returns frames within any of the specified tags' ranges.
     /// </summary>
-    /// <param name="tagNames">The exact names of tags to match. Comparison is case-sensitive.</param>
-    /// <returns>A selector that includes frames from all matching tags, maintaining original frame order.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="tagNames"/> is <see langword="null"/>.</exception>
-    /// <remarks>
-    /// Frames that belong to multiple matching tags are included only once in the result.
-    /// </remarks>
+    /// <param name="tagNames">The names of tags whose frame ranges should be selected.</param>
+    /// <returns>A <see cref="FrameSelector"/> that selects frames covered by any of the named tags.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="tagNames"/> is null.</exception>
     public static FrameSelector ByTags(params string[] tagNames) => new MultipleTagsFrameSelector(tagNames);
 
     /// <summary>
-    /// Creates a selector that returns frames matching a custom predicate function.
+    /// Creates a selector that returns frames matching the specified predicate function.
     /// </summary>
-    /// <param name="predicate">The function that evaluates each frame for inclusion.</param>
-    /// <returns>A selector that includes frames where the predicate returns <see langword="true"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="predicate"/> is <see langword="null"/>.</exception>
+    /// <param name="predicate">The function that determines whether a frame should be selected.</param>
+    /// <returns>A <see cref="FrameSelector"/> that filters frames using the provided predicate.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="predicate"/> is null.</exception>
     public static FrameSelector Predicate(FramePredicate predicate) => new PredicateFrameSelector(predicate);
 
     /// <summary>
-    /// Selects frames from the provided collection based on the implemented selection strategy.
+    /// Selects frames from the provided collection based on the selector's filtering criteria.
     /// </summary>
-    /// <param name="frames">The complete collection of frames to select from.</param>
-    /// <param name="tags">The sprite's animation tags for context-aware selection.</param>
+    /// <param name="frames">The collection of frames to filter.</param>
+    /// <param name="tags">The collection of tags associated with the frame sequence.</param>
     /// <returns>A span containing the selected frames in their original order.</returns>
     public abstract ReadOnlySpan<AsepriteFrame> SelectFrames(ReadOnlySpan<AsepriteFrame> frames, ReadOnlySpan<AsepriteTag> tags);
 

@@ -5,20 +5,18 @@
 namespace AsepriteDotNet.Core.Types;
 
 /// <summary>
-/// Defines the properties of the palette in an Aseprite file.
+/// Represents a color palette containing indexed RGBA colors for sprite rendering and display.
 /// </summary>
 public sealed class AsepritePalette
 {
     private Rgba32[] _colors = Array.Empty<Rgba32>();
 
     /// <summary>
-    /// Gets the color value at the specified index from this palette.
+    /// Gets or sets the color at the specified palette index.
     /// </summary>
-    /// <param name="index">The index of the color element to retrieve.</param>
-    /// <returns>The color element at the specified index.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown if the <paramref name="index"/> is less than zero or greater than or equal to <see cref="Count"/>.
-    /// </exception>
+    /// <param name="index">The zero-based index of the color entry.</param>
+    /// <returns>The <see cref="Rgba32"/> color value at the specified index.</returns>
+    /// <exception cref="IndexOutOfRangeException">Thrown when <paramref name="index"/> is outside the valid range [0, Count).</exception>
     public Rgba32 this[int index]
     {
         get => _colors[index];
@@ -26,19 +24,30 @@ public sealed class AsepritePalette
     }
 
     /// <summary>
-    /// Gets the index of the color element in this palette that should be interpreted as a transparent color.
+    /// Gets the palette index that represents the transparent color in non-background layers.
     /// </summary>
+    /// <remarks>
+    /// Corresponds to the "Palette entry (index) which represent transparent color" field
+    /// in the header specification. Only applies to indexed color sprites and affects
+    /// how transparency is handled during layer composition for non-background layers.
+    /// </remarks>
     public int TransparentIndex { get; internal set; }
 
     /// <summary>
-    /// Gets the total number of color elements in this palette.
+    /// Gets the total number of colors currently stored in the palette.
     /// </summary>
+    /// <remarks>
+    /// A value of 0 indicates an empty palette, while 256 represents the maximum size for
+    /// traditional 8-bit indexed color modes.
+    /// </remarks>
     public int Count => _colors.Length;
 
     /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of the <see cref="Rgba32"/> elements in this
-    /// <see cref="AsepritePalette"/>.  Order of elements is the same as the order of colors in the palette in Aseprite.
+    /// Gets all colors in the palette as a read-only span.
     /// </summary>
+    /// <remarks>
+    /// Colors are ordered by their palette index from 0 to Count-1.
+    /// </remarks>
     public ReadOnlySpan<Rgba32> Colors => _colors;
 
     internal AsepritePalette() { }

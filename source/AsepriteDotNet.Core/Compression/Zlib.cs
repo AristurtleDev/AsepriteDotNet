@@ -7,10 +7,15 @@ using System.IO.Compression;
 namespace AsepriteDotNet.Core.Compression;
 
 /// <summary>
-/// Utility class for working with zlib compressed data.
+/// Provides ZLIB decompression.
 /// </summary>
 internal static class Zlib
 {
+    /// <summary>
+    /// Decompresses ZLIB-compressed data using the DEFLATE algorithm.
+    /// </summary>
+    /// <param name="buffer">The compressed data buffer containing ZLIB-formatted bytes.</param>
+    /// <returns>A new byte array containing the decompressed data.</returns>
     public static byte[] Deflate(byte[] buffer)
     {
         using MemoryStream compressedStream = new(buffer);

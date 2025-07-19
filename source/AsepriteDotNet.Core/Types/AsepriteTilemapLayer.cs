@@ -5,13 +5,12 @@
 namespace AsepriteDotNet.Core.Types;
 
 /// <summary>
-/// Defines the properties of a layer in an Aseprite file that tilemap cels are placed on.  This class cannot be
-/// inherited.
+/// Represents a tilemap layer that contains tile-based content using references to a specific tileset.
 /// </summary>
 public sealed class AsepriteTilemapLayer : AsepriteLayer
 {
     /// <summary>
-    /// Gets the tileset that is used by all tilemap cels on this tilemap layer.
+    /// Gets the tileset that provides the tile definitions for this tilemap layer.
     /// </summary>
     public AsepriteTileset Tileset { get; internal set; }
 

@@ -4,7 +4,6 @@
 
 using System.Drawing;
 using AsepriteDotNet.Core;
-using AsepriteDotNet.Core.FileFormat.Data;
 using AsepriteDotNet.Core.IO;
 using AsepriteDotNet.Core.Types;
 
@@ -74,8 +73,8 @@ namespace AsepriteDotNet.Tests.IO
             //  Validate Tags
             Assert.Equal(4, doc.Tags.Length);
             Assert.Equal("tag0to2forward", doc.Tags[0].Name);
-            Assert.Equal(0, doc.Tags[0].From);
-            Assert.Equal(2, doc.Tags[0].To);
+            Assert.Equal(0, doc.Tags[0].FromFrame);
+            Assert.Equal(2, doc.Tags[0].ToFrame);
             Assert.Equal("tag-1-user-data", doc.Tags[0].UserData.Text);
             Assert.Equal(new Rgba32(0, 0, 0, 255), doc.Tags[0].Color);
             Assert.Equal(AsepriteLoopDirection.Forward, doc.Tags[0].LoopDirection);
@@ -412,43 +411,14 @@ namespace AsepriteDotNet.Tests.IO
             Assert.Equal(new Rgba32(1, 2, 3, 4), doc.UserData.Color);
         }
 
-        [Fact]
-        public void AsepriteFileReader_ReadTagsTest()
-        {
-            string path = GetPath("read-test.aseprite");
-            AsepriteTag[] tags = AsepriteFileLoader.ReadTags(path);
-
-            Assert.Equal(4, tags.Length);
-            Assert.Equal("tag0to2forward", tags[0].Name);
-            Assert.Equal(0, tags[0].From);
-            Assert.Equal(2, tags[0].To);
-            Assert.Equal("tag-1-user-data", tags[0].UserData.Text);
-            Assert.Equal(new Rgba32(0, 0, 0, 255), tags[0].Color);
-            Assert.Equal(AsepriteLoopDirection.Forward, tags[0].LoopDirection);
-            Assert.Equal("tag3pingpong", tags[1].Name);
-            Assert.Equal(AsepriteLoopDirection.PingPong, tags[1].LoopDirection);
-            Assert.Equal("tag4userdata", tags[2].Name);
-            Assert.Equal(new Rgba32(11, 255, 230, 255), tags[2].Color);
-            Assert.Equal(new Rgba32(11, 255, 230, 255), tags[2].UserData.Color);
-            Assert.Equal("tag-4-user-data", tags[2].UserData.Text);
-            Assert.False(tags[3].UserData.HasText);
-        }
-
         //  There was an issue where slice data was read incorrectly.  This test was put in place to ensure that
         //  doesn't happen again....
         [Fact]
         public void AsepriteFileReader_SliceTest()
         {
-            SliceKeyData sliceKeyData = new SliceKeyData()
-            {
-                FrameNumber = 0,
-                X = 2,
-                Y = 2,
-                Width = 28,
-                Height = 27
-            };
-
-            AsepriteSliceKey expected = new AsepriteSliceKey(sliceKeyData, null, null);
+            AsepriteSliceKey expected = new();
+            expected.FrameIndex = 0;
+            expected.Bounds = new Rectangle(2, 2, 28, 27);
 
             string path = GetPath("slice-test.aseprite");
             AsepriteFile aseFile = AsepriteFileLoader.FromFile(path);

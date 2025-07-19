@@ -3,7 +3,6 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Drawing;
-using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -12,24 +11,19 @@ namespace AsepriteDotNet.Core.Types;
 /// </summary>
 public sealed class AsepriteImageCel : AsepriteCel
 {
-    private readonly Rgba32[] _pixels;
+    internal Rgba32[] InternalPixels { get;  set; }
 
     /// <summary>
     /// Gets the size of this image cel.
     /// </summary>
-    public Size Size { get; }
+    public Size Size { get; internal set; }
 
     /// <summary>
     /// Gets the collection of color data that represents the pixels that make up the image for this image cel.
     /// The order of color elements starts with the top-left most pixel in the image and is read left-to-right from
     /// top-to-bottom.
     /// </summary>
-    public ReadOnlySpan<Rgba32> Pixels => _pixels;
+    public ReadOnlySpan<Rgba32> Pixels => InternalPixels;
 
-    internal AsepriteImageCel(CelHeaderData celHeaderData, AsepriteLayer layer, ImageCelData imageCel, Rgba32[] pixels)
-        : base(celHeaderData, layer)
-    {
-        Size = new Size(imageCel.Width, imageCel.Height);
-        _pixels = pixels;
-    }
+    internal AsepriteImageCel() { }
 }

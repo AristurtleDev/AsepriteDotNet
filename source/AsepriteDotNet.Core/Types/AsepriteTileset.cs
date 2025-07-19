@@ -3,7 +3,6 @@
 //  See LICENSE file in the project root for full license information
 
 using System.Drawing;
-using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -12,50 +11,33 @@ namespace AsepriteDotNet.Core.Types;
 /// </summary>
 public sealed class AsepriteTileset
 {
-    private readonly Rgba32[] _pixels;
+    internal Rgba32[] InternalPixels { get; set; }
 
     /// <summary>
     /// Gets the ID of this tileset.
     /// </summary>
-    public int ID { get; }
+    public int ID { get; internal set; }
 
     /// <summary>
     /// Gets the total number of tiles in this tileset.
     /// </summary>
-    public int TileCount { get; }
-
-    /// <summary>
-    /// Gets the size of this tileset.
-    /// </summary>
-    [Obsolete("Use TileSize instead as it more accurately describes this property.  This will be removed in a future release")]
-    public Size Size { get; }
+    public int TileCount { get; internal set; }
 
     /// <summary>
     /// Gets the size of each tile in this tileset.
     /// </summary>
-    public Size TileSize { get; }
-
+    public Size TileSize { get; internal set; }
 
     /// <summary>
     /// Gets the name of this tileset.
     /// </summary>
-    public string Name { get; }
+    public string Name { get; internal set; }
 
     /// <summary>
     /// Gets the collection of color value that represents the pixel data of the image of this tileset.  Order of color
     /// elements is from top-left pixel read left-to-right top-to-bottom.
     /// </summary>
-    public ReadOnlySpan<Rgba32> Pixels => _pixels;
+    public ReadOnlySpan<Rgba32> Pixels => InternalPixels;
 
-    internal AsepriteTileset(TilesetData tilesetData, string name, Rgba32[] pixels)
-    {
-        ID = (int)tilesetData.Id;
-        TileCount = (int)tilesetData.NumberOfTiles;
-#pragma warning disable CS0618 // Type or member is obsolete
-        Size = new Size(tilesetData.TileWidth, tilesetData.TileHeight);
-#pragma warning restore CS0618 // Type or member is obsolete
-        TileSize = new Size(tilesetData.TileWidth, tilesetData.TileHeight);
-        Name = name;
-        _pixels = pixels;
-    }
+    internal AsepriteTileset() { }
 }

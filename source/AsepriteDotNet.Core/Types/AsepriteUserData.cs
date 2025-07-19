@@ -26,7 +26,7 @@ public sealed class AsepriteUserData
     /// <summary>
     /// Gets the text that was set for this user data in Aseprite.
     /// </summary>
-    public string? Text { get; internal set; }
+    public string Text { get; internal set; }
 
     /// <summary>
     /// Gets the color that was set for this user data in Aseprite.

@@ -3,452 +3,181 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using AsepriteDotNet.Core.Types;
 
 namespace AsepriteDotNet.Core;
 
-/// <summary>
-/// Represents the contents loaded from an Aseprite file.
-/// </summary>
 public sealed class AsepriteFile
 {
-    private readonly AsepriteFrame[] _frames;
-    private readonly AsepriteLayer[] _layers;
-    private readonly AsepriteTag[] _tags;
-    private readonly AsepriteSlice[] _slices;
-    private readonly AsepriteTileset[] _tilesets;
-    private readonly string[] _warnings;
+    internal AsepriteFrame[] InternalFrames { get; set; }
+    internal AsepriteLayer[] InternalLayers { get; set; }
+    internal AsepriteTag[] InternalTags { get; set; }
+    internal AsepriteSlice[] InternalSlices { get; set; }
+    internal AsepriteTileset[] InternalTilesets { get; set; }
 
-    /// <summary>
-    /// Gets the width of the canvas, in pixels.
-    /// </summary>
-    public int CanvasWidth { get; }
+    public Size CanvasSize { get; internal set; }
 
-    /// <summary>
-    /// Gets the height of the canvas, in pixels.
-    /// </summary>
-    public int CanvasHeight { get; }
+    public AsepriteColorDepth ColorDepth { get; internal set; }
 
-    /// <summary>
-    /// Gets the <see cref="Aseprite.AsepriteColorDepth"/> mode used in Aseprite.
-    /// </summary>
-    public AsepriteColorDepth ColorDepth { get; }
+    public ReadOnlySpan<AsepriteFrame> Frames => InternalFrames;
 
-    /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteFrame"/> elements in this
-    /// <see cref="AsepriteFile"/>.  Order of elements is from first-to-last.
-    /// </summary>
-    public ReadOnlySpan<AsepriteFrame> Frames => _frames;
+    public ReadOnlySpan<AsepriteLayer> Layers => InternalLayers;
 
-    /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteLayer"/> elements in this
-    /// <see cref="AsepriteFile"/>.  Order of elements is from bottom-to-top.
-    /// </summary>
-    public ReadOnlySpan<AsepriteLayer> Layers => _layers;
+    public ReadOnlySpan<AsepriteTag> Tags => InternalTags;
 
-    /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteTag"/> elements in this
-    /// <see cref="AsepriteFile"/>.  ORder of elements is as defined in the Aseprite UI from left-to-right.
-    /// </summary>
-    public ReadOnlySpan<AsepriteTag> Tags => _tags;
+    public ReadOnlySpan<AsepriteSlice> Slices => InternalSlices;
 
-    /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteSlice"/> elements in this
-    /// <see cref="AsepriteFile"/>.  Order of elements is in the order they were created in Aseprite.
-    /// </summary>
-    public ReadOnlySpan<AsepriteSlice> Slices => _slices;
+    public ReadOnlySpan<AsepriteTileset> Tilesets => InternalTilesets;
 
-    /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of all <see cref="AsepriteTileset"/> element in this <see cref="AsepriteFile"/>.
-    /// </summary>
-    public ReadOnlySpan<AsepriteTileset> Tilesets => _tilesets;
+    public AsepritePalette Palette { get; internal set; }
 
-    /// <summary>
-    /// Gets a <see cref="ReadOnlySpan{T}"/> of any warnings issued when the Aseprite file was parsed to create this
-    /// <see cref="AsepriteFile"/> instance.  You can use this to see if there were any non-fatal errors that
-    /// occurred while parsing the file.
-    /// </summary>
-    public ReadOnlySpan<string> Warnings => _warnings;
+    public AsepriteUserData UserData { get; internal set; }
 
-    /// <summary>
-    /// Gets the <see cref="AsepritePalette"/> for this <see cref="AsepriteFile"/>.
-    /// </summary>
-    public AsepritePalette Palette { get; }
+    public string Name { get; internal set; }
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteUserData"/> that was set in the properties for the sprite in Aseprite.
-    /// </summary>
-    public AsepriteUserData UserData { get; }
+    public int FrameCount => InternalFrames.Length;
 
-    /// <summary>
-    /// Gets the name of the Aseprite file (without the extension).
-    /// </summary>
-    public string Name { get; }
+    internal AsepriteFile() { }
 
-    /// <summary>
-    /// Gets the total number of <see cref="AsepriteFrame"/> elements in this file.
-    /// </summary>
-    public int FrameCount => _frames.Length;
+    public AsepriteFrame GetFrame(int index) => InternalFrames[index];
 
-    internal AsepriteFile(string name, AsepritePalette palette, int canvasWidth, int canvasHeight, AsepriteColorDepth colorDepth, List<AsepriteFrame> frames, List<AsepriteLayer> layers, List<AsepriteTag> tags, List<AsepriteSlice> slices, List<AsepriteTileset> tilesets, AsepriteUserData userData, List<string> warnings)
-    {
-        Name = name;
-        CanvasWidth = canvasWidth;
-        CanvasHeight = canvasHeight;
-        ColorDepth = colorDepth;
-        _frames = frames.ToArray();
-        _tags = tags.ToArray();
-        _slices = slices.ToArray();
-        _tilesets = tilesets.ToArray();
-        _warnings = warnings.ToArray();
-        _layers = layers.ToArray();
-        Palette = palette;
-        UserData = userData;
-    }
-
-    /// <summary>
-    /// Returns the <see cref="AsepriteFrame"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteFrame"/> to get.</param>
-    /// <returns>The <see cref="AsepriteFrame"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// if <paramref name="index"/> is less than zero or greater than or equal to the total number of frames.
-    /// </exception>
-    public AsepriteFrame GetFrame(int index) => _frames[index];
-
-    /// <summary>
-    /// Gets the <see cref="AsepriteFrame"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteFrame"/> to get.</param>
-    /// <param name="frame">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteFrame"/>; otherwise,
-    /// <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if the <see cref="AsepriteFrame"/> was found; otherwise <see langword="false"/>.  This
-    /// method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
-    /// equal to the total number of <see cref="AsepriteFrame"/> elements in this file.
-    /// </returns>
-    public bool TryGetFrame(int index, [NotNullWhen(true)] out AsepriteFrame? frame)
+    public bool TryGetFrame(int index, [NotNullWhen(true)] out AsepriteFrame frame)
     {
         frame = default;
-        try { frame = _frames[index]; }
+        try { frame = InternalFrames[index]; }
         catch (ArgumentOutOfRangeException) { }
         return frame is not null;
     }
 
-    /// <summary>
-    /// Returns the <see cref="AsepriteLayer"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteLayer"/> to get.</param>
-    /// <returns>The <see cref="AsepriteLayer"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// if <paramref name="index"/> is less than zero or greater than or equal to the total number of layers.
-    /// </exception>
-    public AsepriteLayer GetLayer(int index) => _layers[index];
-
-    /// <summary>
-    /// Returns the <see cref="AsepriteLayer"/> with the specified name.
-    /// </summary>
-    /// <param name="name">The name of <see cref="AsepriteLayer"/>.</param>
-    /// <returns>The <see cref="AsepriteLayer"/> with the specified name.</returns>
-    /// <exception cref="ArgumentNullException">
-    /// If <paramref name="name"/> is <see langword="null"/> or an empty string.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    /// An <see cref="AsepriteLayer"/> with the name specified does not exist.
-    /// </exception>
     public AsepriteLayer GetLayer(string name)
     {
-#if NET6_0
-        if(string.IsNullOrEmpty(name))
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        for (int i = 0; i < InternalLayers.Length; i++)
         {
-            throw new ArgumentNullException(nameof(name), $"{nameof(name)} cannot be null or an empty string.");
+            AsepriteLayer layer = InternalLayers[i];
+            if (layer.Name.Equals(name, StringComparison.Ordinal))
+            {
+                return layer;
+            }
         }
-#elif NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNullOrEmpty(name);
-#endif
 
-        return _layers.AsParallel()
-                      .WithDegreeOfParallelism(Environment.ProcessorCount)
-                      .First(layer => layer.Name.Equals(name, StringComparison.Ordinal));
+        throw new InvalidOperationException($"Unable to find a layer with the name '{name}'");
     }
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteLayer"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteLayer"/> to get.</param>
-    /// <param name="layer">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteLayer"/>; otherwise,
-    /// <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if the <see cref="AsepriteLayer"/> was found; otherwise <see langword="false"/>.  This
-    /// method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
-    /// equal to the total number of <see cref="AsepriteLayer"/> elements in this file.
-    /// </returns>
-    public bool TryGetLayer(int index, [NotNullWhen(true)] out AsepriteLayer? layer)
+    public bool TryGetLayer(string name, [NotNullWhen(true)] out AsepriteLayer layer)
     {
-        layer = default;
-        try { layer = _layers[index]; }
-        catch (ArgumentOutOfRangeException) { }
-        return layer is not null;
-    }
+        layer = null;
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteLayer"/> with the specified name.
-    /// </summary>
-    /// <param name="name">The name of the <see cref="AsepriteLayer"/></param>
-    /// <param name="layer">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteLayer"/> with the specified
-    /// name; otherwise, <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if an <see cref="AsepriteLayer"/> with the specified name was found in this file;
-    /// otherwise, <see langword="false"/>.
-    /// </returns>
-    public bool TryGetLayer(string name, [NotNullWhen(true)] out AsepriteLayer? layer)
-    {
-        layer = _layers.AsParallel()
-                       .WithDegreeOfParallelism(Environment.ProcessorCount)
-                       .FirstOrDefault(layer => layer.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        for (int i = 0; i < InternalLayers.Length; i++)
+        {
+            AsepriteLayer possibleLayer = InternalLayers[i];
+            if (possibleLayer.Name.Equals(name, StringComparison.Ordinal))
+            {
+                layer = possibleLayer;
+                break;
+            }
+        }
 
         return layer is not null;
     }
 
-    /// <summary>
-    /// Returns the <see cref="AsepriteTag"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteTag"/> to get.</param>
-    /// <returns>The <see cref="AsepriteTag"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// if <paramref name="index"/> is less than zero or greater than or equal to the total number of tags.
-    /// </exception>
-    public AsepriteTag GetTag(int index) => _tags[index];
-
-    /// <summary>
-    /// Returns the <see cref="AsepriteTag"/> with the specified name.
-    /// </summary>
-    /// <param name="name">The name of <see cref="AsepriteTag"/>.</param>
-    /// <returns>The <see cref="AsepriteTag"/> with the specified name.</returns>
-    /// <exception cref="ArgumentNullException">
-    /// If <paramref name="name"/> is <see langword="null"/> or an empty string.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    /// An <see cref="AsepriteTag"/> with the name specified does not exist.
-    /// </exception>
     public AsepriteTag GetTag(string name)
     {
-#if NET6_0
-        if(string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentNullException(nameof(name), $"{nameof(name)} cannot be null or an empty string");
-        }
-#elif NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNullOrEmpty(name);
-#endif
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
-        return _tags.AsParallel()
-                      .WithDegreeOfParallelism(Environment.ProcessorCount)
-                      .First(tag => tag.Name.Equals(name, StringComparison.Ordinal));
+        for (int i = 0; i < InternalTags.Length; i++)
+        {
+            AsepriteTag tag = InternalTags[i];
+            if (tag.Name.Equals(name, StringComparison.Ordinal))
+            {
+                return tag;
+            }
+        }
+
+        throw new InvalidOperationException($"Unable to find a tag with the name '{name}'");
     }
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteTag"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteTag"/> to get.</param>
-    /// <param name="tag">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteTag"/>; otherwise,
-    /// <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if the <see cref="AsepriteTag"/> was found; otherwise <see langword="false"/>.  This
-    /// method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
-    /// equal to the total number of <see cref="AsepriteTag"/> elements in this file.
-    /// </returns>
-    public bool TryGetTag(int index, [NotNullWhen(true)] out AsepriteTag? tag)
+    public bool TryGetTag(string name, [NotNullWhen(true)] out AsepriteTag tag)
     {
         tag = default;
-        try { tag = _tags[index]; }
-        catch (ArgumentOutOfRangeException) { }
-        return tag is not null;
-    }
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteTag"/> with the specified name.
-    /// </summary>
-    /// <param name="name">The name of the <see cref="AsepriteTag"/></param>
-    /// <param name="tag">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteTag"/> with the specified
-    /// name; otherwise, <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if an <see cref="AsepriteTag"/> with the specified name was found in this file;
-    /// otherwise, <see langword="false"/>.
-    /// </returns>
-    public bool TryGetTag(string name, [NotNullWhen(true)] out AsepriteTag? tag)
-    {
-        tag = _tags.AsParallel()
-                   .WithDegreeOfParallelism(Environment.ProcessorCount)
-                   .FirstOrDefault(tag => tag.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        for (int i = 0; i < InternalTags.Length; i++)
+        {
+            AsepriteTag possibleTag = InternalTags[i];
+            if (possibleTag.Name.Equals(name, StringComparison.Ordinal))
+            {
+                tag = possibleTag;
+                break;
+            }
+        }
 
         return tag is not null;
     }
 
-    /// <summary>
-    /// Returns the <see cref="AsepriteSlice"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteSlice"/> to get.</param>
-    /// <returns>The <see cref="AsepriteSlice"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// if <paramref name="index"/> is less than zero or greater than or equal to the total number of slices.
-    /// </exception>
-    public AsepriteSlice GetSlice(int index) => _slices[index];
-
-    /// <summary>
-    /// Returns the <see cref="AsepriteSlice"/> with the specified name.
-    /// </summary>
-    /// <param name="name">The name of <see cref="AsepriteSlice"/>.</param>
-    /// <returns>The <see cref="AsepriteSlice"/> with the specified name.</returns>
-    /// <exception cref="ArgumentNullException">
-    /// If <paramref name="name"/> is <see langword="null"/> or an empty string.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    /// An <see cref="AsepriteSlice"/> with the name specified does not exist.
-    /// </exception>
     public AsepriteSlice GetSlice(string name)
     {
-#if NET6_0
-        if(string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentNullException(nameof(name), $"{nameof(name)} cannot be null or an empty string");
-        }
-#elif NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNullOrEmpty(name);
-#endif
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
-        return _slices.AsParallel()
-                      .WithDegreeOfParallelism(Environment.ProcessorCount)
-                      .First(slice => slice.Name.Equals(name, StringComparison.Ordinal));
+        for (int i = 0; i < InternalSlices.Length; i++)
+        {
+            AsepriteSlice slice = InternalSlices[i];
+            if (slice.Name.Equals(name, StringComparison.Ordinal))
+            {
+                return slice;
+            }
+        }
+
+        throw new InvalidOperationException($"Unable to find a slice with the name '{name}'");
     }
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteSlice"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteSlice"/> to get.</param>
-    /// <param name="slice">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteSlice"/>; otherwise,
-    /// <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if the <see cref="AsepriteSlice"/> was found; otherwise <see langword="false"/>.  This
-    /// method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
-    /// equal to the total number of <see cref="AsepriteSlice"/> elements in this file.
-    /// </returns>
-    public bool TryGetSlice(int index, [NotNullWhen(true)] out AsepriteSlice? slice)
+    public bool TryGetSlice(string name, [NotNullWhen(true)] out AsepriteSlice slice)
     {
         slice = default;
-        try { slice = _slices[index]; }
-        catch (ArgumentOutOfRangeException) { }
-        return slice is not null;
-    }
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteSlice"/> with the specified name.
-    /// </summary>
-    /// <param name="name">The name of the <see cref="AsepriteSlice"/></param>
-    /// <param name="slice">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteSlice"/> with the specified
-    /// name; otherwise, <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if an <see cref="AsepriteSlice"/> with the specified name was found in this file;
-    /// otherwise, <see langword="false"/>.
-    /// </returns>
-    public bool TryGetSlice(string name, [NotNullWhen(true)] out AsepriteSlice? slice)
-    {
-        slice = _slices.AsParallel()
-                       .WithDegreeOfParallelism(Environment.ProcessorCount)
-                       .FirstOrDefault(slice => slice.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        for (int i = 0; i < InternalSlices.Length; i++)
+        {
+            AsepriteSlice possibleSlice = InternalSlices[i];
+            if (possibleSlice.Name.Equals(name, StringComparison.Ordinal))
+            {
+                slice = possibleSlice;
+                break;
+            }
+        }
 
         return slice is not null;
     }
 
-    /// <summary>
-    /// Returns the <see cref="AsepriteTileset"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteTileset"/> to get.</param>
-    /// <returns>The <see cref="AsepriteTileset"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// if <paramref name="index"/> is less than zero or greater than or equal to the total number of tilesets.
-    /// </exception>
-    public AsepriteTileset GetTileset(int index) => _tilesets[index];
-
-    /// <summary>
-    /// Returns the <see cref="AsepriteTileset"/> with the specified name.
-    /// </summary>
-    /// <param name="name">The name of <see cref="AsepriteTileset"/>.</param>
-    /// <returns>The <see cref="AsepriteTileset"/> with the specified name.</returns>
-    /// <exception cref="ArgumentNullException">
-    /// If <paramref name="name"/> is <see langword="null"/> or an empty string.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    /// An <see cref="AsepriteTileset"/> with the name specified does not exist.
-    /// </exception>
     public AsepriteTileset GetTileset(string name)
     {
-#if NET6_0
-        if(string.IsNullOrEmpty(name))
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        for (int i = 0; i < InternalTilesets.Length; i++)
         {
-            throw new ArgumentNullException(nameof(name), $"{nameof(name)} cannot be null or an empty string");
+            AsepriteTileset tileSet = InternalTilesets[i];
+            if (tileSet.Name.Equals(name, StringComparison.Ordinal))
+            {
+                return tileSet;
+            }
         }
-#elif NET8_0_OR_GREATER
-        ArgumentNullException.ThrowIfNullOrEmpty(name);
-#endif
 
-        return _tilesets.AsParallel()
-                        .WithDegreeOfParallelism(Environment.ProcessorCount)
-                        .First(tileset => tileset.Name.Equals(name, StringComparison.Ordinal));
+        throw new InvalidOperationException($"Unable to find a tileset with the name '{name}'");
     }
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteTileset"/> at the specified index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the <see cref="AsepriteTileset"/> to get.</param>
-    /// <param name="slice">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteTileset"/>; otherwise,
-    /// <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if the <see cref="AsepriteTileset"/> was found; otherwise <see langword="false"/>.  This
-    /// method returns <see langword="false"/> if <paramref name="index"/> is less than zero or is greater than or
-    /// equal to the total number of <see cref="AsepriteTileset"/> elements in this file.
-    /// </returns>
-    public bool TryGetTileset(int index, [NotNullWhen(true)] out AsepriteTileset? slice)
+    public bool TryGetTileset(string name, [NotNullWhen(true)] out AsepriteTileset tileset)
     {
-        slice = default;
-        try { slice = _tilesets[index]; }
-        catch (ArgumentOutOfRangeException) { }
-        return slice is not null;
-    }
+        tileset = default;
 
-    /// <summary>
-    /// Gets the <see cref="AsepriteTileset"/> with the specified name.
-    /// </summary>
-    /// <param name="name">The name of the <see cref="AsepriteTileset"/></param>
-    /// <param name="tileset">
-    /// When this method returns <see langword="true"/>, contains the <see cref="AsepriteTileset"/> with the specified
-    /// name; otherwise, <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if an <see cref="AsepriteTileset"/> with the specified name was found in this file;
-    /// otherwise, <see langword="false"/>.
-    /// </returns>
-    public bool TryGetTileset(string name, [NotNullWhen(true)] out AsepriteTileset? tileset)
-    {
-        tileset = _tilesets.AsParallel()
-                           .WithDegreeOfParallelism(Environment.ProcessorCount)
-                           .FirstOrDefault(tileset => tileset.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        for (int i = 0; i < InternalTilesets.Length; i++)
+        {
+            AsepriteTileset possibleTileset = InternalTilesets[i];
+            if (possibleTileset.Name.Equals(name, StringComparison.Ordinal))
+            {
+                tileset = possibleTileset;
+                break;
+            }
+        }
 
         return tileset is not null;
     }

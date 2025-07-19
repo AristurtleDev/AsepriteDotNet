@@ -2,8 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-using AsepriteDotNet.Core.FileFormat.Data;
-
 namespace AsepriteDotNet.Core.Types;
 
 /// <summary>
@@ -14,17 +12,17 @@ public abstract class AsepriteLayer
     /// <summary>
     /// Gets a value that indicates whether this layer is visible.
     /// </summary>
-    public bool IsVisible { get; }
+    public bool IsVisible { get; internal set; }
 
     /// <summary>
     /// Gets a value that indicates whether this layer is the background layer.
     /// </summary>
-    public bool IsBackgroundLayer { get; }
+    public bool IsBackgroundLayer { get; internal set; }
 
     /// <summary>
     /// Gets a value that indicates whether this layer is a reference layer.
     /// </summary>
-    public bool IsReferenceLayer { get; }
+    public bool IsReferenceLayer { get; internal set; }
 
     /// <summary>
     /// Gets the child level of this layer in relation to its parent.
@@ -33,36 +31,27 @@ public abstract class AsepriteLayer
     /// See <see href="https://github.com/aseprite/aseprite/blob/main/docs/ase-file-specs.md#note1"/> for more
     /// information.
     /// </remarks>
-    public int ChildLevel { get; }
+    public int ChildLevel { get; internal set; }
 
     /// <summary>
     /// Gets the blend mode used by this layer when blending cels on this layer with the layer below it.
     /// </summary>
-    public AsepriteBlendMode BlendMode { get; }
+    public AsepriteBlendMode BlendMode { get; internal set; }
 
     /// <summary>
     /// Gets the opacity level of this layer.
     /// </summary>
-    public int Opacity { get; }
+    public int Opacity { get; internal set; }
 
     /// <summary>
     /// Gets the name of this layer.
     /// </summary>
-    public string Name { get; }
+    public string Name { get; internal set; }
 
     /// <summary>
     /// Gets the custom user data that was set in the properties for this layer in Aseprite.
     /// </summary>
-    public AsepriteUserData UserData { get; } = new AsepriteUserData();
+    public AsepriteUserData UserData { get; internal set; } = new();
 
-    internal AsepriteLayer(LayerData layerData, string name)
-    {
-        Name = name;
-        IsVisible = (layerData.Flags & 1) != 0;
-        IsBackgroundLayer = (layerData.Flags & 8) != 0;
-        IsReferenceLayer = (layerData.Flags & 64) != 0;
-        ChildLevel = layerData.Level;
-        BlendMode = (AsepriteBlendMode)layerData.BlendMode;
-        Opacity = layerData.Opacity;
-    }
+    internal AsepriteLayer() { }
 }

@@ -28,7 +28,7 @@ public sealed class AsepritePalette
     /// <summary>
     /// Gets the index of the color element in this palette that should be interpreted as a transparent color.
     /// </summary>
-    public int TransparentIndex { get; }
+    public int TransparentIndex { get; internal set; }
 
     /// <summary>
     /// Gets the total number of color elements in this palette.
@@ -41,7 +41,7 @@ public sealed class AsepritePalette
     /// </summary>
     public ReadOnlySpan<Rgba32> Colors => _colors;
 
-    internal AsepritePalette(int transparentIndex) => TransparentIndex = transparentIndex;
+    internal AsepritePalette() { }
 
     internal void Resize(int newSize)
     {

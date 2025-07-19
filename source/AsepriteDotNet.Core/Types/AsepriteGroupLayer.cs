@@ -3,7 +3,6 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Runtime.InteropServices;
-using AsepriteDotNet.Core.FileFormat.Data;
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -12,15 +11,13 @@ namespace AsepriteDotNet.Core.Types;
 /// </summary>
 public sealed class AsepriteGroupLayer : AsepriteLayer
 {
-    private readonly List<AsepriteLayer> _children = new List<AsepriteLayer>();
+    internal List<AsepriteLayer> InternalChildren = [];
 
     /// <summary>
     /// Gets the child layers that were grouped inside this group layer.
     /// The order of layer elements is from bottom most to top most layer in the group.
     /// </summary>
-    public ReadOnlySpan<AsepriteLayer> Children => CollectionsMarshal.AsSpan(_children);
+    public ReadOnlySpan<AsepriteLayer> Children => CollectionsMarshal.AsSpan(InternalChildren);
 
-    internal AsepriteGroupLayer(LayerData layerData, string name) : base(layerData, name) { }
-
-    internal void AddChild(AsepriteLayer layer) => _children.Add(layer);
+    internal AsepriteGroupLayer() { }
 }

@@ -8,28 +8,28 @@ namespace AsepriteDotNet.Core.Types;
 
 public static class AsepriteCelExtensions
 {
-    public static ImageData ToImageData(this AsepriteCel cel) => cel switch
+    public static RenderedImage ToRenderedImage(this AsepriteCel cel) => cel switch
     {
-        AsepriteImageCel imageCel => ToImageData(imageCel),
-        AsepriteLinkedCel linkedCel => ToImageData(linkedCel),
-        AsepriteTilemapCel tilemapCel => ToImageData(tilemapCel),
+        AsepriteImageCel imageCel => ToRenderedImage(imageCel),
+        AsepriteLinkedCel linkedCel => ToRenderedImage(linkedCel),
+        AsepriteTilemapCel tilemapCel => ToRenderedImage(tilemapCel),
         _ => throw new InvalidOperationException("Invalid cel type")
     };
 
-    private static ImageData ToImageData(AsepriteImageCel imageCel)
+    private static RenderedImage ToRenderedImage(AsepriteImageCel imageCel)
     {
         ArgumentNullException.ThrowIfNull(imageCel);
-        return new ImageData(imageCel.Size, imageCel.Pixels.ToArray());
+        return new RenderedImage(imageCel.Size, imageCel.Pixels.ToArray());
     }
 
-    private static ImageData ToImageData(AsepriteLinkedCel linkedCel)
+    private static RenderedImage ToRenderedImage(AsepriteLinkedCel linkedCel)
     {
         ArgumentNullException.ThrowIfNull(linkedCel);
         AsepriteCel originCel = linkedCel.Cel;
-        return ToImageData(originCel);
+        return ToRenderedImage(originCel);
     }
 
-    private static ImageData ToImageData(AsepriteTilemapCel tilemapCel)
+    private static RenderedImage ToRenderedImage(AsepriteTilemapCel tilemapCel)
     {
         ArgumentNullException.ThrowIfNull(tilemapCel);
 
@@ -58,6 +58,6 @@ public static class AsepriteCelExtensions
             }
         }
 
-        return new ImageData(size, pixels);
+        return new RenderedImage(size, pixels);
     }
 }

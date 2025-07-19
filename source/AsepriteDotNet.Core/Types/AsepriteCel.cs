@@ -3,8 +3,6 @@
 //  See LICENSE file in the project root for full license information.
 
 using System.Drawing;
-using AsepriteDotNet.Core.FileFormat.Data;
-
 
 namespace AsepriteDotNet.Core.Types;
 
@@ -16,28 +14,24 @@ public abstract class AsepriteCel
     /// <summary>
     /// Gets the layer that this cel exists on.
     /// </summary>
-    public AsepriteLayer Layer { get; }
+    public AsepriteLayer Layer { get; internal set; }
 
     /// <summary>
     /// Gets the top-left xy-coordinate position of this el relative to the bounds of the frame it is in.
     /// </summary>
-    public Point Location { get; }
+    public Point Location { get; internal set; }
 
     /// <summary>
     /// Gets the opacity level of this cel.
     /// </summary>
-    public int Opacity { get; }
+    public int Opacity { get; internal set; }
+
+    public int ZIndex { get; internal set; }
 
     /// <summary>
     /// Gets the custom user data that was set in the properties for this cel in Aseprite.
     /// </summary>
-    public AsepriteUserData UserData { get; }
+    public AsepriteUserData UserData { get; internal set; } = new();
 
-    internal AsepriteCel(CelHeaderData celHeaderData, AsepriteLayer layer)
-    {
-        Layer = layer;
-        Location = new Point(celHeaderData.X, celHeaderData.Y);
-        Opacity = celHeaderData.Opacity;
-        UserData = new AsepriteUserData();
-    }
+    internal AsepriteCel() { }
 }

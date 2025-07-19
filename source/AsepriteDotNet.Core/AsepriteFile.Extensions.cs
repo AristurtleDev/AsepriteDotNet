@@ -18,9 +18,9 @@ public static class AsepriteFileExtensions
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="frameIndex"/> is negative or greater than or equal to the number of frames.
     /// </exception>
-    public static ReadOnlySpan<Rgba32> RenderFrame(this AsepriteFile file, int frameIndex)
+    public static RenderedImage RenderFrame(this AsepriteFile file, int frameIndex)
     {
-        LayerSelector layerSelector = LayerSelector.AllLayers();
+        LayerSelector layerSelector = LayerSelector.VisibleLayers();
         return RenderFrame(file, frameIndex, layerSelector);
     }
 
@@ -35,7 +35,7 @@ public static class AsepriteFileExtensions
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="frameIndex"/> is negative or greater than or equal to the number of frames.
     /// </exception>
-    public static ReadOnlySpan<Rgba32> RenderFrame(this AsepriteFile file, int frameIndex, LayerSelector layerSelector)
+    public static RenderedImage RenderFrame(this AsepriteFile file, int frameIndex, LayerSelector layerSelector)
     {
         ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(layerSelector);
@@ -53,9 +53,9 @@ public static class AsepriteFileExtensions
     /// <param name="frame">The frame to render.</param>
     /// <returns>A span of RGBA color values representing the rendered frame, ordered left-to-right, top-to-bottom.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> or <paramref name="frame"/> is <see langword="null"/>.</exception>
-    public static ReadOnlySpan<Rgba32> RenderFrame(this AsepriteFile file, AsepriteFrame frame)
+    public static RenderedImage RenderFrame(this AsepriteFile file, AsepriteFrame frame)
     {
-        LayerSelector layerSelector = LayerSelector.AllLayers();
+        LayerSelector layerSelector = LayerSelector.VisibleLayers();
         return RenderFrame(file, frame, layerSelector);
     }
 
@@ -67,7 +67,7 @@ public static class AsepriteFileExtensions
     /// <param name="layerSelector">The strategy for selecting which layers to include in the rendering.</param>
     /// <returns>A span of RGBA color values representing the rendered frame, ordered left-to-right, top-to-bottom.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/>, <paramref name="frame"/>, or <paramref name="layerSelector"/> is <see langword="null"/>.</exception>
-    public static ReadOnlySpan<Rgba32> RenderFrame(this AsepriteFile file, AsepriteFrame frame, LayerSelector layerSelector)
+    public static RenderedImage RenderFrame(this AsepriteFile file, AsepriteFrame frame, LayerSelector layerSelector)
     {
         ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(frame);
@@ -80,12 +80,12 @@ public static class AsepriteFileExtensions
 
         if (layers.Count == 0)
         {
-            // If no layers, return empty Rgba32 array
-            return [];
+            // If no layers, return empty.
+            return RenderedImage.Empty;
         }
 
 
-        Rgba32[] result = new Rgba32[frame.Size.Width * frame.Size.Height];
+        Rgba32[] pixels = new Rgba32[frame.Size.Width * frame.Size.Height];
         ReadOnlySpan<AsepriteCel> cels = frame.Cels;
 
         for (int celNum = 0; celNum < cels.Length; celNum++)
@@ -106,15 +106,39 @@ public static class AsepriteFileExtensions
 
             if (cel is AsepriteImageCel imageCel)
             {
-                BlendCel(result, imageCel.Pixels, cel.Layer.BlendMode, new Rectangle(imageCel.Location, imageCel.Size), frame.Size.Width, imageCel.Opacity, imageCel.Layer.Opacity);
+                BlendCel(pixels, imageCel.Pixels, cel.Layer.BlendMode, new Rectangle(imageCel.Location, imageCel.Size), frame.Size.Width, imageCel.Opacity, imageCel.Layer.Opacity);
             }
             else if (cel is AsepriteTilemapCel tilemapCel)
             {
-                BlendTilemapCel(result, tilemapCel, frame.Size.Width);
+                BlendTilemapCel(pixels, tilemapCel, frame.Size.Width);
             }
         }
 
-        return result;
+        return new RenderedImage(frame.Size, pixels);
+    }
+
+    public static List<RenderedImage> RenderFrames(this AsepriteFile file, FrameSelector frameSelector)
+    {
+        LayerSelector layerSelector = LayerSelector.VisibleLayers();
+        return RenderFrames(file, frameSelector, layerSelector);
+    }
+
+    public static List<RenderedImage> RenderFrames(this AsepriteFile file, FrameSelector frameSelector, LayerSelector layerSelector)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+        ArgumentNullException.ThrowIfNull(frameSelector);
+        ArgumentNullException.ThrowIfNull(layerSelector);
+
+        ReadOnlySpan<AsepriteFrame> selectedFrames = frameSelector.SelectFrames(file.Frames, file.Tags);
+        List<RenderedImage> results = [];
+
+        for (int i = 0; i < selectedFrames.Length; i++)
+        {
+            RenderedImage renderedImage = RenderFrame(file, selectedFrames[i], layerSelector);
+            results.Add(renderedImage);
+        }
+
+        return results;
     }
 
     private static void BlendCel(Span<Rgba32> backdrop, ReadOnlySpan<Rgba32> source, AsepriteBlendMode blendMode, Rectangle bounds, int frameWidth, int celOpacity, int layerOpacity)

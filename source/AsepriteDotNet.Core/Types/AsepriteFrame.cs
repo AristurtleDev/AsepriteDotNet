@@ -12,13 +12,13 @@ namespace AsepriteDotNet.Core.Types;
 /// </summary>
 public sealed class AsepriteFrame
 {
-    private readonly List<AsepriteCel> _cels;
+    internal List<AsepriteCel> InternalCels { get; } = [];
 
     /// <summary>
     /// Gets the underlying collection of cels elements that are contained within this frame.
     /// Cel elements are ordered from bottom most layer to top most layer within the frame.
     /// </summary>
-    public ReadOnlySpan<AsepriteCel> Cels => CollectionsMarshal.AsSpan(_cels);
+    public ReadOnlySpan<AsepriteCel> Cels => CollectionsMarshal.AsSpan(InternalCels);
 
     /// <summary>
     /// Gets the name of this frame.
@@ -28,25 +28,20 @@ public sealed class AsepriteFrame
     /// when the AsepriteFile is parsed based on the name of the Aseprite file, without extension, appended with the
     /// zero-based index of the frame. (e.g. sprite0).
     /// </remarks>
-    public string Name { get; }
+    public string Name { get; internal set; }
 
     /// <summary>
     /// Gets the size of this frame, in pixels.
     /// </summary>
-    public Size Size { get; }
+    public Size Size { get; internal set; }
 
     /// <summary>
     /// Gets the amount of time that this frame should be displayed when used as part of an animation.
     /// </summary>
-    public TimeSpan Duration { get; }
+    public TimeSpan Duration { get; internal set; }
 
-    internal AsepriteFrame(string name, int width, int height, int duration, List<AsepriteCel> cels)
-    {
-        Name = name;
-        Size = new Size(width, height);
-        Duration = TimeSpan.FromMilliseconds(duration);
-        _cels = cels;
-    }
+    public int OriginalIndex { get; internal set; }
 
-    internal void AddCel(AsepriteCel cel) => _cels.Add(cel);
+    internal AsepriteFrame() { }
+
 }

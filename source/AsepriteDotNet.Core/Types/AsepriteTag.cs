@@ -2,8 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information
 
-using AsepriteDotNet.Core.FileFormat.Data;
-
 namespace AsepriteDotNet.Core.Types;
 
 /// <summary>
@@ -14,45 +12,37 @@ public sealed class AsepriteTag
     /// <summary>
     /// Gets the index of the frame that the animation defined by this tag starts on.
     /// </summary>
-    public int From { get; }
+    public int FromFrame { get; internal set;  }
 
     /// <summary>
     /// Gets the index of the frame that the animation defined by this tag ends on.
     /// </summary>
-    public int To { get; }
+    public int ToFrame { get; internal set; }
 
     /// <summary>
     /// Gets the loop direction used by the animation defined by this tag.
     /// </summary>
-    public AsepriteLoopDirection LoopDirection { get; }
+    public AsepriteLoopDirection LoopDirection { get; internal set; }
 
     /// <summary>
     /// Gets the name of this tag.
     /// </summary>
-    public string Name { get; }
+    public string Name { get; internal set; }
 
     /// <summary>
     /// Gets the color defined for this tag.
     /// </summary>
-    public Rgba32 Color { get; }
+    public Rgba32 Color { get; internal set; }
 
     /// <summary>
     /// Gets the number of times the animation defined by this tag repeats.
     /// </summary>
-    public int Repeat { get; }
+    public int RepeatCount { get; internal set; }
 
     /// <summary>
     /// Gets the custom user data that was set in the properties for this tag in Aseprite.
     /// </summary>
     public AsepriteUserData UserData { get; } = new AsepriteUserData();
 
-    internal unsafe AsepriteTag(TagData tagData, string name)
-    {
-        From = tagData.From;
-        To = tagData.To;
-        LoopDirection = (AsepriteLoopDirection)tagData.Direction;
-        Name = name;
-        Repeat = tagData.Repeat;
-        Color = new Rgba32(tagData.R, tagData.G, tagData.B);
-    }
+    internal unsafe AsepriteTag() { }
 }

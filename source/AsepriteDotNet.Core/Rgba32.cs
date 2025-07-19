@@ -127,7 +127,7 @@ public struct Rgba32 : IEquatable<Rgba32>
     public static bool operator !=(Rgba32 left, Rgba32 right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override readonly bool Equals([NotNullWhen(true)] object? obj) => obj is Rgba32 other && Equals(other);
+    public override readonly bool Equals([NotNullWhen(true)] object obj) => obj is Rgba32 other && Equals(other);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

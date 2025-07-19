@@ -2,13 +2,6 @@
 //  Licensed under the MIT license.
 //  See LICENSE file in the project root for full license information.
 
-
-//  Copyright (c) Christopher Whitley. All rights reserved.
-//  Licensed under the MIT license.
-//  See LICENSE file in the project root for full license information.
-
-using AsepriteDotNet.Core.FileFormat.Data;
-
 namespace AsepriteDotNet.Core.Types;
 
 /// <summary>
@@ -19,10 +12,7 @@ public sealed class AsepriteLinkedCel : AsepriteCel
     /// <summary>
     /// Gets the cel that this linked cel is linked to
     /// </summary>
-    public AsepriteCel Cel { get; }
+    public AsepriteCel Cel { get; internal set; }
 
-    internal AsepriteLinkedCel(CelHeaderData celHeaderData, AsepriteCel otherCel) : base(celHeaderData, otherCel.Layer)
-    {
-        Cel = otherCel;
-    }
+    internal AsepriteLinkedCel() { }
 }

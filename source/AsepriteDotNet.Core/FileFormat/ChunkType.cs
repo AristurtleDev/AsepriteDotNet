@@ -2,6 +2,7 @@ namespace AsepriteDotNet.Core.FileFormat;
 
 internal enum ChunkType : ushort
 {
+    None = 0x0000,
     OldPalette1 = 0x0004,
     OldPalette2 = 0x0011,
     Layer = 0x2004,

@@ -127,7 +127,7 @@ public abstract class FrameSelector
                 AsepriteTag tag = tags[tagIndex];
                 if (tag.Name.Equals(_tagName, StringComparison.Ordinal))
                 {
-                    for (int frameIndex = tag.From; frameIndex <= tag.To && frameIndex < frames.Length; frameIndex++)
+                    for (int frameIndex = tag.FromFrame; frameIndex <= tag.ToFrame && frameIndex < frames.Length; frameIndex++)
                     {
                         matchedFrames.Add(frames[frameIndex]);
                     }
@@ -158,7 +158,7 @@ public abstract class FrameSelector
                 AsepriteTag tag = tags[tagIndex];
                 if (_tagNames.Contains(tag.Name))
                 {
-                    for (int frameIndex = tag.From; frameIndex <= tag.To && frameIndex < frames.Length; frameIndex++)
+                    for (int frameIndex = tag.FromFrame; frameIndex <= tag.ToFrame && frameIndex < frames.Length; frameIndex++)
                     {
                         frameIndices.Add(frameIndex);
                     }

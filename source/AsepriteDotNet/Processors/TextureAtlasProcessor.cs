@@ -81,12 +81,14 @@ public static class TextureAtlasProcessor
     /// <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
     /// <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
     /// <param name="innerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+    /// <param name="splitLayers">Indicates whether each layer should be processed separately instead of being flattened together.</param>
     /// <returns>
     /// The <see cref="TextureAtlas"/> created by this method.  If <paramref name="layers"/> is empty or contains zero
     /// elements, then <see cref="TextureAtlas.Empty"/> is returned.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
-    public static TextureAtlas Process(AsepriteFile file, ICollection<string> layers, bool mergeDuplicateFrames = true, int borderPadding = 0, int spacing = 0, int innerPadding = 0)
+    public static TextureAtlas Process(AsepriteFile file, ICollection<string> layers, bool mergeDuplicateFrames = true, int borderPadding = 0, int spacing = 0, int innerPadding = 0, bool splitLayers = false)
+
     {
         ArgumentNullException.ThrowIfNull(file);
 
@@ -99,11 +101,42 @@ public static class TextureAtlasProcessor
         int frameHeight = file.CanvasHeight;
         int frameCount = file.Frames.Length;
 
-        Rgba32[][] flattenedFrames = new Rgba32[frameCount][];
+        Rgba32[][] flattenedFrames;
 
-        for (int i = 0; i < frameCount; i++)
+        if (splitLayers)
         {
-            flattenedFrames[i] = file.Frames[i].FlattenFrame(layers);
+            flattenedFrames = new Rgba32[layers.Count * frameCount][];
+
+            HashSet<string> layerNames = new HashSet<string>(layers);
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                for (int celNum = 0; celNum < Math.Min(layers.Count, file.Frames[i].Cels.Length); celNum++)
+                {
+                    AsepriteCel cel = file.Frames[i].Cels[celNum];
+
+                    if (!layerNames.Contains(cel.Layer.Name)) continue;
+
+                    if (cel is AsepriteLinkedCel linkedCel)
+                    {
+                        cel = linkedCel.Cel;
+                    }
+
+                    if (cel is AsepriteImageCel imageCel)
+                    {
+                        flattenedFrames[i * layers.Count + celNum] = imageCel.Pixels.ToArray();
+                    }
+                }
+            }
+        }
+        else
+        {
+            flattenedFrames = new Rgba32[frameCount][];
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                flattenedFrames[i] = file.Frames[i].FlattenFrame(layers);
+            }
         }
 
         Dictionary<int, int> duplicateMap = new Dictionary<int, int>();

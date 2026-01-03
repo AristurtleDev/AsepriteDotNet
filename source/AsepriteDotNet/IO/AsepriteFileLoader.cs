@@ -277,6 +277,8 @@ public static partial class AsepriteFileLoader
         List<AsepriteTag> tags = new List<AsepriteTag>();
         List<AsepriteSlice> slices = new List<AsepriteSlice>();
         List<AsepriteTileset> tilesets = new List<AsepriteTileset>();
+        int tilesetUserDataIndex = 0;
+
         AsepriteUserData spriteUserData = new AsepriteUserData();
 
         //  Read frame-by-frame until all frames are read.
@@ -508,8 +510,22 @@ public static partial class AsepriteFileLoader
                             {
                                 color = reader.ReadUnsafe<Rgba32>(Rgba32.StructSize);
                             }
-
-                            if (currentUserData is null && paletteRead)
+                            if (lastReadChunkType == ASE_CHUNK_TILESET)
+                            {
+                                var lasttileset = tilesets.Last();
+                                if (tilesetUserDataIndex == -1)
+                                {
+                                    lasttileset.UserData.Text = text;
+                                    lasttileset.UserData.Color = color;
+                                }
+                                else
+                                {
+                                    lasttileset.TileUserDatas[tilesetUserDataIndex].Text = text;
+                                    lasttileset.TileUserDatas[tilesetUserDataIndex].Color = color;
+                                }
+                                tilesetUserDataIndex++;
+                            }
+                            else if (currentUserData is null && paletteRead)
                             {
                                 spriteUserData.Text = text;
                                 spriteUserData.Color = color;
@@ -603,6 +619,7 @@ public static partial class AsepriteFileLoader
                             AsepriteTileset tileset = new AsepriteTileset(properties, tilesetName, pixels);
                             tilesets.Add(tileset);
                             lastReadChunkType = chunkHeader.ChunkType;
+                            tilesetUserDataIndex = -1;
                         }
                         break;
 

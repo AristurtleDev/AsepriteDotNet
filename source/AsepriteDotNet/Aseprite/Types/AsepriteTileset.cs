@@ -47,6 +47,9 @@ public sealed class AsepriteTileset
     /// </summary>
     public ReadOnlySpan<Rgba32> Pixels => _pixels;
 
+    public AsepriteUserData UserData { get; }
+    public AsepriteUserData[] TileUserDatas {  get; }
+
     internal AsepriteTileset(AsepriteTilesetProperties tilesetProperties, string name, Rgba32[] pixels)
     {
         ID = (int)tilesetProperties.Id;
@@ -57,5 +60,11 @@ public sealed class AsepriteTileset
         TileSize = new Size(tilesetProperties.TileWidth, tilesetProperties.TileHeight);
         Name = name;
         _pixels = pixels;
+        UserData = new AsepriteUserData();
+        TileUserDatas = new AsepriteUserData[TileCount];
+        for(var i=0;i<TileUserDatas.Length;i++)
+        {
+            TileUserDatas[i] = new AsepriteUserData();
+        }
     }
 }

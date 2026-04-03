@@ -109,15 +109,25 @@ public static class TextureAtlasProcessor
         {
             flattenedFrames = new Rgba32[layers.Count * frameCount][];
 
-            HashSet<string> layerNames = new HashSet<string>(layers);
+            List<string> layerList = new List<string>(layers);
 
             for (int i = 0; i < frameCount; i++)
             {
-                for (int celNum = 0; celNum < Math.Min(layers.Count, file.Frames[i].Cels.Length); celNum++)
+                for (int layerIndex = 0; layerIndex < layerList.Count; layerIndex++)
                 {
-                    AsepriteCel cel = file.Frames[i].Cels[celNum];
+                    string layerName = layerList[layerIndex];
+                    AsepriteCel? cel = null;
 
-                    if (!layerNames.Contains(cel.Layer.Name)) continue;
+                    foreach (AsepriteCel frameCel in file.Frames[i].Cels)
+                    {
+                        if (frameCel.Layer.Name == layerName)
+                        {
+                            cel = frameCel;
+                            break;
+                        }
+                    }
+
+                    if (cel is null) continue;
 
                     if (cel is AsepriteLinkedCel linkedCel)
                     {
@@ -126,7 +136,7 @@ public static class TextureAtlasProcessor
 
                     if (cel is AsepriteImageCel imageCel)
                     {
-                        flattenedFrames[i * layers.Count + celNum] = imageCel.Pixels.ToArray();
+                        flattenedFrames[i * layers.Count + layerIndex] = imageCel.Pixels.ToArray();
                     }
                 }
             }
@@ -140,6 +150,8 @@ public static class TextureAtlasProcessor
                 flattenedFrames[i] = file.Frames[i].FlattenFrame(layers);
             }
         }
+
+        frameCount = flattenedFrames.Length;
 
         Dictionary<int, int> duplicateMap = new Dictionary<int, int>();
         Dictionary<int, TextureRegion> originalToDuplicateLookup = new Dictionary<int, TextureRegion>();
@@ -176,7 +188,7 @@ public static class TextureAtlasProcessor
                         + (innerPadding * 2 * rows);
 
         Rgba32[] imagePixels = new Rgba32[imageWidth * imageHeight];
-        TextureRegion[] regions = new TextureRegion[file.Frames.Length];
+        TextureRegion[] regions = new TextureRegion[flattenedFrames.Length];
 
         int offset = 0;
 

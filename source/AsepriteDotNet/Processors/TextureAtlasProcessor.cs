@@ -43,6 +43,7 @@ public static class TextureAtlasProcessor
     /// <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
     /// <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
     /// <param name="innerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+    /// <param name="splitLayers">Indicates whether each layer should be processed separately.</param>
     /// <returns>The <see cref="TextureAtlas"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     public static TextureAtlas Process(AsepriteFile file,
@@ -52,7 +53,8 @@ public static class TextureAtlasProcessor
                                        bool mergeDuplicateFrames = true,
                                        int borderPadding = 0,
                                        int spacing = 0,
-                                       int innerPadding = 0)
+                                       int innerPadding = 0,
+                                       bool splitLayers = false)
     {
         ArgumentNullException.ThrowIfNull(file);
 
@@ -66,7 +68,7 @@ public static class TextureAtlasProcessor
             layers.Add(layer.Name);
         }
 
-        return Process(file, layers, mergeDuplicateFrames, borderPadding, spacing, innerPadding);
+        return Process(file, layers, mergeDuplicateFrames, borderPadding, spacing, innerPadding, splitLayers);
     }
 
     /// <summary>

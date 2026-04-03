@@ -43,6 +43,7 @@ public static class TextureAtlasProcessor
     /// <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
     /// <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
     /// <param name="innerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+    /// <param name="splitLayers">Indicates whether each layer should be processed separately.</param>
     /// <returns>The <see cref="TextureAtlas"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
     public static TextureAtlas Process(AsepriteFile file,
@@ -52,7 +53,8 @@ public static class TextureAtlasProcessor
                                        bool mergeDuplicateFrames = true,
                                        int borderPadding = 0,
                                        int spacing = 0,
-                                       int innerPadding = 0)
+                                       int innerPadding = 0,
+                                       bool splitLayers = false)
     {
         ArgumentNullException.ThrowIfNull(file);
 
@@ -66,7 +68,7 @@ public static class TextureAtlasProcessor
             layers.Add(layer.Name);
         }
 
-        return Process(file, layers, mergeDuplicateFrames, borderPadding, spacing, innerPadding);
+        return Process(file, layers, mergeDuplicateFrames, borderPadding, spacing, innerPadding, splitLayers);
     }
 
     /// <summary>
@@ -81,12 +83,14 @@ public static class TextureAtlasProcessor
     /// <param name="borderPadding">The amount of transparent pixels to add to the edge of the generated texture.</param>
     /// <param name="spacing">The amount of transparent pixels to add between each texture region in the generated texture.</param>
     /// <param name="innerPadding">The amount of transparent pixels to add around the edge of each texture region in the generated texture.</param>
+    /// <param name="splitLayers">Indicates whether each layer should be processed separately instead of being flattened together.</param>
     /// <returns>
     /// The <see cref="TextureAtlas"/> created by this method.  If <paramref name="layers"/> is empty or contains zero
     /// elements, then <see cref="TextureAtlas.Empty"/> is returned.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="file"/> is <see langword="null"/>.</exception>
-    public static TextureAtlas Process(AsepriteFile file, ICollection<string> layers, bool mergeDuplicateFrames = true, int borderPadding = 0, int spacing = 0, int innerPadding = 0)
+    public static TextureAtlas Process(AsepriteFile file, ICollection<string> layers, bool mergeDuplicateFrames = true, int borderPadding = 0, int spacing = 0, int innerPadding = 0, bool splitLayers = false)
+
     {
         ArgumentNullException.ThrowIfNull(file);
 
@@ -99,12 +103,55 @@ public static class TextureAtlasProcessor
         int frameHeight = file.CanvasHeight;
         int frameCount = file.Frames.Length;
 
-        Rgba32[][] flattenedFrames = new Rgba32[frameCount][];
+        Rgba32[][] flattenedFrames;
 
-        for (int i = 0; i < frameCount; i++)
+        if (splitLayers)
         {
-            flattenedFrames[i] = file.Frames[i].FlattenFrame(layers);
+            flattenedFrames = new Rgba32[layers.Count * frameCount][];
+
+            List<string> layerList = new List<string>(layers);
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                for (int layerIndex = 0; layerIndex < layerList.Count; layerIndex++)
+                {
+                    string layerName = layerList[layerIndex];
+                    AsepriteCel? cel = null;
+
+                    foreach (AsepriteCel frameCel in file.Frames[i].Cels)
+                    {
+                        if (frameCel.Layer.Name == layerName)
+                        {
+                            cel = frameCel;
+                            break;
+                        }
+                    }
+
+                    if (cel is null) continue;
+
+                    if (cel is AsepriteLinkedCel linkedCel)
+                    {
+                        cel = linkedCel.Cel;
+                    }
+
+                    if (cel is AsepriteImageCel imageCel)
+                    {
+                        flattenedFrames[i * layers.Count + layerIndex] = imageCel.Pixels.ToArray();
+                    }
+                }
+            }
         }
+        else
+        {
+            flattenedFrames = new Rgba32[frameCount][];
+
+            for (int i = 0; i < frameCount; i++)
+            {
+                flattenedFrames[i] = file.Frames[i].FlattenFrame(layers);
+            }
+        }
+
+        frameCount = flattenedFrames.Length;
 
         Dictionary<int, int> duplicateMap = new Dictionary<int, int>();
         Dictionary<int, TextureRegion> originalToDuplicateLookup = new Dictionary<int, TextureRegion>();
@@ -141,7 +188,7 @@ public static class TextureAtlasProcessor
                         + (innerPadding * 2 * rows);
 
         Rgba32[] imagePixels = new Rgba32[imageWidth * imageHeight];
-        TextureRegion[] regions = new TextureRegion[file.Frames.Length];
+        TextureRegion[] regions = new TextureRegion[flattenedFrames.Length];
 
         int offset = 0;
 

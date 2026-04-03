@@ -245,7 +245,7 @@ internal static class AsepriteColorUtilities
 
         opacity = Calc.MultiplyUnsigned8Bit(source.A, opacity);
 
-        int a = source.A + backdrop.A - Calc.MultiplyUnsigned8Bit(backdrop.A, source.A);
+        int a = backdrop.A + opacity - Calc.MultiplyUnsigned8Bit(backdrop.A, opacity);
         int r = backdrop.R + (source.R - backdrop.R) * opacity / a;
         int g = backdrop.G + (source.G - backdrop.G) * opacity / a;
         int b = backdrop.B + (source.B - backdrop.B) * opacity / a;

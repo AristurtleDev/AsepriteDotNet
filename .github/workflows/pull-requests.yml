@@ -1,0 +1,27 @@
+################################################################################
+### Pull Request Validation
+### Runs unit tests on pull requests targeting the develop branch.
+################################################################################
+name: "Pull Request Validation"
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  test:
+    name: "Run Tests"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Test AsepriteDotNet
+        run: dotnet test tests/AsepriteDotNet.Tests/AsepriteDotNet.Tests.csproj --nologo --verbosity minimal --configuration Release

@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
 
-  <!-- Set the project category used by the root Directory.Build.props -->
   <PropertyGroup>
-    <ProjectCategory>test</ProjectCategory>
-  </PropertyGroup>
-
-  <!-- Never generate documentation files for test projects -->
-  <!-- (you win this time prime) -->
-  <PropertyGroup>
+    <ArtifactsPath>$(SolutionDirectory).artifacts/tests</ArtifactsPath>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <!-- Common Test Project Configurations -->
-  <PropertyGroup>
     <IsTestProject Condition="'$(IsTestProject)' == ''">true</IsTestProject>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
